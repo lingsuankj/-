@@ -11,12 +11,17 @@
 			<view class="chartTitle">学生答题次数</view>
 			<view class="personage">
 				<view class="personage_child">
-					<qiun-data-charts type="line" :opts="opts_personage" :chartData="chartData_personage_left" />
+					<view class="area">
+						<qiun-data-charts type="area" :opts="opts_personage" :chartData="chartData_personage_left" />
+					</view>
+
 					<text class="name">小明</text>
 					<text class="num">10次</text>
 				</view>
 				<view class="personage_child">
-					<qiun-data-charts type="line" :opts="opts_personage" :chartData="chartData_personage_right" />
+					<view class="area">
+						<qiun-data-charts type="area" :opts="opts_personage" :chartData="chartData_personage_right" />
+					</view>
 					<text class="name">张三</text>
 					<text class="num">8次</text>
 				</view>
@@ -54,26 +59,20 @@
 		},
 		xAxis: {
 			disabled: true,
-			disableGrid: true
+			axisLine: false
 		},
 		yAxis: {
 			disableGrid: true,
-			disabled: true,
-			gridType: "dash",
-			dashLength: 2,
-			// data: [{
-			// 	min: 0,
-			// 	max: 150
-			// }]
+			disabled: true
 		},
 		extra: {
-			line: {
+			area: {
 				type: "curve",
+				opacity: 0.2,
+				addLine: true,
 				width: 2,
-				activeType: "hollow",
-				linearType: "custom",
-				onShadow: true,
-				animation: "horizontal"
+				gradient: true,
+				activeType: "hollow"
 			}
 		}
 	}
@@ -102,35 +101,7 @@
 			let resL = {
 				categories: ["2018", "2019", "2020", "2021", "2022", "2023"],
 				series: [{
-					name: "成交量A",
-					linearColor: [
-						[
-							0,
-							"#1890FF"
-						],
-						[
-							0.25,
-							"#00B5FF"
-						],
-						[
-							0.5,
-							"#00D1ED"
-						],
-						[
-							0.75,
-							"#00E6BB"
-						],
-						[
-							1,
-							"#90F489"
-						]
-					],
-					setShadow: [
-						3,
-						8,
-						10,
-						"#1890FF"
-					],
+					name: "数据A",
 					data: [25, 33, 25, 34, 28, 30]
 				}]
 			};
@@ -144,35 +115,7 @@
 			let resR = {
 				categories: ["2018", "2019", "2020", "2021", "2022", "2023"],
 				series: [{
-					name: "成交量A",
-					linearColor: [
-						[
-							0,
-							"#1890FF"
-						],
-						[
-							0.25,
-							"#00B5FF"
-						],
-						[
-							0.5,
-							"#00D1ED"
-						],
-						[
-							0.75,
-							"#00E6BB"
-						],
-						[
-							1,
-							"#90F489"
-						]
-					],
-					setShadow: [
-						3,
-						8,
-						10,
-						"#1890FF"
-					],
+					name: "数据A",
 					data: [29, 33, 25, 30, 33, 30]
 				}]
 			};
@@ -237,6 +180,11 @@
 					width: 47%;
 					background-color: #fff;
 					border-radius: 15px;
+
+					.area {
+						margin-top: 50rpx;
+						height: 200rpx;
+					}
 
 					.name {
 						position: absolute;

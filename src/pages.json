@@ -6,8 +6,8 @@
 				"navigationBarTitleText": "首页",
 				// 设置自定义导航栏 custom  默认导航栏就会消失
 				// "navigationStyle": "custom",
-				"navigationBarTextStyle": "black",
-				"navigationBarBackgroundColor": "#e1bbff"
+				"navigationBarTextStyle": "black"
+				// "navigationBarBackgroundColor": "#e1bbff"
 			}
 		}, {
 			"path": "pages/my/my",
@@ -15,13 +15,19 @@
 				"navigationBarTitleText": "我的",
 				// 设置自定义导航栏 custom  默认导航栏就会消失
 				// "navigationStyle": "custom",
-				"navigationBarTextStyle": "black",
-				"navigationBarBackgroundColor": "#e1bbff"
+				"navigationBarTextStyle": "black"
 			}
 		}, {
 			"path": "pages/myGrade/myGrade",
 			"style": {
 				"navigationBarTitleText": "小帅的主页",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/allGrade/allGrade",
+			"style": {
+				"navigationBarTitleText": "查询成绩",
 				"enablePullDownRefresh": false
 			}
 

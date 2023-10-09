@@ -16,13 +16,13 @@
 
 		</view>
 		<view class="tools">
-			<view class="tool" @tap="toGrade">
+			<view class="tool" @tap="toMyGrade">
 				<view class="imgBox">
 					<image mode="aspectFill" src="../../static/grade.png"></image>
 				</view>
 				<view>我的成绩</view>
 			</view>
-			<view class="tool">
+			<view class="tool" @tap="toAllGrade">
 				<view class="imgBox">
 					<image mode="aspectFill" src="../../static/grade.png"></image>
 				</view>
@@ -41,9 +41,14 @@
 		userId: 1563,
 		userName: '李四'
 	})
-	const toGrade = () => {
+	const toMyGrade = () => {
 		uni.navigateTo({
 			url: `/pages/myGrade/myGrade?userInfo=${JSON.stringify(userInfo.value)}`
+		})
+	}
+	const toAllGrade = () => {
+		uni.navigateTo({
+			url: `/pages/allGrade/allGrade?userInfo=${JSON.stringify(userInfo.value)}`
 		})
 	}
 </script>
@@ -124,7 +129,7 @@
 				margin-right: 40rpx;
 
 				.imgBox {
-					margin: 0 auto;
+					margin: 0 auto 3rpx;
 					display: flex;
 					justify-content: center;
 					align-items: center;
