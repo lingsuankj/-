@@ -53,7 +53,7 @@
 	}
 </script>
 
-<style lang="less">
+<style lang="scss">
 	.clearfix::before,
 	.clearfix::after {
 		content: "";
@@ -66,7 +66,8 @@
 
 	.body {
 		min-height: 100vh;
-		background-image: linear-gradient(to bottom, #D0D5FC, #FCFFFF);
+		background-image: linear-gradient(to bottom, #D8F4F5, #FCFFFF);
+		font-size: 28rpx;
 
 		.userInfo {
 			padding-left: 40rpx;
@@ -75,7 +76,6 @@
 			height: 250rpx;
 			background-color: #FFF;
 			border-radius: 15rpx;
-			font-size: 14px;
 			box-sizing: border-box;
 
 			.userInfoTop {
@@ -84,8 +84,8 @@
 				margin: -36rpx 0 0 0;
 
 				.userPic {
-					width: 140rpx;
-					height: 140rpx;
+					width: 130rpx;
+					height: 130rpx;
 					border-radius: 25rpx;
 				}
 
@@ -93,7 +93,7 @@
 					margin: 46rpx 0 0 40rpx;
 
 					.name {
-						font-size: 16px;
+						font-size: 32rpx;
 						font-weight: 700;
 					}
 
@@ -122,7 +122,6 @@
 			height: 160rpx;
 			background-color: #FFF;
 			border-radius: 15rpx;
-			font-size: 14px;
 			box-sizing: border-box;
 
 			.tool {

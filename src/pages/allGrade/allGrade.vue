@@ -1,6 +1,6 @@
 <template>
 	<view class="body">
-		<view class="banner"></view>
+		<image class="bannerImg" src="../../static/cf5eb8adff344fcc0b17753d9f922e6.png" mode="aspectFill"></image>
 		<view class="datetimeBox">
 			<uni-datetime-picker v-model="range" type="daterange" :clear-icon="false" @change="dateTimeChange" />
 		</view>
@@ -9,6 +9,7 @@
 				@change="onChangeClass">
 			</uni-data-picker>
 		</view>
+		<view class="tips">点击图表查看详情</view>
 		<!-- 图表-班主任 -->
 		<view class="areaAll">
 			<qiun-data-charts type="area" :opts="optsAll" :chartData="chartDataAll" @getIndex="openTableAll" />
@@ -20,7 +21,7 @@
 		</view>
 
 		<!-- 表格 -->
-		<view class="tableBox" :style="{display:tableFlag?'block':'none'}">
+		<view class="tableBox" v-show="tableFlag">
 			<view class="title">
 				23-1班 语文
 				<view class="btnOff" @tap="tableFlag = !tableFlag">x</view>
@@ -60,8 +61,13 @@
 		ref
 	} from 'vue';
 
-	// 日期
-	const range = ref(['2021-02-1', '2021-3-28'])
+	const currentDate = new Date();
+	currentDate.setDate(1);
+	const startDate = currentDate.toISOString().split('T')[0];
+	const endDate = new Date().toISOString().split('T')[0];
+	// 选择器-日期
+	const range = ref([startDate, endDate])
+
 	// 日期点击事件
 	const dateTimeChange = (e) => {
 		console.log('dateTimeChange事件:', e);
@@ -164,6 +170,7 @@
 			chartDataAll.value = JSON.parse(JSON.stringify(res));
 		}, 500);
 	}
+
 	const getServerDataSome = () => {
 		//模拟从服务器获取数据时的延时
 		setTimeout(() => {
@@ -192,29 +199,54 @@
 
 <style lang="scss">
 	.body {
-		.banner {
-			margin: 0 auto 40rpx;
+		font-size: 28rpx;
+
+		.bannerImg {
+			display: block;
+			margin: 0 auto 30rpx;
 			width: 730rpx;
 			height: 350rpx;
-			background-image: url('../../static/index_banner.jpg');
-			background-size: cover;
 			border-radius: 15rpx;
 		}
 
 		.datetimeBox {
 			margin: 0 auto 20rpx;
 			width: 680rpx;
+
+			// 解决日期选择器大小不适配 H5 端的问题
+			/* #ifdef H5 */
+			.uni-calendar:nth-of-type(2) {
+				display: none;
+			}
+
+			/* #endif */
 		}
 
 		.classBox {
 			margin: 0 auto 20rpx;
 			width: 680rpx;
+
+			/* #ifdef MP-ALIPAY */
+			.selected-area {
+				flex: none;
+			}
+
+			/* #endif */
 		}
 
+		// 提示信息 - 折线图可点
+		.tips {
+			text-align: center;
+			font-size: 28rpx;
+			color: #bfdade;
+		}
+
+		// 图表 - 班主任及以上可见
 		.areaAll {
 			margin: 40rpx auto;
 		}
 
+		// 图表 - 任课老师可见
 		.areaSome {
 			margin: 40rpx auto;
 
@@ -223,6 +255,7 @@
 			}
 		}
 
+		// 弹框 - 表格
 		.tableBox {
 			position: fixed;
 			top: 200rpx;
@@ -230,19 +263,23 @@
 			width: 680rpx;
 			height: 800rpx;
 			background-color: #fff;
-			border: 1px solid #333;
+			border-radius: 15rpx;
+			box-shadow: 0 4px 10px 0 rgba(0, 0, 0, .15);
+			background-image: linear-gradient(to right bottom, #d2edee, #d6eee8);
 
 			.title {
 				position: relative;
 				height: 80rpx;
 				line-height: 80rpx;
 				text-align: center;
+				font-size: 36rpx;
+				font-weight: 800;
 
 				.btnOff {
 					position: absolute;
 					top: 0rpx;
 					right: 30rpx;
-					font-size: 18px;
+					font-size: 36rpx;
 				}
 			}
 
@@ -252,11 +289,12 @@
 				display: flex;
 				justify-content: left;
 				text-align: center;
-				background-color: #E1E1CA;
+				background-color: #bfdade;
 
 				.td {
 					width: 25%;
 					border: 1rpx solid #ccc;
+					padding: 10rpx;
 				}
 			}
 
@@ -277,6 +315,7 @@
 				.td {
 					width: 25%;
 					border: 1rpx solid #ccc;
+					padding: 10rpx;
 				}
 			}
 		}

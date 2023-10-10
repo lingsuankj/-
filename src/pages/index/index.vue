@@ -1,6 +1,6 @@
 <template>
 	<view class="body">
-		<view class="banner"></view>
+		<image class="bannerImg" src="../../static/cf5eb8adff344fcc0b17753d9f922e6.png" mode="aspectFill"></image>
 		<view class="chartBox_AllbrokenLine">
 			<view class="chartTitle">学生答题互动频率</view>
 			<view class="AllbrokenLine">
@@ -125,27 +125,29 @@
 </script>
 
 
-<style lang="less">
+<style lang="scss">
 	.body {
 		min-height: 100vh;
 		background-color: #F7F8FA;
 
-		.banner {
-			margin-bottom: -120rpx;
-			width: 750rpx;
+		.bannerImg {
+			display: block;
+			margin: 0 auto -100rpx;
+			width: 730rpx;
 			height: 350rpx;
-			background-image: url('../../static/index_banner.jpg');
-			background-size: cover;
+			border-radius: 15rpx;
 		}
 
 		.chartBox_AllbrokenLine {
 			margin: 0 auto 40rpx;
 			width: 680rpx;
+			position: relative;
+			z-index: 9;
 
 			// 图表-标题
 			.chartTitle {
 				margin-bottom: 16rpx;
-				font-size: 14px;
+				font-size: 28rpx;
 				font-weight: 700;
 			}
 
@@ -154,7 +156,7 @@
 				padding: 15rpx 0rpx;
 				height: 400rpx;
 				background-color: #fff;
-				border-radius: 15px;
+				border-radius: 30rpx;
 			}
 		}
 
@@ -165,7 +167,7 @@
 			// 图表-标题
 			.chartTitle {
 				margin-bottom: 20rpx;
-				font-size: 14px;
+				font-size: 28rpx;
 				font-weight: 700;
 			}
 
@@ -179,7 +181,7 @@
 					position: relative;
 					width: 47%;
 					background-color: #fff;
-					border-radius: 15px;
+					border-radius: 30rpx;
 
 					.area {
 						margin-top: 50rpx;
@@ -190,7 +192,7 @@
 						position: absolute;
 						top: 25rpx;
 						left: 25rpx;
-						font-size: 13px;
+						font-size: 26rpx;
 						font-weight: 600;
 						color: #777;
 					}
@@ -199,7 +201,7 @@
 						position: absolute;
 						top: 70rpx;
 						left: 25rpx;
-						font-size: 14px;
+						font-size: 28rpx;
 						font-weight: 900;
 						color: #555;
 

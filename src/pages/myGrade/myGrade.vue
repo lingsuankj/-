@@ -18,16 +18,12 @@
 		<!-- 正确率-折线图 -->
 		<view class="ringBox">
 			<view class="title">
-				<text class="titleLeft">正确率</text>
+				<text class="titleLeft">正确率 %</text>
 			</view>
 			<view class="ring">
 				<qiun-data-charts type="area" :opts="optsArea" :chartData="chartDataArea" />
 			</view>
 		</view>
-
-
-
-
 	</view>
 </template>
 
@@ -41,8 +37,14 @@
 	} from 'vue';
 
 	const userInfo = ref({})
-	// 日期
-	const range = ref(['2021-02-1', '2021-3-28'])
+
+
+	const currentDate = new Date();
+	currentDate.setDate(1);
+	const startDate = currentDate.toISOString().split('T')[0];
+	const endDate = new Date().toISOString().split('T')[0];
+	// 选择器-日期
+	const range = ref([startDate, endDate])
 
 	// 日期点击事件
 	const maskClick = (e) => {
@@ -166,15 +168,24 @@
 	})
 </script>
 
-<style lang="less">
+<style lang="scss">
 	.body {
 		min-height: 100vh;
 		background-color: #fff;
 
 		.datetimeBox {
 			position: relative;
-			margin-left: 45rpx;
+			margin: 20rpx 0 0 40rpx;
 			width: 500rpx;
+
+			// 解决日期选择器大小不适配 H5 端的问题
+			/* #ifdef H5 */
+			.uni-calendar:nth-of-type(2) {
+				display: none;
+			}
+
+			/* #endif */
+
 		}
 
 		.ringBox {
@@ -193,7 +204,7 @@
 				.titleLeft {
 					position: relative;
 					margin-bottom: 16rpx;
-					font-size: 14px;
+					font-size: 28rpx;
 					font-weight: 700;
 
 					&::before {
@@ -209,7 +220,7 @@
 				}
 
 				.titleRight {
-					font-size: 18px;
+					font-size: 36rpx;
 					color: #5F97BF;
 				}
 			}
