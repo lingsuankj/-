@@ -1,26 +1,26 @@
 <template>
 	<view class="body">
-		<image class="bannerImg" src="../../static/cf5eb8adff344fcc0b17753d9f922e6.png" mode="aspectFill"></image>
-		<view class="chartBox_AllbrokenLine">
+		<image class="bannerImg" src="../../static/images/cf5eb8adff344fcc0b17753d9f922e6.png" mode="aspectFill">
+		</image>
+		<view class="chartBox">
 			<view class="chartTitle">学生答题互动频率</view>
-			<view class="AllbrokenLine">
-				<qiun-data-charts type="line" :opts="opts_AllbrokenLine" :chartData="chartData_AllbrokenLine" />
+			<view class="summarizeLine">
+				<qiun-data-charts type="line" :opts="summarizeLineOpts" :chartData="summarizeLineData" />
 			</view>
 		</view>
-		<view class="chartBox_personage">
+		<view class="chartBox">
 			<view class="chartTitle">学生答题次数</view>
-			<view class="personage">
-				<view class="personage_child">
-					<view class="area">
-						<qiun-data-charts type="area" :opts="opts_personage" :chartData="chartData_personage_left" />
+			<view class="personageBox">
+				<view class="personage">
+					<view class="areaCharts">
+						<qiun-data-charts type="area" :opts="personageAreaOpts" :chartData="personageAreaDataL" />
 					</view>
-
 					<text class="name">小明</text>
 					<text class="num">10次</text>
 				</view>
-				<view class="personage_child">
-					<view class="area">
-						<qiun-data-charts type="area" :opts="opts_personage" :chartData="chartData_personage_right" />
+				<view class="personage">
+					<view class="areaCharts">
+						<qiun-data-charts type="area" :opts="personageAreaOpts" :chartData="personageAreaDataR" />
 					</view>
 					<text class="name">张三</text>
 					<text class="num">8次</text>
@@ -38,17 +38,17 @@
 		ref
 	} from 'vue'
 
+	let summarizeLineData = ref({})
+	let personageAreaDataL = ref({})
+	let personageAreaDataR = ref({})
 
-	let chartData_AllbrokenLine = ref({})
-	let chartData_personage_left = ref({})
-	let chartData_personage_right = ref({})
-	const opts_AllbrokenLine = {
+	const summarizeLineOpts = {
 		animation: true,
 		legend: {
 			show: false
 		}
 	}
-	const opts_personage = {
+	const personageAreaOpts = {
 		color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#ea7ccc"],
 		padding: [10, 15, 15, 15],
 		dataLabel: false,
@@ -76,12 +76,8 @@
 			}
 		}
 	}
-	onReady(() => {
-		getServerData_AllbrokenLine();
-		getServerData_personage_left();
-		getServerData_personage_right();
-	})
-	const getServerData_AllbrokenLine = () => {
+
+	const getSummarizeLineData = () => {
 		setTimeout(() => {
 			//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
 			let res = {
@@ -91,10 +87,10 @@
 					data: [100, 158, 125, 137, 200, 180]
 				}]
 			}
-			chartData_AllbrokenLine.value = JSON.parse(JSON.stringify(res));
+			summarizeLineData.value = JSON.parse(JSON.stringify(res));
 		}, 500);
 	}
-	const getServerData_personage_left = () => {
+	const getPersonageAreaDataL = () => {
 		//模拟从服务器获取数据时的延时
 		setTimeout(() => {
 			//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
@@ -105,10 +101,10 @@
 					data: [25, 33, 25, 34, 28, 30]
 				}]
 			};
-			chartData_personage_left.value = JSON.parse(JSON.stringify(resL));
+			personageAreaDataL.value = JSON.parse(JSON.stringify(resL));
 		}, 500);
 	}
-	const getServerData_personage_right = () => {
+	const getPersonageAreaDataR = () => {
 		//模拟从服务器获取数据时的延时
 		setTimeout(() => {
 			//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
@@ -119,9 +115,15 @@
 					data: [29, 33, 25, 30, 33, 30]
 				}]
 			};
-			chartData_personage_right.value = JSON.parse(JSON.stringify(resR));
+			personageAreaDataR.value = JSON.parse(JSON.stringify(resR));
 		}, 500);
 	}
+
+	onReady(() => {
+		getSummarizeLineData();
+		getPersonageAreaDataL();
+		getPersonageAreaDataR();
+	})
 </script>
 
 
@@ -138,31 +140,11 @@
 			border-radius: 15rpx;
 		}
 
-		.chartBox_AllbrokenLine {
+		.chartBox {
 			margin: 0 auto 40rpx;
 			width: 680rpx;
 			position: relative;
 			z-index: 9;
-
-			// 图表-标题
-			.chartTitle {
-				margin-bottom: 16rpx;
-				font-size: 28rpx;
-				font-weight: 700;
-			}
-
-			// 图表-父盒子
-			.AllbrokenLine {
-				padding: 15rpx 0rpx;
-				height: 400rpx;
-				background-color: #fff;
-				border-radius: 30rpx;
-			}
-		}
-
-		.chartBox_personage {
-			margin: 0 auto 40rpx;
-			width: 680rpx;
 
 			// 图表-标题
 			.chartTitle {
@@ -171,19 +153,27 @@
 				font-weight: 700;
 			}
 
+			// 图表-父盒子
+			.summarizeLine {
+				padding: 15rpx 0rpx;
+				height: 400rpx;
+				background-color: #fff;
+				border-radius: 30rpx;
+			}
+
 			// 两个图表的父盒子
-			.personage {
+			.personageBox {
 				display: flex;
 				justify-content: space-between;
 				height: 250rpx;
 
-				.personage_child {
+				.personage {
 					position: relative;
 					width: 47%;
 					background-color: #fff;
 					border-radius: 30rpx;
 
-					.area {
+					.areaCharts {
 						margin-top: 50rpx;
 						height: 200rpx;
 					}
@@ -220,7 +210,7 @@
 					}
 				}
 			}
-		}
 
+		}
 	}
 </style>

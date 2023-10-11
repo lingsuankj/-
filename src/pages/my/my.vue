@@ -7,28 +7,25 @@
 					<view class="name">钉小帅</view>
 					<view class="classRoom">班级：23-1</view>
 				</view>
-
 			</view>
 			<view class="userInfoBottom">
 				<view class="position">职位：班主任</view>
 				<view class="stuNum">学号：21</view>
 			</view>
-
 		</view>
 		<view class="tools">
 			<view class="tool" @tap="toMyGrade">
 				<view class="imgBox">
-					<image mode="aspectFill" src="../../static/grade.png"></image>
+					<image mode="aspectFill" src="../../static/images/grade.png"></image>
 				</view>
 				<view>我的成绩</view>
 			</view>
 			<view class="tool" @tap="toAllGrade">
 				<view class="imgBox">
-					<image mode="aspectFill" src="../../static/grade.png"></image>
+					<image mode="aspectFill" src="../../static/images/grade.png"></image>
 				</view>
 				<view>全部成绩</view>
 			</view>
-
 		</view>
 	</view>
 </template>
@@ -37,18 +34,20 @@
 	import {
 		ref
 	} from '@vue/runtime-core';
+
 	const userInfo = ref({
 		userId: 1563,
 		userName: '李四'
 	})
+
 	const toMyGrade = () => {
 		uni.navigateTo({
-			url: `/pages/myGrade/myGrade?userInfo=${JSON.stringify(userInfo.value)}`
+			url: `/pages/details/details?userInfo=${JSON.stringify(userInfo.value)}`
 		})
 	}
 	const toAllGrade = () => {
 		uni.navigateTo({
-			url: `/pages/allGrade/allGrade?userInfo=${JSON.stringify(userInfo.value)}`
+			url: `/pages/inquire/inquire?userInfo=${JSON.stringify(userInfo.value)}`
 		})
 	}
 </script>
@@ -66,7 +65,8 @@
 
 	.body {
 		min-height: 100vh;
-		background-image: linear-gradient(to bottom, #D8F4F5, #FCFFFF);
+		background-color: #e0efec;
+		// background-image: linear-gradient(to bottom, #D8F4F5, #FCFFFF);
 		font-size: 28rpx;
 
 		.userInfo {

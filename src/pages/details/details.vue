@@ -1,27 +1,27 @@
 <template>
 	<view class="body">
-		<view class="datetimeBox">
-			<uni-datetime-picker v-model="range" type="daterange" :border="false" :clear-icon="false"
-				@maskClick="maskClick" />
+		<view class="dateSelector">
+			<uni-datetime-picker v-model="dateRange" type="daterange" :clear-icon="false" @change="dateChange" />
 		</view>
+
 		<!-- 本次统计-饼状图 -->
-		<view class="ringBox">
+		<view class="chartsBox">
 			<view class="title">
 				<text class="titleLeft">本次统计</text>
 				<text class="titleRight">85次</text>
 			</view>
-			<view class="ring">
-				<qiun-data-charts type="ring" :opts="optsRing" :chartData="chartDataRing" />
+			<view class="charts">
+				<qiun-data-charts type="ring" :opts="statisticsOpts" :chartData="statisticsData" />
 			</view>
 		</view>
 
 		<!-- 正确率-折线图 -->
-		<view class="ringBox">
+		<view class="chartsBox">
 			<view class="title">
 				<text class="titleLeft">正确率 %</text>
 			</view>
-			<view class="ring">
-				<qiun-data-charts type="area" :opts="optsArea" :chartData="chartDataArea" />
+			<view class="charts">
+				<qiun-data-charts type="area" :opts="accuracyOpts" :chartData="accuracyData" />
 			</view>
 		</view>
 	</view>
@@ -36,24 +36,24 @@
 		ref
 	} from 'vue';
 
-	const userInfo = ref({})
-
+	const userInfo = ref({});
 
 	const currentDate = new Date();
-	currentDate.setDate(1);
+	const startDay = 1
+	currentDate.setDate(startDay);
 	const startDate = currentDate.toISOString().split('T')[0];
 	const endDate = new Date().toISOString().split('T')[0];
-	// 选择器-日期
-	const range = ref([startDate, endDate])
+	const dateRange = ref([startDate, endDate]);
 
-	// 日期点击事件
-	const maskClick = (e) => {
-		console.log('maskClick事件:', e);
+	const dateChange = (e) => {
+		console.log(e);
 	}
 
-	const chartDataRing = ref({})
-	const chartDataArea = ref({})
-	const optsRing = {
+
+	const statisticsData = ref({});
+	const accuracyData = ref({});
+
+	const statisticsOpts = {
 		color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#ea7ccc"],
 		padding: [5, 5, 5, 5],
 		enableScroll: false,
@@ -84,7 +84,7 @@
 			show: false
 		}
 	}
-	const optsArea = {
+	const accuracyOpts = {
 		color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#ea7ccc"],
 		padding: [15, 15, 0, 15],
 		enableScroll: false,
@@ -109,7 +109,8 @@
 			}
 		}
 	}
-	const getServerDataRing = () => {
+
+	const getStatisticsData = () => {
 		setTimeout(() => {
 			//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
 			let res = {
@@ -137,10 +138,10 @@
 					}]
 				}]
 			};
-			chartDataRing.value = JSON.parse(JSON.stringify(res));
+			statisticsData.value = JSON.parse(JSON.stringify(res));
 		}, 500);
 	}
-	const getServerDataArea = () => {
+	const getAccuracyData = () => {
 		setTimeout(() => {
 			//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
 			let res = {
@@ -150,7 +151,7 @@
 					data: [35, 8, 25, 37, 4, 20]
 				}]
 			};
-			chartDataArea.value = JSON.parse(JSON.stringify(res));
+			accuracyData.value = JSON.parse(JSON.stringify(res));
 		}, 500);
 	}
 
@@ -162,9 +163,10 @@
 			title: userInfo.value.userName + '的主页'
 		});
 	})
+
 	onReady(() => {
-		getServerDataRing()
-		getServerDataArea()
+		getStatisticsData()
+		getAccuracyData()
 	})
 </script>
 
@@ -173,10 +175,10 @@
 		min-height: 100vh;
 		background-color: #fff;
 
-		.datetimeBox {
+		.dateSelector {
 			position: relative;
-			margin: 20rpx 0 0 40rpx;
-			width: 500rpx;
+			margin: 20rpx auto 20rpx;
+			width: 680rpx;
 
 			// 解决日期选择器大小不适配 H5 端的问题
 			/* #ifdef H5 */
@@ -188,7 +190,7 @@
 
 		}
 
-		.ringBox {
+		.chartsBox {
 			margin: 40rpx auto;
 			padding: 20rpx 60rpx 60rpx;
 			width: 680rpx;
@@ -225,7 +227,7 @@
 				}
 			}
 
-			.ring {
+			.charts {
 				width: 100%;
 				height: 100%;
 			}

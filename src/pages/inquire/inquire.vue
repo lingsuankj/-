@@ -1,8 +1,9 @@
 <template>
 	<view class="body">
-		<image class="bannerImg" src="../../static/cf5eb8adff344fcc0b17753d9f922e6.png" mode="aspectFill"></image>
-		<view class="datetimeBox">
-			<uni-datetime-picker v-model="range" type="daterange" :clear-icon="false" @change="dateTimeChange" />
+		<image class="bannerImg" src="../../static/images/e550b088ea89cdd2854d9b45878f7c0.png" mode="aspectFill">
+		</image>
+		<view class="dateRangeBox">
+			<uni-datetime-picker v-model="dateRange" type="daterange" :clear-icon="false" @change="dateRangeChange" />
 		</view>
 		<view class="classBox">
 			<uni-data-picker placeholder="请选择班级" :clear-icon="false" :localdata="classesDataTree" v-model="classes"
@@ -11,13 +12,15 @@
 		</view>
 		<view class="tips">点击图表查看详情</view>
 		<!-- 图表-班主任 -->
-		<view class="areaAll">
-			<qiun-data-charts type="area" :opts="optsAll" :chartData="chartDataAll" @getIndex="openTableAll" />
+		<view class="authorityHigh">
+			<qiun-data-charts type="area" :opts="optsAll" :chartData="authorityHighData"
+				@getIndex="openTableAuthorityHigh" />
 		</view>
 		<!-- 图表-任课老师 -->
-		<view class="areaSome">
+		<view class="authorityLow">
 			<view class="title">语文</view>
-			<qiun-data-charts type="area" :opts="optsAll" :chartData="chartDataSome" @getIndex="openTableSome" />
+			<qiun-data-charts type="area" :opts="optsAll" :chartData="authorityLowData"
+				@getIndex="openTableAuthorityLow" />
 		</view>
 
 		<!-- 表格 -->
@@ -46,8 +49,79 @@
 					<view class="td">16</view>
 					<view class="td">80%</view>
 				</view>
+				<view class="tr">
+					<view class="td">小帅1</view>
+					<view class="td">20</view>
+					<view class="td">18</view>
+					<view class="td">90%</view>
+				</view>
+				<view class="tr">
+					<view class="td">张三2</view>
+					<view class="td">20</view>
+					<view class="td">16</view>
+					<view class="td">80%</view>
+				</view>
+				<view class="tr">
+					<view class="td">小帅1</view>
+					<view class="td">20</view>
+					<view class="td">18</view>
+					<view class="td">90%</view>
+				</view>
+				<view class="tr">
+					<view class="td">张三2</view>
+					<view class="td">20</view>
+					<view class="td">16</view>
+					<view class="td">80%</view>
+				</view>
+				<view class="tr">
+					<view class="td">小帅1</view>
+					<view class="td">20</view>
+					<view class="td">18</view>
+					<view class="td">90%</view>
+				</view>
+				<view class="tr">
+					<view class="td">张三2</view>
+					<view class="td">20</view>
+					<view class="td">16</view>
+					<view class="td">80%</view>
+				</view>
+				<view class="tr">
+					<view class="td">小帅1</view>
+					<view class="td">20</view>
+					<view class="td">18</view>
+					<view class="td">90%</view>
+				</view>
+				<view class="tr">
+					<view class="td">张三2</view>
+					<view class="td">20</view>
+					<view class="td">16</view>
+					<view class="td">80%</view>
+				</view>
+				<view class="tr">
+					<view class="td">小帅1</view>
+					<view class="td">20</view>
+					<view class="td">18</view>
+					<view class="td">90%</view>
+				</view>
+				<view class="tr">
+					<view class="td">张三2</view>
+					<view class="td">20</view>
+					<view class="td">16</view>
+					<view class="td">80%</view>
+				</view>
+				<view class="tr">
+					<view class="td">小帅1</view>
+					<view class="td">20</view>
+					<view class="td">18</view>
+					<view class="td">90%</view>
+				</view>
+				<view class="tr">
+					<view class="td">张三2</view>
+					<view class="td">20</view>
+					<view class="td">16</view>
+					<view class="td">80%</view>
+				</view>
 			</scroll-view>
-
 		</view>
 	</view>
 </template>
@@ -62,15 +136,15 @@
 	} from 'vue';
 
 	const currentDate = new Date();
-	currentDate.setDate(1);
+	const startDay = 1
+	currentDate.setDate(startDay);
 	const startDate = currentDate.toISOString().split('T')[0];
 	const endDate = new Date().toISOString().split('T')[0];
-	// 选择器-日期
-	const range = ref([startDate, endDate])
+	const dateRange = ref([startDate, endDate])
 
 	// 日期点击事件
-	const dateTimeChange = (e) => {
-		console.log('dateTimeChange事件:', e);
+	const dateRangeChange = (e) => {
+		console.log('dateRangeChange事件:', e);
 	}
 
 	// 选择班级
@@ -115,18 +189,18 @@
 	// 表格开启状态
 	let tableFlag = ref(false)
 	// 打开表格（班主任）
-	const openTableAll = (e) => {
+	const openTableAuthorityHigh = (e) => {
 		tableFlag.value = true
 		console.log(e, e.opts.categories[e.currentIndex.index]);
 	}
 	// 打开表格-（任课老师）
-	const openTableSome = (e) => {
+	const openTableAuthorityLow = (e) => {
 		tableFlag.value = true
 		// console.log(e, e.opts.categories[e.currentIndex.index]);
 	}
 
-	const chartDataAll = ref({})
-	const chartDataSome = ref({})
+	const authorityHighData = ref({})
+	const authorityLowData = ref({})
 	const optsAll = {
 		color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#ea7ccc"],
 		padding: [15, 15, 0, 15],
@@ -151,7 +225,7 @@
 		}
 	}
 
-	const getServerDataAll = () => {
+	const getAuthorityHighData = () => {
 		//模拟从服务器获取数据时的延时
 		setTimeout(() => {
 			//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
@@ -167,11 +241,11 @@
 					}
 				]
 			};
-			chartDataAll.value = JSON.parse(JSON.stringify(res));
+			authorityHighData.value = JSON.parse(JSON.stringify(res));
 		}, 500);
 	}
 
-	const getServerDataSome = () => {
+	const getAuthorityLowData = () => {
 		//模拟从服务器获取数据时的延时
 		setTimeout(() => {
 			//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
@@ -187,13 +261,13 @@
 					}
 				]
 			};
-			chartDataSome.value = JSON.parse(JSON.stringify(res));
+			authorityLowData.value = JSON.parse(JSON.stringify(res));
 		}, 500);
 	}
 
 	onReady(() => {
-		getServerDataAll()
-		getServerDataSome()
+		getAuthorityHighData()
+		getAuthorityLowData()
 	})
 </script>
 
@@ -209,14 +283,14 @@
 			border-radius: 15rpx;
 		}
 
-		.datetimeBox {
+		.dateRangeBox {
 			margin: 0 auto 20rpx;
 			width: 680rpx;
 
 			// 解决日期选择器大小不适配 H5 端的问题
 			/* #ifdef H5 */
 			.uni-calendar:nth-of-type(2) {
-				display: none;
+				display: none !important;
 			}
 
 			/* #endif */
@@ -242,13 +316,16 @@
 		}
 
 		// 图表 - 班主任及以上可见
-		.areaAll {
+		.authorityHigh {
 			margin: 40rpx auto;
+			width: 680rpx;
+			// height: 500rpx;
 		}
 
 		// 图表 - 任课老师可见
-		.areaSome {
+		.authorityLow {
 			margin: 40rpx auto;
+			width: 680rpx;
 
 			.title {
 				text-align: center;
@@ -258,14 +335,15 @@
 		// 弹框 - 表格
 		.tableBox {
 			position: fixed;
-			top: 200rpx;
-			left: 35rpx;
+			top: 15%;
+			left: 50%;
+			transform: translateX(-50%);
 			width: 680rpx;
 			height: 800rpx;
 			background-color: #fff;
 			border-radius: 15rpx;
 			box-shadow: 0 4px 10px 0 rgba(0, 0, 0, .15);
-			background-image: linear-gradient(to right bottom, #d2edee, #d6eee8);
+			background-image: linear-gradient(to right bottom, #ebebeb, #ffffff);
 
 			.title {
 				position: relative;
@@ -289,7 +367,7 @@
 				display: flex;
 				justify-content: left;
 				text-align: center;
-				background-color: #bfdade;
+				background-color: #e4ebeb;
 
 				.td {
 					width: 25%;
