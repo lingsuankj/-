@@ -9,22 +9,21 @@ import {
 export const useMemberStore = defineStore(
 	'member',
 	() => {
-		// 会员信息
-		const profile = ref()
+		const userInfo = ref()
 
-		// 保存会员信息，登录时使用
+		// 保存用户信息，登录时使用
 		const setProfile = () => {
-			profile.value = val
+			userInfo.value = val
 		}
 
-		// 清理会员信息，退出时使用
+		// 清理用户信息，退出时使用
 		const clearProfile = () => {
-			profile.value = undefined
+			userInfo.value = undefined
 		}
 
 		// 记得 return
 		return {
-			profile,
+			userInfo,
 			setProfile,
 			clearProfile,
 		}

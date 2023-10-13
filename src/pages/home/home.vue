@@ -32,6 +32,7 @@
 
 <script setup>
 	import {
+		onLoad,
 		onReady
 	} from '@dcloudio/uni-app'
 	import {
@@ -124,6 +125,7 @@
 		getPersonageAreaDataL();
 		getPersonageAreaDataR();
 	})
+	onLoad(() => {})
 </script>
 
 

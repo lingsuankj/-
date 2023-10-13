@@ -14,13 +14,13 @@
 			</view>
 		</view>
 		<view class="tools">
-			<view class="tool" @tap="toMyGrade">
+			<view class="tool" @tap="toDetails">
 				<view class="imgBox">
 					<image mode="aspectFill" src="../../static/images/grade.png"></image>
 				</view>
 				<view>我的成绩</view>
 			</view>
-			<view class="tool" @tap="toAllGrade">
+			<view class="tool" @tap="toInquire">
 				<view class="imgBox">
 					<image mode="aspectFill" src="../../static/images/grade.png"></image>
 				</view>
@@ -32,24 +32,29 @@
 
 <script setup>
 	import {
+		onLoad
+	} from '@dcloudio/uni-app';
+	import {
 		ref
-	} from '@vue/runtime-core';
+	} from 'vue';
 
 	const userInfo = ref({
 		userId: 1563,
 		userName: '李四'
 	})
 
-	const toMyGrade = () => {
+	const toDetails = () => {
 		uni.navigateTo({
 			url: `/pages/details/details?userInfo=${JSON.stringify(userInfo.value)}`
 		})
 	}
-	const toAllGrade = () => {
+	const toInquire = () => {
 		uni.navigateTo({
 			url: `/pages/inquire/inquire?userInfo=${JSON.stringify(userInfo.value)}`
 		})
 	}
+
+	onLoad(() => {})
 </script>
 
 <style lang="scss">
