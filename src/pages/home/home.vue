@@ -38,6 +38,10 @@
 	import {
 		ref
 	} from 'vue'
+	import {
+		summarizeAPI,
+		personageAPI
+	} from '@/utils/home.js'
 
 	let summarizeLineData = ref({})
 	let personageAreaDataL = ref({})
@@ -78,56 +82,52 @@
 		}
 	}
 
-	const getSummarizeLineData = () => {
-		setTimeout(() => {
-			//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
-			let res = {
-				categories: ["1月", "2月", "3月", "4月", "5月", "6月"],
-				series: [{
-					name: "总数",
-					data: [100, 158, 125, 137, 200, 180]
-				}]
-			}
-			summarizeLineData.value = JSON.parse(JSON.stringify(res));
-		}, 500);
+	const getSummarizeData = async () => {
+		const res = await summarizeAPI()
+		// 在这里设置初始值，否则会报错
+		summarizeLineData.value = {
+			categories: ["1月", "2月", "3月", "4月", "5月", "6月"],
+			series: [{
+				name: "总数",
+				data: [100, 158, 125, 137, 200, 180]
+			}]
+		}
+		summarizeLineData.value.categories = Object.keys(res.data);
+		summarizeLineData.value.series[0].data = Object.values(res.data);
 	}
-	const getPersonageAreaDataL = () => {
-		//模拟从服务器获取数据时的延时
-		setTimeout(() => {
-			//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
-			let resL = {
-				categories: ["2018", "2019", "2020", "2021", "2022", "2023"],
-				series: [{
-					name: "数据A",
-					data: [25, 33, 25, 34, 28, 30]
-				}]
-			};
-			personageAreaDataL.value = JSON.parse(JSON.stringify(resL));
-		}, 500);
-	}
-	const getPersonageAreaDataR = () => {
-		//模拟从服务器获取数据时的延时
-		setTimeout(() => {
-			//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
-			let resR = {
-				categories: ["2018", "2019", "2020", "2021", "2022", "2023"],
-				series: [{
-					name: "数据A",
-					data: [29, 33, 25, 30, 33, 30]
-				}]
-			};
-			personageAreaDataR.value = JSON.parse(JSON.stringify(resR));
-		}, 500);
+
+	const getPersonageData = async () => {
+		const res = await personageAPI()
+		// 在这里设置初始值，否则会报错
+		personageAreaDataL.value = {
+			categories: ["2018", "2019", "2020", "2021", "2022", "2023"],
+			series: [{
+				name: "数据A",
+				data: [25, 33, 25, 34, 28, 30]
+			}]
+		}
+		personageAreaDataL.value.categories = Object.keys(res.data.all[0].data);
+		personageAreaDataL.value.series[0].data = Object.values(res.data.all[0].data);
+
+		personageAreaDataR.value = {
+			categories: ["2018", "2019", "2020", "2021", "2022", "2023"],
+			series: [{
+				name: "数据A",
+				data: [25, 33, 25, 34, 28, 30]
+			}]
+		}
+		personageAreaDataR.value.categories = Object.keys(res.data.all[1].data);
+		personageAreaDataR.value.series[0].data = Object.values(res.data.all[1].data);
+
+
 	}
 
 	onReady(() => {
-		getSummarizeLineData();
-		getPersonageAreaDataL();
-		getPersonageAreaDataR();
+		getSummarizeData()
+		getPersonageData()
 	})
 	onLoad(() => {})
 </script>
-
 
 <style lang="scss">
 	.body {

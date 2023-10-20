@@ -1,48 +1,28 @@
-// 代码块
-// 封装的目的
-// 		1. 发送请求的时候调用更简洁
-//		2. 添加一些通用的配置(超时时间，请求头)。 调用者没有传入配置的时候用默认的，调用者传入了相同，优先使用调用者
-// 		3. 改成使用promise解决异步问题
-//		4. 统一维护域名
-//		5. 添加请求拦截器，在所有请求之前加一些通用的操作
-//		6. 代码响应之前，进行一些通用的操作
-const proxy = {
-	"/api": {
-		target: "http://dingclass.com",
-		pathRewrite: '^/api'
-	}
-}
-
 function getUrl(url) {
-	for (let key in proxy) {
-		if (url.startsWith(key)) {
-			if (proxy[key].pathRewrite) {
-				url = url.replace(new RegExp(proxy[key].pathRewrite), "")
-			}
-			url = proxy[key].target + url
-			break;
-		}
+	if (url.startsWith('/api')) {
+		url = url.replace(new RegExp('^/api'), "")
+		url = "http://127.0.0.1" + url
 	}
 	return url;
 }
 
 function getHeader(header = {}) {
-	if (+new Date() > uni.getStorageSync("randomNameToken").expireTime) {
-		// 重新获取token，并存入本地
-		uni.setStorageSync("randomNameToken", {
-			token: '123',
-			expireTime: +new Date() + 2 * 60 * 60 * 1000
+	if (+new Date() > uni.getStorageSync("dingEnumeratorToken").expireTime) {
+		// 重新获取token，并存入本地------------------
+		uni.setStorageSync("dingEnumeratorToken", {
+			access_token: 'sss.ddd.fff',
+			expires_in: +new Date() + 2 * 60 * 60 * 1000
 		})
 	}
 	return {
 		"Content-Type": typeof(header) === 'string' ? header : "application/x-www-form-urlencoded",
-		"access_token": uni.getStorageSync("randomNameToken").token,
+		"access_token": uni.getStorageSync("dingEnumeratorToken").token,
 		...header
 	}
 }
 
-function request(options) {
-	return new Promise((reslove, reject) => {
+export function request(options) {
+	return new Promise((resolve, reject) => {
 		if (!options.header) options.header = {}
 		const header = getHeader(options.header);
 		options.url = getUrl(options.url)
@@ -52,21 +32,17 @@ function request(options) {
 			...options,
 			header,
 			success(res) {
-				resolve(res)
-				// if (res.statusCode >= 200 && res.statusCode < 300) {
-				// 	resolve(res)
-				// } else if (res.statusCode === 401) {
-				// 	// 401 清理用户信息 跳转到登录页
-				// 	// 标记为失败
-				// 	reject(res)
-				// } else {
-				// 	// 其他错误
-				// 	uni.showToast({
-				// 		icon: 'none',
-				// 		title: res.data.msg || '请求错误'
-				// 	})
-				// 	reject(res)
-				// }
+				// resolve(res)
+				if (res.statusCode >= 200 && res.statusCode < 300) {
+					resolve(res)
+				} else {
+					// 其他错误
+					uni.showToast({
+						icon: 'none',
+						title: res.data.msg || '请求错误'
+					})
+					reject(res)
+				}
 			},
 			fail(err) {
 				uni.showToast({

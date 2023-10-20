@@ -37,17 +37,11 @@
 				<view class="td">正确率</view>
 			</view>
 			<scroll-view scroll-y=true class="table">
-				<view class="tr">
-					<view class="td">小帅1</view>
-					<view class="td">20</view>
-					<view class="td">18</view>
-					<view class="td">90%</view>
-				</view>
-				<view class="tr">
-					<view class="td">张三2</view>
-					<view class="td">20</view>
-					<view class="td">16</view>
-					<view class="td">80%</view>
+				<view class="tr" v-for="(item,index) in ClassDetailData" :key='index'>
+					<view class="td">{{item.name}}</view>
+					<view class="td">{{item.total}}</view>
+					<view class="td">{{item.correctNum}}</view>
+					<view class="td">{{item.accuracy}}</view>
 				</view>
 			</scroll-view>
 		</view>
@@ -62,58 +56,70 @@
 	import {
 		ref
 	} from 'vue';
+	import {
+		authorityHighAPI,
+		authorityLowAPI,
+		classAPI,
+		classDetailAPI
+	} from '@/utils/inquire.js'
 
+	// 日期
 	const currentDate = new Date();
 	const startDay = 1
 	currentDate.setDate(startDay);
 	const startDate = currentDate.toISOString().split('T')[0];
 	const endDate = new Date().toISOString().split('T')[0];
 	const dateRange = ref([startDate, endDate])
-
 	// 日期点击事件
 	const dateRangeChange = (e) => {
-		console.log('dateRangeChange事件:', e);
+		getAuthorityHighData()
+		getAuthorityLowData()
 	}
 
 	// 选择班级
-	let classes = ref('1-2')
-	const classesDataTree = [{
-			text: "一年级",
-			value: "1-0",
-			children: [{
-					text: "1.1班",
-					value: "1-1"
-				},
-				{
-					text: "1.2班",
-					value: "1-2"
-				}
-			]
-		},
-		{
-			text: "二年级",
-			value: "2-0",
-			children: [{
-					text: "2.1班",
-					value: "2-1"
-				},
-				{
-					text: "2.2班",
-					value: "2-2"
-				}
-			]
-		},
-		{
-			text: "三年级",
-			value: "3-0",
-			disable: true
-		}
-	]
+	let classes = ref(11)
+	const classesDataTree = ref([
+		// {
+		// 	text: "一年级",
+		// 	value: "1-0",
+		// 	children: [{
+		// 			text: "1.1班",
+		// 			value: "1-1"
+		// 		},
+		// 		{
+		// 			text: "1.2班",
+		// 			value: "1-2"
+		// 		}
+		// 	]
+		// },
+		// {
+		// 	text: "二年级",
+		// 	value: "2-0",
+		// 	children: [{
+		// 		text: "2.1班",
+		// 		value: "2-1"
+		// 	}, {
+		// 		text: "2.2班",
+		// 		value: "2-2"
+		// 	}]
+		// },
+		// {
+		// 	text: "三年级",
+		// 	value: "3-0",
+		// 	disable: true
+		// }
+	])
 	// 选择班级后触发
-	const onChangeClass = (e) => {
-		console.log('选择完成触发！', e);
+	const onChangeClass = () => {
+		getAuthorityHighData()
+		getAuthorityLowData()
 	}
 
+	// 科目
+	let subject = ref('语文')
+
+	// 表格
+	const ClassDetailData = ref([])
 	// 表格开启状态
 	let tableFlag = ref(false)
 	// 打开表格（班主任）
@@ -132,10 +138,12 @@
 	const optsAll = {
 		color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#ea7ccc"],
 		padding: [15, 15, 0, 15],
-		enableScroll: false,
+		enableScroll: true,
 		legend: {},
 		xAxis: {
-			disableGrid: true
+			disableGrid: true,
+			scrollShow: true,
+			itemCount: 4
 		},
 		yAxis: {
 			gridType: "dash",
@@ -153,46 +161,103 @@
 		}
 	}
 
-	const getAuthorityHighData = () => {
-		//模拟从服务器获取数据时的延时
-		setTimeout(() => {
-			//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
-			let res = {
-				categories: ["语文", "数学", "英语", "物理", "化学", "生物"],
-				series: [{
-						name: "提问数量",
-						data: [70, 85, 65, 47, 64, 40]
-					},
-					{
-						name: "正确数量",
-						data: [55, 67, 55, 30, 54, 38]
-					}
-				]
-			};
-			authorityHighData.value = JSON.parse(JSON.stringify(res));
-		}, 500);
+	const getClassData = async () => {
+		const res = await classAPI()
+
+		// 处理 class 数据格式
+		const treeFun = (treeList, parentId, newArr) => {
+			for (let k of treeList) {
+				if (k.parent === parentId) {
+					newArr.push(k)
+				}
+			}
+			for (let m of newArr) {
+				m.children = []
+				m.value = m.id
+				treeFun(treeList, m.id, m.children)
+				if (m.children.length === 0) {
+					delete m.children
+				}
+			}
+			return newArr
+		}
+		classesDataTree.value = treeFun(res.data.data, null, [])
 	}
 
-	const getAuthorityLowData = () => {
-		//模拟从服务器获取数据时的延时
-		setTimeout(() => {
-			//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
-			let res = {
-				categories: ["23-1班", "23-2班", "23-3班", "23-4班"],
-				series: [{
-						name: "提问数量",
-						data: [70, 85, 65, 47]
-					},
-					{
-						name: "正确数量",
-						data: [55, 67, 55, 30]
-					}
-				]
-			};
-			authorityLowData.value = JSON.parse(JSON.stringify(res));
-		}, 500);
+	const getAuthorityHighData = async () => {
+		const res = await authorityHighAPI(classes.value, dateRange.value[0], dateRange.value[1])
+		// console.log(res.data);
+		const categories = []
+		const seriesTotal = []
+		const seriesCorrectNum = []
+		res.data.data.forEach(item => {
+			categories.push(item.subject)
+			seriesTotal.push(item.total)
+			seriesCorrectNum.push(item.correctNum)
+		})
+
+		authorityHighData.value = {
+			categories: categories,
+			series: [{
+					name: "提问数量",
+					data: seriesTotal
+				},
+				{
+					name: "正确数量",
+					data: seriesCorrectNum
+				}
+			]
+			// categories: ["语文", "数学", "英语", "物理", "化学", "生物"],
+			// series: [{
+			// 		name: "提问数量",
+			// 		data: [70, 85, 65, 47, 64, 40]
+			// 	},
+			// 	{
+			// 		name: "正确数量",
+			// 		data: [55, 67, 55, 30, 54, 38]
+			// 	}
+			// ]
+		}
 	}
 
+	const getAuthorityLowData = async () => {
+		const res = await authorityLowAPI()
+		// console.log(res.data.data);
+		const categories = []
+		const seriesTotal = []
+		const seriesCorrectNum = []
+		res.data.data.forEach(item => {
+			categories.push(item.subject)
+			seriesTotal.push(item.total)
+			seriesCorrectNum.push(item.correctNum)
+		})
+		authorityLowData.value = {
+			categories: categories,
+			series: [{
+					name: "提问数量",
+					data: seriesTotal
+				},
+				{
+					name: "正确数量",
+					data: seriesCorrectNum
+				}
+			]
+		}
+	}
+
+	const getClassDetailData = async () => {
+		const res = await classDetailAPI(classes.value, dateRange.value[0], dateRange.value[1], subject)
+		res.data.data.forEach(item => {
+			item.accuracy = Math.round(item.correctNum / item.total * 100) + '%'
+		})
+		ClassDetailData.value = res.data.data
+		// console.log(res.data.data);
+	}
+
+	onLoad(() => {
+		getClassData()
+		getClassDetailData()
+	})
 	onReady(() => {
 		getAuthorityHighData()
 		getAuthorityLowData()
@@ -268,9 +333,11 @@
 			transform: translateX(-50%);
 			width: 680rpx;
 			height: 800rpx;
-			background-color: #fff;
+			background-color: #e0e0e0;
 			border-radius: 15rpx;
-			box-shadow: 0 4px 10px 0 rgba(0, 0, 0, .15);
+			// box-shadow: 0 4px 10px 0 rgba(0, 0, 0, .15);
+			box-shadow: 20rpx 20rpx 60rpx #bebebe,
+				-20rpx -20rpx 60rpx #ffffff;
 			background-image: linear-gradient(to right bottom, #ebebeb, #ffffff);
 
 			.title {

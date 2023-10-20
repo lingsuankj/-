@@ -4,23 +4,23 @@
 			<view class="userInfoTop">
 				<image class="userPic" mode="aspectFill" src="../../static/logo.png"></image>
 				<view class="nameBox">
-					<view class="name">钉小帅</view>
+					<view class="name">{{userInfo.name}}</view>
 					<view class="classRoom">班级：23-1</view>
 				</view>
 			</view>
 			<view class="userInfoBottom">
-				<view class="position">职位：班主任</view>
-				<view class="stuNum">学号：21</view>
+				<view class="position" v-if="userInfo.role_list">职位：{{userInfo.role_list.name}}</view>
+				<view class="stuNum" v-if="userInfo.position === '学生'">学号：{{userInfo.name}}</view>
 			</view>
 		</view>
 		<view class="tools">
-			<view class="tool" @tap="toDetails">
+			<view class="tool" @tap="toDetails" v-if="userInfo.position === '学生'">
 				<view class="imgBox">
 					<image mode="aspectFill" src="../../static/images/grade.png"></image>
 				</view>
 				<view>我的成绩</view>
 			</view>
-			<view class="tool" @tap="toInquire">
+			<view class="tool" @tap="toInquire" v-if="userInfo.position !== '学生'">
 				<view class="imgBox">
 					<image mode="aspectFill" src="../../static/images/grade.png"></image>
 				</view>
@@ -37,24 +37,44 @@
 	import {
 		ref
 	} from 'vue';
+	import {
+		loginAPI
+	} from '@/utils/my.js';
 
-	const userInfo = ref({
-		userId: 1563,
-		userName: '李四'
-	})
+
+	// const userInfo = ref({
+	// 	userId: 1563,
+	// 	userName: '李四'
+	// })
 
 	const toDetails = () => {
 		uni.navigateTo({
-			url: `/pages/details/details?userInfo=${JSON.stringify(userInfo.value)}`
+			url: `/pages/details/details?userInfo=${JSON.stringify({userId:userInfo.value.userid,userName:userInfo.value.name})}`
 		})
 	}
 	const toInquire = () => {
 		uni.navigateTo({
-			url: `/pages/inquire/inquire?userInfo=${JSON.stringify(userInfo.value)}`
+			url: `/pages/inquire/inquire?userInfo=${JSON.stringify({userId:userInfo.value.userid,userName:userInfo.value.name})}`
 		})
 	}
 
-	onLoad(() => {})
+	// 获取用户信息接口
+	const userInfo = ref({
+		userId: 1563,
+		userName: '李四'
+	})
+	const getUserData = async () => {
+		const res = await loginAPI('hYLK98jkf0m')
+		userInfo.value = res.data
+		uni.setStorageSync("dingEnumeratorToken", {
+			access_token: userInfo.value.access_token,
+			expires_in: +new Date() + 2 * 60 * 60 * 1000
+		})
+	}
+
+	onLoad(() => {
+		getUserData()
+	})
 </script>
 
 <style lang="scss">
@@ -76,9 +96,9 @@
 
 		.userInfo {
 			padding-left: 40rpx;
+			padding-bottom: 16rpx;
 			margin: 120rpx auto 40rpx;
 			width: 680rpx;
-			height: 250rpx;
 			background-color: #FFF;
 			border-radius: 15rpx;
 			box-sizing: border-box;

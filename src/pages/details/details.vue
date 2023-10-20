@@ -8,7 +8,7 @@
 		<view class="chartsBox">
 			<view class="title">
 				<text class="titleLeft">本次统计</text>
-				<text class="titleRight">85次</text>
+				<text class="titleRight">{{statisticsTotal}}次</text>
 			</view>
 			<view class="charts">
 				<qiun-data-charts type="ring" :opts="statisticsOpts" :chartData="statisticsData" />
@@ -35,6 +35,10 @@
 	import {
 		ref
 	} from 'vue';
+	import {
+		statisticsAPI,
+		accuracyAPI
+	} from '@/utils/details.js'
 
 	const userInfo = ref({});
 
@@ -46,10 +50,11 @@
 	const dateRange = ref([startDate, endDate]);
 
 	const dateChange = (e) => {
-		console.log(e);
+		getStatisticsData()
+		getAccuracyData()
 	}
 
-
+	let statisticsTotal = ref('');
 	const statisticsData = ref({});
 	const accuracyData = ref({});
 
@@ -96,7 +101,9 @@
 		},
 		yAxis: {
 			gridType: "dash",
-			dashLength: 2
+			dashLength: 2,
+			unit: '%',
+			format: 'sss'
 		},
 		extra: {
 			area: {
@@ -110,51 +117,69 @@
 		}
 	}
 
-	const getStatisticsData = () => {
-		setTimeout(() => {
-			//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
-			let res = {
-				series: [{
-					data: [{
-						"name": "语文",
-						"value": 50,
-						"labelText": "四班:18"
-					}, {
-						"name": "数学",
-						"value": 30,
-						"labelText": "数学:30"
-					}, {
-						"name": "英语",
-						"value": 20,
-						"labelText": "英语:20"
-					}, {
-						"name": "物理",
-						"value": 18,
-						"labelText": "物理:18"
-					}, {
-						"name": "化学",
-						"value": 8,
-						"labelText": "四班:18"
-					}]
-				}]
-			};
-			statisticsData.value = JSON.parse(JSON.stringify(res));
-		}, 500);
-	}
-	const getAccuracyData = () => {
-		setTimeout(() => {
-			//模拟服务器返回数据，如果数据格式和标准格式不同，需自行按下面的格式拼接
-			let res = {
-				categories: ["语文", "数学", "英语", "2021", "2022", "2023"],
-				series: [{
-					name: "成交量A",
-					data: [35, 8, 25, 37, 4, 20]
-				}]
-			};
-			accuracyData.value = JSON.parse(JSON.stringify(res));
-		}, 500);
+	const getStatisticsData = async () => {
+		const res = await statisticsAPI(userInfo.value.userId, dateRange.value[0], dateRange.value[1])
+
+		statisticsTotal.value = Object.values(res.data).reduce((total, item) => total + item)
+
+		const newData = []
+		for (let k in res.data) {
+			newData.push({
+				"name": k,
+				"value": res.data[k],
+				"labelText": `${k}:${res.data[k]}`
+			})
+		}
+		statisticsData.value = {
+			series: [{
+				data: newData
+				// data: [{
+				// 	"name": "语文",
+				// 	"value": 50,
+				// 	"labelText": "语文:18"
+				// }, {
+				// 	"name": "数学",
+				// 	"value": 30,
+				// 	"labelText": "数学:30"
+				// }, {
+				// 	"name": "英语",
+				// 	"value": 20,
+				// 	"labelText": "英语:20"
+				// }, {
+				// 	"name": "物理",
+				// 	"value": 18,
+				// 	"labelText": "物理:18"
+				// }, {
+				// 	"name": "化学",
+				// 	"value": 8,
+				// 	"labelText": "四班:18"
+				// }]
+			}]
+		}
 	}
 
+	const getAccuracyData = async () => {
+		const res = await accuracyAPI(userInfo.value.userId, dateRange.value[0], dateRange.value[1])
+		const newCategories = []
+		const newSeries = []
+		res.data.data.forEach(item => {
+			newCategories.push(item.subject)
+			newSeries.push(Math.round(item.correctNum / item.total * 100))
+		})
+
+		accuracyData.value = {
+			categories: newCategories,
+			series: [{
+				name: "正确率",
+				data: newSeries
+			}]
+			// categories: ["语文", "数学", "英语", "物理", "化学", "生物"],
+			// series: [{
+			// 	name: "正确率",
+			// 	data: [85, 80, 65, 87, 84, 90]
+			// }]
+		}
+	}
 	onLoad((option) => {
 		// 获取页面跳转传来的参数
 		userInfo.value = JSON.parse(option.userInfo)
@@ -163,7 +188,6 @@
 			title: userInfo.value.userName + '的主页'
 		});
 	})
-
 	onReady(() => {
 		getStatisticsData()
 		getAccuracyData()
