@@ -38,7 +38,7 @@
 	import {
 		statisticsAPI,
 		accuracyAPI
-	} from '@/utils/details.js'
+	} from '@/utils/requests/details.js'
 
 	const userInfo = ref({});
 
@@ -119,15 +119,14 @@
 
 	const getStatisticsData = async () => {
 		const res = await statisticsAPI(userInfo.value.userId, dateRange.value[0], dateRange.value[1])
-
-		statisticsTotal.value = Object.values(res.data).reduce((total, item) => total + item)
+		statisticsTotal.value = Object.values(res).reduce((total, item) => total + item)
 
 		const newData = []
-		for (let k in res.data) {
+		for (let k in res) {
 			newData.push({
 				"name": k,
-				"value": res.data[k],
-				"labelText": `${k}:${res.data[k]}`
+				"value": res[k],
+				"labelText": `${k}:${res[k]}`
 			})
 		}
 		statisticsData.value = {
@@ -162,7 +161,7 @@
 		const res = await accuracyAPI(userInfo.value.userId, dateRange.value[0], dateRange.value[1])
 		const newCategories = []
 		const newSeries = []
-		res.data.data.forEach(item => {
+		res.data.forEach(item => {
 			newCategories.push(item.subject)
 			newSeries.push(Math.round(item.correctNum / item.total * 100))
 		})
@@ -197,11 +196,12 @@
 <style lang="scss">
 	.body {
 		min-height: 100vh;
+		padding-top: 40rpx;
 		background-color: #fff;
 
 		.dateSelector {
 			position: relative;
-			margin: 20rpx auto 20rpx;
+			margin: 0 auto;
 			width: 680rpx;
 
 			// 解决日期选择器大小不适配 H5 端的问题
@@ -209,9 +209,6 @@
 			.uni-calendar:nth-of-type(2) {
 				display: none;
 			}
-
-			/* #endif */
-
 		}
 
 		.chartsBox {

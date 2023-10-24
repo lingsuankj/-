@@ -1,6 +1,6 @@
 import {
 	request
-} from './request.js';
+} from '../request.js';
 
 // 本次统计 - 饼状图
 export function statisticsAPI(userId, startDate, endDate) {

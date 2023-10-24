@@ -41,7 +41,7 @@
 	import {
 		summarizeAPI,
 		personageAPI
-	} from '@/utils/home.js'
+	} from '@/utils/requests/home.js'
 
 	let summarizeLineData = ref({})
 	let personageAreaDataL = ref({})
@@ -92,8 +92,8 @@
 				data: [100, 158, 125, 137, 200, 180]
 			}]
 		}
-		summarizeLineData.value.categories = Object.keys(res.data);
-		summarizeLineData.value.series[0].data = Object.values(res.data);
+		summarizeLineData.value.categories = Object.keys(res);
+		summarizeLineData.value.series[0].data = Object.values(res);
 	}
 
 	const getPersonageData = async () => {
@@ -106,8 +106,8 @@
 				data: [25, 33, 25, 34, 28, 30]
 			}]
 		}
-		personageAreaDataL.value.categories = Object.keys(res.data.all[0].data);
-		personageAreaDataL.value.series[0].data = Object.values(res.data.all[0].data);
+		personageAreaDataL.value.categories = Object.keys(res.all[0].data);
+		personageAreaDataL.value.series[0].data = Object.values(res.all[0].data);
 
 		personageAreaDataR.value = {
 			categories: ["2018", "2019", "2020", "2021", "2022", "2023"],
@@ -116,10 +116,8 @@
 				data: [25, 33, 25, 34, 28, 30]
 			}]
 		}
-		personageAreaDataR.value.categories = Object.keys(res.data.all[1].data);
-		personageAreaDataR.value.series[0].data = Object.values(res.data.all[1].data);
-
-
+		personageAreaDataR.value.categories = Object.keys(res.all[1].data);
+		personageAreaDataR.value.series[0].data = Object.values(res.all[1].data);
 	}
 
 	onReady(() => {

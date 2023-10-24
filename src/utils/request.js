@@ -1,3 +1,9 @@
+import {
+	useMemberStore
+} from '../stores/modules/member.js'
+
+const memberStore = useMemberStore()
+
 function getUrl(url) {
 	if (url.startsWith('/api')) {
 		url = url.replace(new RegExp('^/api'), "")
@@ -7,21 +13,37 @@ function getUrl(url) {
 }
 
 function getHeader(header = {}) {
-	if (+new Date() > uni.getStorageSync("dingEnumeratorToken").expireTime) {
-		// 重新获取token，并存入本地------------------
-		uni.setStorageSync("dingEnumeratorToken", {
-			access_token: 'sss.ddd.fff',
-			expires_in: +new Date() + 2 * 60 * 60 * 1000
-		})
+	if (+new Date() > memberStore.token.expires_in) {
+		// 重新获取token，并存入本地 ------------------
+		// memberStore.token = {
+		// 	access_token: res.data.access_token,
+		// 	expires_in: +new Date() + 2 * 60 * 60 * 1000
+		// }
 	}
 	return {
 		"Content-Type": typeof(header) === 'string' ? header : "application/x-www-form-urlencoded",
-		"access_token": uni.getStorageSync("dingEnumeratorToken").token,
+		"access_token": memberStore.token.access_token,
 		...header
 	}
 }
 
+const useMock = true
+import {
+	getMockData
+} from '../../mock/index.js'
+
 export function request(options) {
+	if (useMock) {
+		if (options.url.indexOf('?') !== -1) {
+			options.url = options.url.split('?')[0]
+		}
+		return new Promise((resolve, reject) => {
+			setTimeout(() => {
+				const data = getMockData(options.url)
+				resolve(data)
+			}, 100)
+		})
+	}
 	return new Promise((resolve, reject) => {
 		if (!options.header) options.header = {}
 		const header = getHeader(options.header);
@@ -52,22 +74,5 @@ export function request(options) {
 				reject(err)
 			}
 		})
-	})
-}
-
-export function get(url, options) {
-	return request({
-		url,
-		...options,
-		method: "GET"
-	})
-}
-
-export function post(url, data, options) {
-	return request({
-		url,
-		data,
-		...options,
-		method: "POST"
 	})
 }

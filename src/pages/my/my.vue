@@ -9,18 +9,18 @@
 				</view>
 			</view>
 			<view class="userInfoBottom">
-				<view class="position" v-if="userInfo.role_list">职位：{{userInfo.role_list.name}}</view>
+				<view class="position" v-if="userInfo.role_list">职位：{{userInfo.position}}</view>
 				<view class="stuNum" v-if="userInfo.position === '学生'">学号：{{userInfo.name}}</view>
 			</view>
 		</view>
 		<view class="tools">
-			<view class="tool" @tap="toDetails" v-if="userInfo.position === '学生'">
+			<view class="tool" @tap="toDetails" v-if="memberStore.userInfo.position === '学生'">
 				<view class="imgBox">
 					<image mode="aspectFill" src="../../static/images/grade.png"></image>
 				</view>
 				<view>我的成绩</view>
 			</view>
-			<view class="tool" @tap="toInquire" v-if="userInfo.position !== '学生'">
+			<view class="tool" @tap="toInquire" v-if="memberStore.userInfo.position !== '学生'">
 				<view class="imgBox">
 					<image mode="aspectFill" src="../../static/images/grade.png"></image>
 				</view>
@@ -39,13 +39,12 @@
 	} from 'vue';
 	import {
 		loginAPI
-	} from '@/utils/my.js';
+	} from '@/utils/requests/my.js';
+	import {
+		useMemberStore
+	} from '../../stores/modules/member.js'
 
-
-	// const userInfo = ref({
-	// 	userId: 1563,
-	// 	userName: '李四'
-	// })
+	const memberStore = useMemberStore()
 
 	const toDetails = () => {
 		uni.navigateTo({
@@ -58,18 +57,19 @@
 		})
 	}
 
-	// 获取用户信息接口
 	const userInfo = ref({
 		userId: 1563,
 		userName: '李四'
 	})
+	// 获取用户信息接口
 	const getUserData = async () => {
 		const res = await loginAPI('hYLK98jkf0m')
-		userInfo.value = res.data
-		uni.setStorageSync("dingEnumeratorToken", {
-			access_token: userInfo.value.access_token,
+		userInfo.value = res
+		memberStore.userInfo = res
+		memberStore.token = {
+			access_token: res.access_token,
 			expires_in: +new Date() + 2 * 60 * 60 * 1000
-		})
+		}
 	}
 
 	onLoad(() => {

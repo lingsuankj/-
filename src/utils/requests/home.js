@@ -1,6 +1,6 @@
 import {
 	request
-} from './request.js';
+} from '../request.js';
 
 // 学生答题互动频率数据
 export function summarizeAPI() {

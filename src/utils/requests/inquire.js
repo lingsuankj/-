@@ -1,6 +1,6 @@
 import {
 	request
-} from './request.js';
+} from '../request.js';
 
 // 语文组 / 数学组...
 
@@ -10,6 +10,14 @@ export function classAPI() {
 		method: 'GET',
 		url: `/api/inquire/class`
 	})
+}
+
+// 获取科目列表
+export function subjectAPI() {
+	return request(({
+		method: 'GET',
+		url: '/api/inquire/subject'
+	}))
 }
 
 // 班主任-数据
@@ -38,7 +46,7 @@ export function authorityLowAPI(cla, startDate, endDate) {
 	})
 }
 
-// 班级总数据详情
+// 班级总数据详情 - 每个人的成绩
 export function classDetailAPI(cla, subject, startDate, endDate) {
 	return request({
 		method: 'POST',

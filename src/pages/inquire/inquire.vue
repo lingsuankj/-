@@ -7,26 +7,31 @@
 		</view>
 		<view class="classBox">
 			<uni-data-picker placeholder="请选择班级" :clear-icon="false" :localdata="classesDataTree" v-model="classes"
-				@change="onChangeClass">
+				@change="classChange">
 			</uni-data-picker>
+		</view>
+		<view class="subjectBox">
+			<picker mode="selector" @change="subjectChange" :range="subjectList">
+				<view>{{subject}}</view>
+			</picker>
 		</view>
 		<view class="tips">点击图表查看详情</view>
 		<!-- 图表-班主任 -->
 		<view class="authorityHigh">
-			<qiun-data-charts type="area" :opts="optsAll" :chartData="authorityHighData"
+			<qiun-data-charts type="area" :opts="optsAll" :ontouch='true' :chartData="authorityHighData"
 				@getIndex="openTableAuthorityHigh" />
 		</view>
 		<!-- 图表-任课老师 -->
 		<view class="authorityLow">
-			<view class="title">语文</view>
-			<qiun-data-charts type="area" :opts="optsAll" :chartData="authorityLowData"
+			<view class="title">{{subject}}</view>
+			<qiun-data-charts type="area" :opts="optsAll" :ontouch='true' :chartData="authorityLowData"
 				@getIndex="openTableAuthorityLow" />
 		</view>
 
 		<!-- 表格 -->
 		<view class="tableBox" v-show="tableFlag">
 			<view class="title">
-				23-1班 语文
+				{{tableClass}} {{tableSubject}}
 				<view class="btnOff" @tap="tableFlag = !tableFlag">x</view>
 			</view>
 			<!-- 表头 -->
@@ -60,15 +65,19 @@
 		authorityHighAPI,
 		authorityLowAPI,
 		classAPI,
-		classDetailAPI
-	} from '@/utils/inquire.js'
+		classDetailAPI,
+		subjectAPI
+	} from '@/utils/requests/inquire.js'
+
+	const tableClass = ref('')
+	const tableSubject = ref('')
 
 	// 日期
-	const currentDate = new Date();
+	const currentDate = new Date()
 	const startDay = 1
-	currentDate.setDate(startDay);
-	const startDate = currentDate.toISOString().split('T')[0];
-	const endDate = new Date().toISOString().split('T')[0];
+	currentDate.setDate(startDay)
+	const startDate = currentDate.toISOString().split('T')[0]
+	const endDate = new Date().toISOString().split('T')[0]
 	const dateRange = ref([startDate, endDate])
 	// 日期点击事件
 	const dateRangeChange = (e) => {
@@ -110,13 +119,22 @@
 		// }
 	])
 	// 选择班级后触发
-	const onChangeClass = () => {
+	const classChange = (e) => {
 		getAuthorityHighData()
 		getAuthorityLowData()
+		tableClass.value = ''
+		e.detail.value.forEach(item => {
+			tableClass.value = tableClass.value + item.text + ' '
+		})
 	}
 
 	// 科目
-	let subject = ref('语文')
+	const subjectList = ref([])
+	let subject = ref(subjectList.value[0])
+	const subjectChange = (e) => {
+		subject.value = subjectList.value[e.detail.value]
+		tableSubject.value = subjectList.value[e.detail.value]
+	}
 
 	// 表格
 	const ClassDetailData = ref([])
@@ -125,11 +143,13 @@
 	// 打开表格（班主任）
 	const openTableAuthorityHigh = (e) => {
 		tableFlag.value = true
-		console.log(e, e.opts.categories[e.currentIndex.index]);
+		tableSubject.value = e.opts.categories[e.currentIndex.index]
+		console.log(e, e.opts.categories[e.currentIndex.index])
 	}
 	// 打开表格-（任课老师）
 	const openTableAuthorityLow = (e) => {
 		tableFlag.value = true
+		tableClass.value = e.opts.categories[e.currentIndex.index]
 		// console.log(e, e.opts.categories[e.currentIndex.index]);
 	}
 
@@ -163,7 +183,6 @@
 
 	const getClassData = async () => {
 		const res = await classAPI()
-
 		// 处理 class 数据格式
 		const treeFun = (treeList, parentId, newArr) => {
 			for (let k of treeList) {
@@ -181,16 +200,21 @@
 			}
 			return newArr
 		}
-		classesDataTree.value = treeFun(res.data.data, null, [])
+		classesDataTree.value = treeFun(res.data, null, [])
+	}
+
+	const getSubjectData = async () => {
+		const res = await subjectAPI()
+		subjectList.value = res.data
+		subject.value = subjectList.value[0]
 	}
 
 	const getAuthorityHighData = async () => {
 		const res = await authorityHighAPI(classes.value, dateRange.value[0], dateRange.value[1])
-		// console.log(res.data);
 		const categories = []
 		const seriesTotal = []
 		const seriesCorrectNum = []
-		res.data.data.forEach(item => {
+		res.data.forEach(item => {
 			categories.push(item.subject)
 			seriesTotal.push(item.total)
 			seriesCorrectNum.push(item.correctNum)
@@ -222,11 +246,10 @@
 
 	const getAuthorityLowData = async () => {
 		const res = await authorityLowAPI()
-		// console.log(res.data.data);
 		const categories = []
 		const seriesTotal = []
 		const seriesCorrectNum = []
-		res.data.data.forEach(item => {
+		res.data.forEach(item => {
 			categories.push(item.subject)
 			seriesTotal.push(item.total)
 			seriesCorrectNum.push(item.correctNum)
@@ -245,17 +268,18 @@
 		}
 	}
 
+	// 表格中数据
 	const getClassDetailData = async () => {
 		const res = await classDetailAPI(classes.value, dateRange.value[0], dateRange.value[1], subject)
-		res.data.data.forEach(item => {
+		res.data.forEach(item => {
 			item.accuracy = Math.round(item.correctNum / item.total * 100) + '%'
 		})
-		ClassDetailData.value = res.data.data
-		// console.log(res.data.data);
+		ClassDetailData.value = res.data
 	}
 
 	onLoad(() => {
 		getClassData()
+		getSubjectData()
 		getClassDetailData()
 	})
 	onReady(() => {
@@ -287,6 +311,9 @@
 			}
 
 			/* #endif */
+			.uni-icons {
+				margin-left: 20rpx;
+			}
 		}
 
 		.classBox {
@@ -299,6 +326,18 @@
 			}
 
 			/* #endif */
+		}
+
+		.subjectBox {
+			margin: 0 auto 20rpx;
+			padding-left: 20rpx;
+			width: 680rpx;
+			height: 35px;
+			border: 1rpx solid #e5e5e5;
+			border-radius: 5px;
+			line-height: 35px;
+			box-sizing: border-box;
+			font-size: 14px;
 		}
 
 		// 提示信息 - 折线图可点

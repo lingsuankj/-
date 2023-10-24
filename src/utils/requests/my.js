@@ -1,6 +1,6 @@
 import {
 	request
-} from './request.js'
+} from '../request.js'
 
 
 // 获取个人信息 authCode:免登授权码

@@ -1,6 +1,6 @@
 import Mock from 'mockjs';
 
-Mock.mock('http://127.0.0.1/my/login?authCode=hYLK98jkf0m', 'get', {
+export const myLogin = Mock.mock({
 	access_token: '96fc7a7axxx',
 	expires_in: '7200',
 	userid: '500',
@@ -17,4 +17,4 @@ Mock.mock('http://127.0.0.1/my/login?authCode=hYLK98jkf0m', 'get', {
 		'班主任',
 		'任课老师'
 	]
-});
+})

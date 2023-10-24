@@ -1,7 +1,7 @@
 import Mock from 'mockjs';
 
 // 得到对应的所有的年级-班级
-Mock.mock('http://127.0.0.1/inquire/class', 'get', {
+export const inquireClass = Mock.mock({
 	data: [{
 			id: 1,
 			parent: null,
@@ -35,9 +35,14 @@ Mock.mock('http://127.0.0.1/inquire/class', 'get', {
 	]
 })
 
+// 得到所有的课程
+export const inquireSubject = Mock.mock({
+	data: ['数学', '语文', '英语', '物理', '历史', '地理']
+})
+
 // 接收的参数：班级 开始时间 结束时间
 // 得到的结果：suject:科目，total:总数提问次数，correctNum:回答正确次数
-Mock.mock('http://127.0.0.1/inquire/authorityHigh', 'post', {
+export const inquireAuthorityHigh = Mock.mock({
 	data: [{
 		subject: '语文',
 		total: '@natural(180, 200)',
@@ -67,7 +72,7 @@ Mock.mock('http://127.0.0.1/inquire/authorityHigh', 'post', {
 
 // 接收的参数：班级 开始时间 结束时间
 // 得到的结果：suject:科目，total:总数提问次数，correctNum:回答正确次数
-Mock.mock('http://127.0.0.1/inquire/authorityLow', 'post', {
+export const inquireAuthorityLow = Mock.mock({
 	data: [{
 		subject: '23-1',
 		total: '@natural(180, 200)',
@@ -89,7 +94,7 @@ Mock.mock('http://127.0.0.1/inquire/authorityLow', 'post', {
 
 // 接收的参数：班级 科目 开始时间 结束时间
 // 得到的结果：name:姓名，total:总数提问次数，correctNum:回答正确次数
-Mock.mock('http://127.0.0.1/inquire/classDetail', 'post', {
+export const inquireClassDetail = Mock.mock({
 	data: [{
 		name: '@cname()',
 		total: '@natural(180, 200)',
