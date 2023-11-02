@@ -1,6 +1,9 @@
+// import {
+// 	request
+// } from '../request.js';
 import {
 	request
-} from '../request.js';
+} from '../request-mock.js';
 
 // 学生答题互动频率数据
 export function summarizeAPI() {

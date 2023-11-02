@@ -1,8 +1,8 @@
 import Mock from 'mockjs';
 
 export const myLogin = Mock.mock({
-	access_token: '96fc7a7axxx',
-	expires_in: '7200',
+	// accessToken: '96fc7a7axxx',
+	// expireIn: '7200',
 	userid: '500',
 	name: '@cname()',
 	pic: '@image("200*200","red","#fff","pic")',

@@ -13,6 +13,11 @@ export const inquireClass = Mock.mock({
 			text: '1-1班'
 		},
 		{
+			id: 111,
+			parent: 11,
+			text: '1-1-1班'
+		},
+		{
 			id: 12,
 			parent: 1,
 			text: '1-2班'

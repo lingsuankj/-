@@ -1,6 +1,9 @@
+// import {
+// 	request
+// } from '../request.js';
 import {
 	request
-} from '../request.js';
+} from '../request-mock.js';
 
 // 语文组 / 数学组...
 

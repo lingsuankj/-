@@ -2,25 +2,27 @@
 	<view class="body clearfix">
 		<view class="userInfo clearfix">
 			<view class="userInfoTop">
-				<image class="userPic" mode="aspectFill" src="../../static/logo.png"></image>
-				<view class="nameBox">
-					<view class="name">{{userInfo.name}}</view>
-					<view class="classRoom">班级：23-1</view>
-				</view>
+				<image v-if="memberStore.userInfo.avatar" class="userPic" mode="aspectFill"
+					:src="memberStore.userInfo.avatar"></image>
+				<div v-else class="defaultAvatar">{{memberStore.userInfo.default_avatar_text}}</div>
+				<view class="nameBox">{{memberStore.userInfo.nameStr}}</view>
 			</view>
 			<view class="userInfoBottom">
-				<view class="position" v-if="userInfo.role_list">职位：{{userInfo.position}}</view>
-				<view class="stuNum" v-if="userInfo.position === '学生'">学号：{{userInfo.name}}</view>
+				<view class="stuNum" v-if="memberStore.userInfo.studentInfoList[0]">
+					班级：{{memberStore.userInfo.studentInfoList[0].className}}</view>
+				<view class="position" v-if="memberStore.userInfo.deptNameStr">
+					职位：{{memberStore.userInfo.deptNameStr}}
+				</view>
 			</view>
 		</view>
 		<view class="tools">
-			<view class="tool" @tap="toDetails" v-if="memberStore.userInfo.position === '学生'">
+			<view class="tool" @tap="toDetails">
 				<view class="imgBox">
 					<image mode="aspectFill" src="../../static/images/grade.png"></image>
 				</view>
 				<view>我的成绩</view>
 			</view>
-			<view class="tool" @tap="toInquire" v-if="memberStore.userInfo.position !== '学生'">
+			<view class="tool" @tap="toInquire">
 				<view class="imgBox">
 					<image mode="aspectFill" src="../../static/images/grade.png"></image>
 				</view>
@@ -33,13 +35,20 @@
 <script setup>
 	import {
 		onLoad
-	} from '@dcloudio/uni-app';
+	} from '@dcloudio/uni-app'
 	import {
-		ref
-	} from 'vue';
+		ref,
+	} from 'vue'
 	import {
-		loginAPI
-	} from '@/utils/requests/my.js';
+		loginAPI,
+		tokenAPI,
+		userIdAPI,
+		userInfoAPI,
+		deptDetailAPI,
+		userRelationListAPI,
+		schoolUserInfoAPI,
+		schoolDeptDetailAPI
+	} from '@/utils/requests/my.js'
 	import {
 		useMemberStore
 	} from '../../stores/modules/member.js'
@@ -48,32 +57,192 @@
 
 	const toDetails = () => {
 		uni.navigateTo({
-			url: `/pages/details/details?userInfo=${JSON.stringify({userId:userInfo.value.userid,userName:userInfo.value.name})}`
+			url: `/pages/details/details?userInfo=${JSON.stringify({userId:memberStore.userInfo.userid,userName:memberStore.userInfo.name})}`
 		})
 	}
 	const toInquire = () => {
 		uni.navigateTo({
-			url: `/pages/inquire/inquire?userInfo=${JSON.stringify({userId:userInfo.value.userid,userName:userInfo.value.name})}`
+			url: `/pages/inquire/inquire?userInfo=${JSON.stringify({userId:memberStore.userInfo.userid,userName:memberStore.userInfo.name})}`
 		})
 	}
 
-	const userInfo = ref({
-		userId: 1563,
-		userName: '李四'
-	})
-	// 获取用户信息接口
+	//  mock 获取用户信息接口
 	const getUserData = async () => {
 		const res = await loginAPI('hYLK98jkf0m')
 		userInfo.value = res
 		memberStore.userInfo = res
+		// memberStore.token = {
+		// 	accessToken: res.accessToken,
+		// 	expireIn: +new Date() + 2 * 60 * 60 * 1000
+		// }
+	}
+
+	const getAuthCode = async () => {
+		const res = await new Promise((resolve, reject) => {
+			dd.getAuthCode({
+				success: function(res) {
+					resolve(res)
+				},
+				fail: function(err) {
+					uni.showToast({
+						icon: 'none',
+						title: '自动登陆失败'
+					})
+					reject(err)
+				}
+			})
+		})
+		memberStore.authCode = res.authCode
+	}
+
+	const getToken = async () => {
+		const res = await tokenAPI()
 		memberStore.token = {
-			access_token: res.access_token,
-			expires_in: +new Date() + 2 * 60 * 60 * 1000
+			accessToken: res.data.accessToken,
+			expireIn: +new Date() + res.data.expireIn * 1000
 		}
 	}
 
-	onLoad(() => {
-		getUserData()
+	const getUserId = async () => {
+		const res = await userIdAPI()
+		memberStore.userId = res.data.result.userid
+	}
+
+	const getUserInfo = async () => {
+		const res = await userInfoAPI()
+		memberStore.userInfo = {
+			name: res.data.result.name,
+			avatar: res.data.result.avatar,
+			unionid: res.data.result.unionid,
+			userid: res.data.result.userid,
+			deptIdList: res.data.result.dept_id_list,
+			roleList: res.data.result.role_list
+		}
+		console.log(res.data.result)
+		// console.log(memberStore.userInfo)
+	}
+
+	const getDeptName = async () => {
+		memberStore.userInfo.deptIdGuardianList = []
+		memberStore.userInfo.studentInfoList = []
+		memberStore.userInfo.isStudent = false
+		memberStore.userInfo.isGuardian = false
+		const deptNameList = []
+		const promiseAll = memberStore.userInfo.deptIdList.map(item => {
+			return deptDetailAPI(item).then(res => {
+				deptNameList.push(res.data.result.name)
+				// 如果是家长，获取该部门的父级部门（班级部门 ID）
+				// 通过班级部门 ID，获取孩子的 userid/name
+				if (res.data.result.name === '家长') {
+					memberStore.userInfo.isGuardian = true
+					memberStore.userInfo.deptIdGuardianList.push(item)
+				}
+				if (res.data.result.name === '学生') {
+					memberStore.userInfo.isStudent = true
+					memberStore.userInfo.studentInfoList.push({
+						name: memberStore.userInfo.name,
+						userId: memberStore.userInfo.userid,
+						relation_name: '本人',
+					})
+				}
+			})
+		})
+		await Promise.all(promiseAll)
+		memberStore.userInfo.deptNameList = deptNameList
+	}
+
+	const getDeptParentId = async () => {
+		memberStore.userInfo.deptIdGuardianParentList = []
+		const promiseAll = memberStore.userInfo.deptIdGuardianList.map(item => {
+			return deptDetailAPI(item).then(res => {
+				memberStore.userInfo.deptIdGuardianParentList.push(res.data.result.parent_id)
+			})
+		})
+		await Promise.all(promiseAll)
+	}
+
+	// 获取学生：userid 班级id 关系
+	const getUserRelationList = async (deptList) => {
+		const promiseAll = deptList.map(item => {
+			return userRelationListAPI(item).then(res => {
+				res.data.result.relations.forEach(itemId => {
+					memberStore.userInfo.studentInfoList.push({
+						userId: itemId.to_userid,
+						relation_name: itemId.relation_name,
+						classId: itemId.class_id
+					})
+				})
+			})
+		})
+		await Promise.all(promiseAll)
+	}
+
+	// 获取学生：名字/学号/班级 userid
+	const getStuInfo = async () => {
+		const promiseAll = memberStore.userInfo.studentInfoList.map(item => {
+			// 获取用户详情
+			return schoolUserInfoAPI(item.classId, item.userId, 'student').then(res => {
+				item.name = res.data.result.details[0].name
+				item.student_no = JSON.parse(res.data.result.details[0].feature).student_no || ''
+				item.classId = res.data.result.details[0].class_id
+			})
+		})
+		await Promise.all(promiseAll)
+	}
+
+	// 家校通讯录 获取班级名称
+	const getSchoolDeptDetail = async () => {
+		memberStore.userInfo.studentInfoList.forEach(item => {
+			schoolDeptDetailAPI(item.classId).then(res => {
+				item.className = res.data.result.detail.name
+				item.classDetail = res.data.result.detail
+			})
+		})
+	}
+
+	const getDeptStr = () => {
+		let deptNameStr = ''
+		if (memberStore.userInfo.deptNameList.includes('学生')) {
+			deptNameStr = '学生'
+		} else if (memberStore.userInfo.deptNameList.includes('老师') && memberStore.userInfo.deptNameList.includes(
+				'家长')) {
+			deptNameStr = '老师 - 家长'
+		} else if (memberStore.userInfo.deptNameList.includes('家长')) {
+			deptNameStr = '家长'
+		} else {
+			deptNameStr = '老师'
+		}
+		memberStore.userInfo.deptNameStr = deptNameStr
+	}
+
+	const getNameStr = () => {
+		let nameStr = ''
+		if (memberStore.userInfo.isGuardian) {
+			memberStore.userInfo.nameStr = memberStore.userInfo.studentInfoList[0].name + memberStore.userInfo
+				.studentInfoList[0].relation_name
+		} else {
+			memberStore.userInfo.nameStr = memberStore.userInfo.name
+		}
+	}
+
+	onLoad(async () => {
+		// mock
+		// getUserData()
+
+		// 自动登录
+		await getAuthCode()
+		await getToken()
+		console.log('token-------', memberStore.token.accessToken)
+		await getUserId()
+		await getUserInfo()
+		await getDeptName()
+		await getDeptParentId()
+		await getUserRelationList(memberStore.userInfo.deptIdGuardianParentList)
+		await getStuInfo()
+		await getSchoolDeptDetail()
+		getDeptStr()
+		getNameStr()
+		console.log(memberStore.userInfo)
 	})
 </script>
 
@@ -91,7 +260,6 @@
 	.body {
 		min-height: 100vh;
 		background-color: #e0efec;
-		// background-image: linear-gradient(to bottom, #D8F4F5, #FCFFFF);
 		font-size: 28rpx;
 
 		.userInfo {
@@ -99,9 +267,10 @@
 			padding-bottom: 16rpx;
 			margin: 120rpx auto 40rpx;
 			width: 680rpx;
-			background-color: #FFF;
+			background-color: #FFFFFF;
 			border-radius: 15rpx;
 			box-sizing: border-box;
+			box-shadow: 20rpx 20rpx 50rpx #DDDDDD77;
 
 			.userInfoTop {
 				display: flex;
@@ -114,17 +283,23 @@
 					border-radius: 25rpx;
 				}
 
+				.defaultAvatar {
+					width: 130rpx;
+					height: 130rpx;
+					border-radius: 25rpx;
+					text-align: center;
+					line-height: 130rpx;
+					font-size: 42rpx;
+					color: #FFFFFF;
+					background-color: #54BBBC;
+				}
+
 				.nameBox {
-					margin: 46rpx 0 0 40rpx;
-
-					.name {
-						font-size: 32rpx;
-						font-weight: 700;
-					}
-
-					.classRoom {
-						margin: 12rpx 0;
-					}
+					height: 130rpx;
+					margin-left: 30rpx;
+					line-height: 166rpx;
+					font-size: 32rpx;
+					font-weight: 700;
 				}
 			}
 
@@ -148,6 +323,7 @@
 			background-color: #FFF;
 			border-radius: 15rpx;
 			box-sizing: border-box;
+			box-shadow: 20rpx 20rpx 50rpx #DDDDDD77;
 
 			.tool {
 				margin-right: 40rpx;

@@ -9,6 +9,8 @@ import {
 export const useMemberStore = defineStore(
 	'member',
 	() => {
+		let authCode = ref('')
+		let userId = ref('')
 		const token = ref({})
 		const userInfo = ref({})
 

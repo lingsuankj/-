@@ -144,7 +144,7 @@
 	const openTableAuthorityHigh = (e) => {
 		tableFlag.value = true
 		tableSubject.value = e.opts.categories[e.currentIndex.index]
-		console.log(e, e.opts.categories[e.currentIndex.index])
+		// console.log(e, e.opts.categories[e.currentIndex.index])
 	}
 	// 打开表格-（任课老师）
 	const openTableAuthorityLow = (e) => {
@@ -378,6 +378,7 @@
 			box-shadow: 20rpx 20rpx 60rpx #bebebe,
 				-20rpx -20rpx 60rpx #ffffff;
 			background-image: linear-gradient(to right bottom, #ebebeb, #ffffff);
+			transition: all .5s;
 
 			.title {
 				position: relative;
