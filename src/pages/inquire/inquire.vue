@@ -2,17 +2,20 @@
 	<view class="body">
 		<image class="bannerImg" src="../../static/images/e550b088ea89cdd2854d9b45878f7c0.png" mode="aspectFill">
 		</image>
-		<view class="dateRangeBox">
+		<view class="dateSelector">
 			<uni-datetime-picker v-model="dateRange" type="daterange" :clear-icon="false" @change="dateRangeChange" />
 		</view>
-		<view class="classBox">
+		<view class="classSelector">
 			<uni-data-picker placeholder="请选择班级" :clear-icon="false" :localdata="classesDataTree" v-model="classes"
 				@change="classChange">
 			</uni-data-picker>
 		</view>
-		<view class="subjectBox">
+		<view class="subjectSelector">
 			<picker mode="selector" @change="subjectChange" :range="subjectList">
-				<view>{{subject}}</view>
+				<view class="subjectContent">
+					<view class="subjectText">{{subject}}</view>
+					<view class="subjectIcon"></view>
+				</view>
 			</picker>
 		</view>
 		<view class="tips">点击图表查看详情</view>
@@ -300,7 +303,7 @@
 			border-radius: 15rpx;
 		}
 
-		.dateRangeBox {
+		.dateSelector {
 			margin: 0 auto 20rpx;
 			width: 680rpx;
 
@@ -316,7 +319,7 @@
 			}
 		}
 
-		.classBox {
+		.classSelector {
 			margin: 0 auto 20rpx;
 			width: 680rpx;
 
@@ -326,9 +329,24 @@
 			}
 
 			/* #endif */
+			// 年级/班级 边距
+			.selected-item {
+				margin-left: 0;
+				margin-right: 0;
+			}
+
+			// 下箭头
+			.input-value {
+				padding-right: 0;
+			}
+
+			.arrow-area {
+				margin-right: 20rpx;
+				width: 10px;
+			}
 		}
 
-		.subjectBox {
+		.subjectSelector {
 			margin: 0 auto 20rpx;
 			padding-left: 20rpx;
 			width: 680rpx;
@@ -338,6 +356,22 @@
 			line-height: 35px;
 			box-sizing: border-box;
 			font-size: 14px;
+
+			.subjectContent {
+				display: flex;
+				justify-content: space-between;
+
+				.subjectIcon {
+					margin: auto 20rpx;
+					transform: rotate(-45deg);
+					width: 7px;
+					height: 7px;
+					border-left: 1px solid #999;
+					border-bottom: 1px solid #999;
+				}
+			}
+
+
 		}
 
 		// 提示信息 - 折线图可点
@@ -367,14 +401,15 @@
 		// 弹框 - 表格
 		.tableBox {
 			position: fixed;
-			top: 15%;
+			top: 10%;
 			left: 50%;
 			transform: translateX(-50%);
-			width: 680rpx;
-			height: 800rpx;
+			// width: 680rpx;
+			// height: 800rpx;
+			width: 90%;
+			height: 80%;
 			background-color: #e0e0e0;
 			border-radius: 15rpx;
-			// box-shadow: 0 4px 10px 0 rgba(0, 0, 0, .15);
 			box-shadow: 20rpx 20rpx 60rpx #bebebe,
 				-20rpx -20rpx 60rpx #ffffff;
 			background-image: linear-gradient(to right bottom, #ebebeb, #ffffff);
@@ -416,7 +451,7 @@
 				display: flex;
 				flex-direction: column;
 				width: 90%;
-				height: 600rpx;
+				height: calc(100% - 80rpx - 56rpx - 5%);
 				margin: 0 auto;
 
 				.tr {

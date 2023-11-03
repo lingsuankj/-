@@ -3,6 +3,14 @@
 		<view class="dateSelector">
 			<uni-datetime-picker v-model="dateRange" type="daterange" :clear-icon="false" @change="dateChange" />
 		</view>
+		<view class="stuSelector">
+			<picker mode="selector" @change="stuChange" :range="memberStore.userInfo.studentInfoList" range-key="name">
+				<view class="stuContent">
+					<view class="stuText">{{memberStore.userInfo.studentInfoList[stuIndex].name}}</view>
+					<view class="stuIcon"></view>
+				</view>
+			</picker>
+		</view>
 
 		<!-- 本次统计-饼状图 -->
 		<view class="chartsBox">
@@ -31,35 +39,47 @@
 	import {
 		onLoad,
 		onReady
-	} from '@dcloudio/uni-app';
+	} from '@dcloudio/uni-app'
 	import {
 		ref
-	} from 'vue';
+	} from 'vue'
 	import {
 		statisticsAPI,
 		accuracyAPI
 	} from '@/utils/requests/details.js'
+	import {
+		useMemberStore
+	} from '../../stores/modules/member.js'
 
-	const userInfo = ref({});
+	const memberStore = useMemberStore()
 
-	const currentDate = new Date();
+	const currentDate = new Date()
 	const startDay = 1
-	currentDate.setDate(startDay);
-	const startDate = currentDate.toISOString().split('T')[0];
-	const endDate = new Date().toISOString().split('T')[0];
-	const dateRange = ref([startDate, endDate]);
-
+	currentDate.setDate(startDay)
+	const startDate = currentDate.toISOString().split('T')[0]
+	const endDate = new Date().toISOString().split('T')[0]
+	const dateRange = ref([startDate, endDate])
 	const dateChange = (e) => {
 		getStatisticsData()
 		getAccuracyData()
 	}
 
-	let statisticsTotal = ref('');
-	const statisticsData = ref({});
-	const accuracyData = ref({});
+	let stuIndex = ref(0)
+	const stuChange = (e) => {
+		stuIndex.value = e.detail.value
+		uni.setNavigationBarTitle({
+			title: memberStore.userInfo.studentInfoList[stuIndex.value].name + '的主页'
+		})
+		getStatisticsData()
+		getAccuracyData()
+	}
+
+	let statisticsTotal = ref('')
+	const statisticsData = ref({})
+	const accuracyData = ref({})
 
 	const statisticsOpts = {
-		color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#ea7ccc"],
+		color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#EA7CCC"],
 		padding: [5, 5, 5, 5],
 		enableScroll: false,
 		title: {
@@ -90,7 +110,7 @@
 		}
 	}
 	const accuracyOpts = {
-		color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#ea7ccc"],
+		color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#EA7CCC"],
 		padding: [15, 15, 0, 15],
 		enableScroll: false,
 		legend: {
@@ -118,7 +138,9 @@
 	}
 
 	const getStatisticsData = async () => {
-		const res = await statisticsAPI(userInfo.value.userId, dateRange.value[0], dateRange.value[1])
+		const res = await statisticsAPI(memberStore.userInfo.studentInfoList[stuIndex.value].userId, dateRange
+			.value[0],
+			dateRange.value[1])
 		statisticsTotal.value = Object.values(res).reduce((total, item) => total + item)
 
 		const newData = []
@@ -156,9 +178,10 @@
 			}]
 		}
 	}
-
 	const getAccuracyData = async () => {
-		const res = await accuracyAPI(userInfo.value.userId, dateRange.value[0], dateRange.value[1])
+		const res = await accuracyAPI(memberStore.userInfo.studentInfoList[stuIndex.value].userId, dateRange.value[
+				0],
+			dateRange.value[1])
 		const newCategories = []
 		const newSeries = []
 		res.data.forEach(item => {
@@ -179,18 +202,16 @@
 			// }]
 		}
 	}
-	onLoad((option) => {
-		// 获取页面跳转传来的参数
-		userInfo.value = JSON.parse(option.userInfo)
-		// 设置当前页面的导航栏
+
+	onLoad(() => {
+		// 导航栏标题
 		uni.setNavigationBarTitle({
-			title: userInfo.value.userName + '的主页'
-		});
-	})
-	onReady(() => {
+			title: memberStore.userInfo.studentInfoList[stuIndex.value].name + '的主页'
+		})
 		getStatisticsData()
 		getAccuracyData()
 	})
+	onReady(() => {})
 </script>
 
 <style lang="scss">
@@ -201,13 +222,43 @@
 
 		.dateSelector {
 			position: relative;
-			margin: 0 auto;
+			margin: 0 auto 20rpx;
 			width: 680rpx;
 
 			// 解决日期选择器大小不适配 H5 端的问题
 			/* #ifdef H5 */
 			.uni-calendar:nth-of-type(2) {
 				display: none;
+			}
+
+			.uni-icons {
+				margin-left: 20rpx;
+			}
+		}
+
+		.stuSelector {
+			margin: 0 auto 20rpx;
+			padding-left: 20rpx;
+			width: 680rpx;
+			height: 35px;
+			border: 1rpx solid #e5e5e5;
+			border-radius: 5px;
+			line-height: 35px;
+			box-sizing: border-box;
+			font-size: 14px;
+
+			.stuContent {
+				display: flex;
+				justify-content: space-between;
+
+				.stuIcon {
+					margin: auto 20rpx;
+					transform: rotate(-45deg);
+					width: 7px;
+					height: 7px;
+					border-left: 1px solid #999;
+					border-bottom: 1px solid #999;
+				}
 			}
 		}
 
@@ -217,7 +268,7 @@
 			width: 680rpx;
 			height: 500rpx;
 			background-color: #F8F8F8;
-			border-radius: 15px;
+			border-radius: 30rpx;
 			box-sizing: border-box;
 
 			.title {
@@ -253,7 +304,5 @@
 				height: 100%;
 			}
 		}
-
-		.lineBox {}
 	}
 </style>

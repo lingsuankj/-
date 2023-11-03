@@ -116,5 +116,77 @@ export const inquireClassDetail = Mock.mock({
 		name: '@cname()',
 		total: '@natural(180, 200)',
 		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
+	}, {
+		name: '@cname()',
+		total: '@natural(180, 200)',
+		correctNum: '@natural(140, 180)'
 	}]
 });

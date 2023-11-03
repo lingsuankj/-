@@ -16,6 +16,7 @@
 			</view>
 		</view>
 		<view class="tools">
+			<!--  v-if="memberStore.userInfo.studentInfoList.length > 0" -->
 			<view class="tool" @tap="toDetails">
 				<view class="imgBox">
 					<image mode="aspectFill" src="../../static/images/grade.png"></image>
@@ -57,12 +58,12 @@
 
 	const toDetails = () => {
 		uni.navigateTo({
-			url: `/pages/details/details?userInfo=${JSON.stringify({userId:memberStore.userInfo.userid,userName:memberStore.userInfo.name})}`
+			url: `/pages/details/details`
 		})
 	}
 	const toInquire = () => {
 		uni.navigateTo({
-			url: `/pages/inquire/inquire?userInfo=${JSON.stringify({userId:memberStore.userInfo.userid,userName:memberStore.userInfo.name})}`
+			url: `/pages/inquire/inquire`
 		})
 	}
 
@@ -119,14 +120,16 @@
 			roleList: res.data.result.role_list
 		}
 		console.log(res.data.result)
-		// console.log(memberStore.userInfo)
 	}
 
 	const getDeptName = async () => {
-		memberStore.userInfo.deptIdGuardianList = []
-		memberStore.userInfo.studentInfoList = []
 		memberStore.userInfo.isStudent = false
 		memberStore.userInfo.isGuardian = false
+		memberStore.userInfo.isTeacher = false
+		memberStore.userInfo.isClassBoss = false
+		memberStore.userInfo.studentInfoList = []
+		memberStore.userInfo.deptIdGuardianList = []
+		memberStore.userInfo.deptIdTeacherList = []
 		const deptNameList = []
 		const promiseAll = memberStore.userInfo.deptIdList.map(item => {
 			return deptDetailAPI(item).then(res => {
@@ -145,6 +148,13 @@
 						relation_name: '本人',
 					})
 				}
+				if (res.data.result.name === '老师') {
+					memberStore.userInfo.isTeacher = true
+					memberStore.userInfo.deptIdTeacherList.push(item)
+				}
+				if (res.data.result.name.includes('班主任')) {
+					memberStore.userInfo.isClassBoss = true
+				}
 			})
 		})
 		await Promise.all(promiseAll)
@@ -153,17 +163,25 @@
 
 	const getDeptParentId = async () => {
 		memberStore.userInfo.deptIdGuardianParentList = []
-		const promiseAll = memberStore.userInfo.deptIdGuardianList.map(item => {
+		const promiseAllGuardian = memberStore.userInfo.deptIdGuardianList.map(item => {
 			return deptDetailAPI(item).then(res => {
 				memberStore.userInfo.deptIdGuardianParentList.push(res.data.result.parent_id)
 			})
 		})
-		await Promise.all(promiseAll)
+		memberStore.userInfo.teacherInfoList = []
+		const promiseAllTeacher = memberStore.userInfo.deptIdTeacherList.map(item => {
+			return deptDetailAPI(item).then(res => {
+				memberStore.userInfo.teacherInfoList.push({
+					classId: res.data.result.parent_id
+				})
+			})
+		})
+		await Promise.all(promiseAllGuardian.concat(promiseAllTeacher))
 	}
 
-	// 获取学生：userid 班级id 关系
-	const getUserRelationList = async (deptList) => {
-		const promiseAll = deptList.map(item => {
+	// 获取学生：userid 监护人关系 calssid 
+	const getUserRelationList = async () => {
+		const promiseAll = memberStore.userInfo.deptIdGuardianParentList.map(item => {
 			return userRelationListAPI(item).then(res => {
 				res.data.result.relations.forEach(itemId => {
 					memberStore.userInfo.studentInfoList.push({
@@ -193,6 +211,12 @@
 	// 家校通讯录 获取班级名称
 	const getSchoolDeptDetail = async () => {
 		memberStore.userInfo.studentInfoList.forEach(item => {
+			schoolDeptDetailAPI(item.classId).then(res => {
+				item.className = res.data.result.detail.name
+				item.classDetail = res.data.result.detail
+			})
+		})
+		memberStore.userInfo.teacherInfoList.forEach(item => {
 			schoolDeptDetailAPI(item.classId).then(res => {
 				item.className = res.data.result.detail.name
 				item.classDetail = res.data.result.detail
@@ -236,12 +260,12 @@
 		await getUserId()
 		await getUserInfo()
 		await getDeptName()
-		await getDeptParentId()
-		await getUserRelationList(memberStore.userInfo.deptIdGuardianParentList)
-		await getStuInfo()
-		await getSchoolDeptDetail()
 		getDeptStr()
+		await getDeptParentId()
+		await getUserRelationList()
+		await getStuInfo()
 		getNameStr()
+		await getSchoolDeptDetail()
 		console.log(memberStore.userInfo)
 	})
 </script>
