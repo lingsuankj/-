@@ -8,7 +8,7 @@ export const detailsStatistics = Mock.mock({
 	'英语': '@natural(20, 100)',
 	'物理': '@natural(20, 100)',
 	'化学': '@natural(20, 100)',
-	'生物': '@natural(20, 100)'
+	'生物': '@natural(20, 100)',
 });
 
 // 接收的参数：userId 开始时间 结束时间
@@ -17,26 +17,26 @@ export const detailsAccuracy = Mock.mock({
 	data: [{
 		subject: '@cword(2)',
 		total: '@natural(180, 200)',
-		correctNum: '@natural(140, 180)'
+		correctNum: '@natural(140, 180)',
 	}, {
 		subject: '@cword(2)',
 		total: '@natural(180, 200)',
-		correctNum: '@natural(140, 180)'
+		correctNum: '@natural(140, 180)',
 	}, {
 		subject: '@cword(2)',
 		total: '@natural(180, 200)',
-		correctNum: '@natural(140, 180)'
+		correctNum: '@natural(140, 180)',
 	}, {
 		subject: '@cword(2)',
 		total: '@natural(180, 200)',
-		correctNum: '@natural(140, 180)'
+		correctNum: '@natural(140, 180)',
 	}, {
 		subject: '@cword(2)',
 		total: '@natural(180, 200)',
-		correctNum: '@natural(140, 180)'
+		correctNum: '@natural(140, 180)',
 	}, {
 		subject: '@cword(2)',
 		total: '@natural(180, 200)',
-		correctNum: '@natural(140, 180)'
-	}]
+		correctNum: '@natural(140, 180)',
+	}],
 });

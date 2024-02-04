@@ -10,11 +10,11 @@ export const myLogin = Mock.mock({
 	role_list: {
 		group_name: '职务',
 		name: '老师',
-		id: '100'
+		id: '100',
 	},
 	'position|1': [
 		'学生',
 		'班主任',
-		'任课老师'
-	]
-})
+		'任课老师',
+	],
+});

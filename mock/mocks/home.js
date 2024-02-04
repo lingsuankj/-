@@ -6,7 +6,7 @@ export const homeSummarize = Mock.mock({
 	'2023-3': '@natural(100, 200)',
 	'2023-4': '@natural(100, 200)',
 	'2023-5': '@natural(100, 200)',
-	'2023-6': '@natural(100, 200)'
+	'2023-6': '@natural(100, 200)',
 });
 
 export const homePersonage = Mock.mock({
@@ -19,8 +19,8 @@ export const homePersonage = Mock.mock({
 			'2023-3': '@natural(100, 200)',
 			'2023-4': '@natural(100, 200)',
 			'2023-5': '@natural(100, 200)',
-			'2023-6': '@natural(100, 200)'
-		}
+			'2023-6': '@natural(100, 200)',
+		},
 	}, {
 		name: '@cname()',
 		total: '@natural(100, 200)',
@@ -30,7 +30,7 @@ export const homePersonage = Mock.mock({
 			'2023-3': '@natural(100, 200)',
 			'2023-4': '@natural(100, 200)',
 			'2023-5': '@natural(100, 200)',
-			'2023-6': '@natural(100, 200)'
-		}
-	}]
+			'2023-6': '@natural(100, 200)',
+		},
+	}],
 });

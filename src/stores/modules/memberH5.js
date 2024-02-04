@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable prefer-const */
-/* eslint-disable no-undef */
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
@@ -18,17 +17,8 @@ export const useMemberStore = defineStore(
       userInfo,
     };
   },
-  // 持久化: app
+  // 持久化: Web
   {
-    persist: {
-      storage: {
-        getItem(key) {
-          return uni.getStorageSync(key);
-        },
-        setItem(key, value) {
-          uni.setStorageSync(key, value);
-        },
-      },
-    },
+    persist: true,
   }
 );
