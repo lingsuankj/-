@@ -13,13 +13,13 @@
     </view>
 
     <!-- 本次统计-饼状图 -->
-    <view class="chartsBox">
+    <view class="chartsBox" v-if="statisticsData?.series">
       <view class="title">
         <text class="titleLeft">本次统计</text>
         <text class="titleRight">{{ statisticsTotal }}次</text>
       </view>
       <view class="charts">
-        <qiun-data-charts type="ring" :opts="statisticsOpts" :chartData="statisticsData" />
+        <qiun-data-charts type="pie" :opts="statisticsOpts" :chartData="statisticsData" />
       </view>
     </view>
 
@@ -70,6 +70,11 @@
 
   let statisticsTotal = ref('');
   const statisticsData = ref({});
+  // const statisticsData = ref({
+  //     series: [{
+  //       data: [{name: 's',value: 1}],
+  //     }],
+  //   });
   const accuracyData = ref({});
 
   const statisticsOpts = {
@@ -138,7 +143,7 @@
 
   let totalData = ref([]);
 
-  onReady(async () => {
+  onLoad(async () => {
     uni.setNavigationBarTitle({
       title: memberStore.userInfo.studentInfoList[stuIndex.value].name + '的主页',
     });

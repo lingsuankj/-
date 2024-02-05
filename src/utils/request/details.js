@@ -6,7 +6,7 @@ export function statisticsAPI(userId, startDate, endDate) {
     method: 'POST',
     url: '/ling/api/v1/rollCall/count-by-course-stuId',
     data: {
-      studentId: 3,
+      studentId: 1,
       startDate,
       endDate,
     },
@@ -19,7 +19,7 @@ export function accuracyAPI(userId, startDate, endDate) {
     method: 'POST',
     url: '/ling/api/v1/rollCall/correct-count-by-course-stuId',
     data: {
-      studentId: 3,
+      studentId: 1,
       startDate,
       endDate,
     },

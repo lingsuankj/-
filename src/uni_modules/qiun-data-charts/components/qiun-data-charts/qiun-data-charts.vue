@@ -869,7 +869,7 @@ export default {
         const ctx = cfu.option[cid].context;
         if(typeof ctx === "object" && !!!cfu.option[cid].update){
           ctx.clearRect(0, 0, this.cWidth*this.pixel, this.cHeight*this.pixel);
-          ctx.draw();
+          // ctx.draw();
         }
       }
     },

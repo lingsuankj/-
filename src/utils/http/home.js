@@ -40,8 +40,8 @@ export const popularStudent = async (personageAreaDataL, personageAreaDataR, stu
   const startDate = currentDate.toISOString().split('T')[0] + 'T00:00:00Z';
 
   return new Promise(async resolve => {
-    const res = await popularStudentAPI('2024-01-10T00:00:00Z', '2024-01-30T23:59:59Z');
-    // const res = await popularStudentAPI(startDate, endDate);
+    // const res = await popularStudentAPI('2024-01-10T00:00:00Z', '2024-02-20T23:59:59Z');
+    const res = await popularStudentAPI(startDate, endDate);
     const stuLCategories = [];
     const stuLData = [];
     const stuRCategories = [];

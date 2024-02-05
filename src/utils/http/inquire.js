@@ -7,7 +7,16 @@ import { teacherScoreAPI,
   headMasterScoreAPI,
   headMasterCorrectScoreAPI } from '../request/inquire.js';
 
-// 班主任 - 全部 grade: '一年级'  class: '一班' // 只写了默认值，没有传值！！！！！！
+/**
+ * 班主任获取数据
+ * @param {Number} gradeNum gradeNum
+ * @param {Number} classNum classNum
+ * @param {Number} startDate startDate
+ * @param {Number} endDate endDate
+ * @param {*} tableData tableData
+ * @example
+ * headTeacherScore('小学一年级2024级', '1班', '2024-01-18T00:00:00Z', '2024-01-30T23:59:59Z', tableData);
+ */
 export const headTeacherScore = async (gradeNum, classNum, startDate, endDate, tableData) => {
   const res = await headTeacherScoreAPI(gradeNum, classNum, startDate, endDate);
 
@@ -23,8 +32,6 @@ export const headTeacherScore = async (gradeNum, classNum, startDate, endDate, t
 // 班主任 - 正确 grade: '一年级'  class: '一班'
 export const headTeacherCorrectScore = async (gradeNum, classNum, startDate, endDate, tableData, headTeacherData) => {
   const res = await headTeacherCorrectScoreAPI(gradeNum, classNum, startDate, endDate);
-  console.log('班主任正确数据-----------');
-  console.log(res.data);
 
   tableData.value.forEach(item => {
     item.accuracy = res.data.filter(e => e.studentId === item.studentId && e.courseId === item.courseId)[0]?._count / item._count || 0;
@@ -38,9 +45,6 @@ export const headTeacherCorrectScore = async (gradeNum, classNum, startDate, end
   tableData.value.forEach(item => {
     course.push(item.courseName);
   });
-
-  console.log('班主任全部数据-----------');
-  console.log(tableData.value);
 
   course = Array.from(new Set(course));
 
@@ -71,9 +75,19 @@ export const headTeacherCorrectScore = async (gradeNum, classNum, startDate, end
   };
 };
 
-// 任课老师 - 全部
+/**
+ * 任课老师获取数据
+ * @param {Number} courseId courseId
+ * @param {Number} teacherId teacherId
+ * @param {String} startDate startDate
+ * @param {String} endDate endDate
+ * @param {*} tableData tableData
+ * @example
+ * teacherScore(1, 1, '2024-01-18T00:00:00Z', '2024-01-30T23:59:59Z', tableData);
+ */
 export const teacherScore = async (courseId, teacherId, startDate, endDate, tableData) => {
   const res = await teacherScoreAPI(courseId, teacherId, startDate, endDate);
+
   res.data.forEach(item => {
     if (!Number.isInteger(item._avg.score)) {
       item._avg.score = item._avg.score.toFixed(1);
@@ -127,7 +141,16 @@ export const teacherCorrectScore = async (courseId, teacherId, startDate, endDat
   };
 };
 
-// 校长 - 全部
+/**
+ * 校长数据
+ * @param {Number} courseId courseId
+ * @param {String} grade grade
+ * @param {String} startDate startDate
+ * @param {String} endDate endDate
+ * @param {*} tableData tableData
+ * @example
+ * headMasterScore(1, '小学一年级2024级', '2024-01-18T00:00:00Z', '2024-01-30T23:59:59Z', tableData)
+ */
 export const headMasterScore = async (courseId, grade, startDate, endDate, tableData) => {
   const res = await headMasterScoreAPI(courseId, grade, startDate, endDate);
 
@@ -154,16 +177,16 @@ export const headMasterCorrectScore = async (courseId, grade, startDate, endDate
   let count = [];
   let correctCount = [];
   tableData.value.forEach(item => {
-    course.push(item.grade + item.class);
+    course.push(item.class);
   });
   course = Array.from(new Set(course));
 
   count = course.map(countItem => {
-    return tableData.value.filter(item => countItem.includes(item.grade) && countItem.includes(item.class)).reduce((total, cur) => total + cur._count, 0);
+    return tableData.value.filter(item => countItem.includes(item.class)).reduce((total, cur) => total + cur._count, 0);
   });
 
   correctCount = course.map(countItem => {
-    return tableData.value.filter(item => countItem.includes(item.grade) && countItem.includes(item.class)).reduce((total, cur) => total + cur.correctCount, 0);
+    return tableData.value.filter(item => countItem.includes(item.class)).reduce((total, cur) => total + cur.correctCount, 0);
   });
 
   if (!count.length) {

@@ -10,7 +10,7 @@
         @change="classAllChange">
       </uni-data-picker>
     </view>
-    <view class="classSelector" v-if="memberStore.userInfo.isHeadTeacher">
+    <view class="classSelector" v-if="memberStore.userInfo.isHeadTeacher && !memberStore.userInfo.isHeadMaster">
       <picker mode="selector" @change="classChange" :range="classRange" range-key="className">
         <view class="classContent">
           <view class="classText">{{ classText }}</view>
@@ -27,7 +27,7 @@
       </picker>
     </view>
     <!-- 图表-班主任 -->
-    <view class="teacherBoss" v-if="memberStore?.userInfo?.isHeadTeacher">
+    <view class="teacherBoss" v-if="memberStore?.userInfo?.isHeadTeacher && !memberStore?.userInfo?.isHeadMaster">
       <qiun-data-charts type="area" :opts="optsAll" :ontouch='true' :chartData="headTeacherData"
         @getIndex="clickHeadTeacher" />
     </view>
@@ -81,7 +81,7 @@
     headTeacherCorrectScore,
     classAll,
     headMasterScore,
-    headMasterCorrectScore} from '../../utils/http/inquire';
+    headMasterCorrectScore } from '../../utils/http/inquire';
 
   const memberStore = useMemberStore();
 
@@ -109,7 +109,9 @@
 
   // 校长 - 选择班级
   const classAllChange = async (e) => {
-    console.log(e);
+    if (e.detail.value.length === 3) {
+      console.log(e.detail.value[1].text + e.detail.value[2].text);
+    }
 
     classId.value = e.detail.value[e.detail.value.length - 1].value;
     console.log(classId.value);
@@ -132,8 +134,6 @@
   };
 
   const courseList = ref(memberStore.userInfo.allCourse);
-  console.log('courseList=================');
-  console.log(courseList);
   // =======================================
   // let course = ref(1);
   let course = ref(courseList?.value[0]);
@@ -151,17 +151,22 @@
 
   // 点击班主任 图表
   const clickHeadTeacher = (e) => {
-    tableFlag.value = true;
-    course.value = e.opts.categories[e.currentIndex.index];
-
-    tableDataShow.value = tableData.value.filter(item => item.courseName === e.opts.categories[e.currentIndex.index]);
+    console.log();
+    if (e.currentIndex.index !== -1) {
+      tableFlag.value = true;
+      course.value = e.opts.categories[e.currentIndex.index];
+  
+      tableDataShow.value = tableData.value.filter(item => item.courseName === e.opts.categories[e.currentIndex.index]);
+    }
   };
 
   const clickTeacher = (e) => {
-    tableFlag.value = true;
-    classText.value = e.opts.categories[e.currentIndex.index];
-    tableDataShow.value = tableData.value.filter(item => e.opts.categories[e.currentIndex.index].includes(item.grade) && e.opts.categories[e.currentIndex.index].includes(item.class));
-    // classId.value = memberStore.userInfo.teacherInfoList[e.currentIndex.index].classId;
+    if (e.currentIndex.index !== -1) {
+      tableFlag.value = true;
+      classText.value = e.opts.categories[e.currentIndex.index];
+      tableDataShow.value = tableData.value.filter(item => e.opts.categories[e.currentIndex.index].includes(item.class));
+      // // classId.value = memberStore.userInfo.teacherInfoList[e.currentIndex.index].classId;
+    }
   };
 
   const headTeacherData = ref({});
@@ -192,19 +197,16 @@
     },
   };
 
-  const getChartData = async() => {
-    if (memberStore.userInfo.isHeadTeacher) {
-      // 获取班主任
-      await headTeacherScore('小学一年级2024级', '1班', sendDateRange.value[0], sendDateRange.value[1], tableData);
-      await headTeacherCorrectScore('小学一年级2024级', '1班', sendDateRange.value[0], sendDateRange.value[1], tableData, headTeacherData);
-    } else if (memberStore.userInfo.isTeacher) {
-      // 获取任课老师数据 会覆盖班主任表格的数据
-      await teacherScore(1, 1, sendDateRange.value[0], sendDateRange.value[1], tableData);
-      await teacherCorrectScore(1, 1, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
-    } else {
-      // 获取校长
+  const getChartData = async () => {
+    if (memberStore.userInfo.isHeadMaster) {
       await headMasterScore(1, '小学一年级2024级', sendDateRange.value[0], sendDateRange.value[1], tableData);
       await headMasterCorrectScore(1, '小学一年级2024级', sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
+    } else if (memberStore.userInfo.isHeadTeacher) {
+      await headTeacherScore('小学一年级2024级', '1班', sendDateRange.value[0], sendDateRange.value[1], tableData);
+      await headTeacherCorrectScore('小学一年级2024级', '1班', sendDateRange.value[0], sendDateRange.value[1], tableData, headTeacherData);
+    } else {
+      await teacherScore(1, 1, sendDateRange.value[0], sendDateRange.value[1], tableData);
+      await teacherCorrectScore(1, 1, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
     }
   }
 

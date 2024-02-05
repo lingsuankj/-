@@ -1,34 +1,30 @@
 {
-  "pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+  "pages": [
     {
       "path": "pages/home/home",
       "style": {
-        "navigationBarTitleText": "首页",
-        "navigationBarTextStyle": "black"
+        "navigationBarTitleText": "首页"
       }
     }, {
       "path": "pages/my/my",
       "style": {
-        "navigationBarTitleText": "我的",
-        "navigationBarTextStyle": "black"
+        "navigationBarTitleText": "我的"
       }
     }, {
       "path": "pages/details/details",
       "style": {
-        "navigationBarTitleText": "个人详情",
-        "enablePullDownRefresh": false
+        "navigationBarTitleText": "个人详情"
       }
     }, {
       "path": "pages/inquire/inquire",
       "style": {
-        "navigationBarTitleText": "成绩查询",
-        "enablePullDownRefresh": false
+        "navigationBarTitleText": "成绩查询"
       }
     }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "uni-app",
+    "navigationBarTitleText": "uniapp",
     "navigationBarBackgroundColor": "#F8F8F8",
     "backgroundColor": "#F8F8F8",
     "rpxCalcMaxDeviceWidth": 960,
