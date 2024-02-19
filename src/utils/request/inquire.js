@@ -32,13 +32,13 @@ export function headTeacherCorrectScoreAPI(gradeNum, classNum, startDate, endDat
 }
 
 // teacher
-export function teacherScoreAPI(courseId, teacherId, startDate, endDate) {
+export function teacherScoreAPI(courseDingId, teacherDingId, startDate, endDate) {
   return request({
     method: 'POST',
     url: '/ling/api/v1/rollCall/count-by-class-course',
     data: {
-      courseId,
-      teacherId,
+      courseDingId,
+      teacherDingId,
       startDate,
       endDate,
     },
@@ -46,13 +46,13 @@ export function teacherScoreAPI(courseId, teacherId, startDate, endDate) {
 }
 
 // teacherCorrect
-export function teacherCorrectScoreAPI(courseId, teacherId, startDate, endDate) {
+export function teacherCorrectScoreAPI(courseDingId, teacherDingId, startDate, endDate) {
   return request({
     method: 'POST',
     url: '/ling/api/v1/rollCall/correct-count-by-class-course',
     data: {
-      courseId,
-      teacherId,
+      courseDingId,
+      teacherDingId,
       startDate,
       endDate,
     },
@@ -60,12 +60,12 @@ export function teacherCorrectScoreAPI(courseId, teacherId, startDate, endDate) 
 }
 
 // headMaster
-export function headMasterScoreAPI(courseId, grade, startDate, endDate) {
+export function headMasterScoreAPI(courseDingId, grade, startDate, endDate) {
   return request({
     method: 'POST',
     url: '/ling/api/v1/rollCall/count-by-grade-course',
     data: {
-      courseId,
+      courseDingId,
       grade,
       startDate,
       endDate,
@@ -74,12 +74,12 @@ export function headMasterScoreAPI(courseId, grade, startDate, endDate) {
 }
 
 // headMasterCorrect
-export function headMasterCorrectScoreAPI(courseId, grade, startDate, endDate) {
+export function headMasterCorrectScoreAPI(courseDingId, grade, startDate, endDate) {
   return request({
     method: 'POST',
     url: '/ling/api/v1/rollCall/correct-count-by-grade-course',
     data: {
-      courseId,
+      courseDingId,
       grade,
       startDate,
       endDate,
@@ -96,6 +96,17 @@ export function schoolDeptListAPI(super_id = undefined) {
       page_size: 30,
       page_no: 1,
       super_id,
+    },
+  });
+}
+
+// 家校通讯录 - 获取部门详情
+export function schoolDeptDetailAPI(deptId) {
+  return request({
+    method: 'POST',
+    url: `/oding/topapi/edu/dept/get?access_token=${memberStore.token.accessToken}`,
+    data: {
+      dept_id: deptId,
     },
   });
 }

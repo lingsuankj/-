@@ -5,7 +5,18 @@ import { teacherScoreAPI,
   headTeacherCorrectScoreAPI,
   schoolDeptListAPI,
   headMasterScoreAPI,
-  headMasterCorrectScoreAPI } from '../request/inquire.js';
+  headMasterCorrectScoreAPI,
+  schoolDeptDetailAPI } from '../request/inquire.js';
+
+// #ifndef H5
+import { useMemberStore } from '../../stores/modules/member.js';
+// #endif
+
+// #ifdef H5
+import { useMemberStore } from '../../stores/modules/memberH5.js';
+// #endif
+
+const memberStore = useMemberStore();
 
 /**
  * 班主任获取数据
@@ -35,7 +46,7 @@ export const headTeacherCorrectScore = async (gradeNum, classNum, startDate, end
 
   tableData.value.forEach(item => {
     item.accuracy = res.data.filter(e => e.studentId === item.studentId && e.courseId === item.courseId)[0]?._count / item._count || 0;
-    item.accuracy = item.accuracy * 100 + '%';
+    item.accuracy = (item.accuracy * 100 | 0) + '%';
     item.correctCount = res.data.filter(e => e.studentId === item.studentId && e.courseId === item.courseId)[0]?._count || 0;
   });
 
@@ -102,7 +113,7 @@ export const teacherCorrectScore = async (courseId, teacherId, startDate, endDat
 
   tableData.value.forEach(item => {
     item.accuracy = res.data.filter(e => e.studentId === item.studentId && e.grade === item.grade && e.class === item.class)[0]?._count / item._count || 0;
-    item.accuracy = item.accuracy * 100 + '%';
+    item.accuracy = (item.accuracy * 100 | 0) + '%';
     item.correctCount = res.data.filter(e => e.studentId === item.studentId && e.grade === item.grade && e.class === item.class)[0]?._count || 0;
   });
 
@@ -169,7 +180,7 @@ export const headMasterCorrectScore = async (courseId, grade, startDate, endDate
 
   tableData.value.forEach(item => {
     item.accuracy = res.data.filter(e => e.studentId === item.studentId && e.grade === item.grade && e.class === item.class)[0]?._count / item._count || 0;
-    item.accuracy = item.accuracy * 100 + '%';
+    item.accuracy = (item.accuracy * 100 | 0) + '%';
     item.correctCount = res.data.filter(e => e.studentId === item.studentId && e.grade === item.grade && e.class === item.class)[0]?._count || 0;
   });
 
@@ -232,21 +243,43 @@ const schoolList = async (deptId, newArr) => {
   return newArr;
 };
 
-const gradeId = classAllData => {
+const gradeId = (classAllData, period = '') => {
   for (const k of classAllData) {
+    if (k.deptType === 'period') {
+      period = k.text;
+    }
     if (k.deptType === 'grade') {
-      return k.value;
+      return {
+        text: period + k.text,
+        deptId: k.value
+      }
     }
     if (k.children?.length) {
-      return gradeId(k.children);
+      return gradeId(k.children, period);
     }
   }
 };
 
 // 校长/年级主任 - 选择年级
-export const classAll = async (classAllData, classAllId) => {
+export const classAll = async (classAllData, classAllId, headMasterGrade) => {
   const res = await schoolList(undefined, []);
   classAllData.value = res;
 
-  classAllId.value = gradeId(res);
+  const resGrade = gradeId(res); // {text: '幼儿园中班', deptId: 856155465}
+  classAllId.value = resGrade.deptId;
+  headMasterGrade.value = resGrade.text;
+};
+
+export const teacherClassDetail = async (headTeacherGrade) => {
+  for (const item of memberStore.userInfo.teacherInfoList) {
+    const resPeriod = await schoolDeptDetailAPI(JSON.parse(item.classDetail.chain)[1]);
+    const period = resPeriod.data.result.detail.name;
+  
+    const resGrade = await schoolDeptDetailAPI(JSON.parse(item.classDetail.chain)[2]);
+    const grade = resGrade.data.result.detail.name;
+  
+    item.gradeName = period + grade;
+  }
+
+  headTeacherGrade.value = memberStore.userInfo.teacherInfoList[0]?.gradeName;
 };

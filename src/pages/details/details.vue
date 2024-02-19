@@ -23,13 +23,13 @@
       </view>
     </view>
 
-    <!-- 正确率-折线图 -->
+    <!-- 正确率-柱状图 -->
     <view class="chartsBox">
       <view class="title">
         <text class="titleLeft">正确率 %</text>
       </view>
       <view class="charts">
-        <qiun-data-charts type="area" :opts="accuracyOpts" :chartData="accuracyData" />
+        <qiun-data-charts type="column" :opts="accuracyOpts" :chartData="accuracyData" :ontouch="true" />
       </view>
     </view>
   </view>
@@ -78,18 +78,18 @@
   const accuracyData = ref({});
 
   const statisticsOpts = {
-    color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#EA7CCC"],
+    color: ['#1890FF', '#91CB74', '#FAC858', '#EE6666', '#73C0DE', '#3CA272', '#FC8452', '#9A60B4', '#EA7CCC'],
     padding: [5, 5, 5, 5],
     enableScroll: false,
     title: {
-      name: "",
+      name: '',
       fontSize: 15,
-      color: "#666666",
+      color: '#666666',
     },
     subtitle: {
-      name: "",
+      name: '',
       fontSize: 25,
-      color: "#7cb5ec",
+      color: '#7cb5ec',
     },
     extra: {
       ring: {
@@ -100,8 +100,8 @@
         labelWidth: 15,
         border: true,
         borderWidth: 2,
-        borderColor: "#FFFFFF",
-        centerColor: "#F8F8F8",
+        borderColor: '#FFFFFF',
+        centerColor: '#F8F8F8',
       },
     },
     legend: {
@@ -109,7 +109,7 @@
     }
   }
   const accuracyOpts = {
-    color: ["#1890FF", "#91CB74", "#FAC858", "#EE6666", "#73C0DE", "#3CA272", "#FC8452", "#9A60B4", "#EA7CCC"],
+    color: ['#1890FF', '#91CB74', '#FAC858', '#EE6666', '#73C0DE', '#3CA272', '#FC8452', '#9A60B4', '#EA7CCC'],
     padding: [15, 15, 0, 15],
     enableScroll: false,
     legend: {
@@ -119,7 +119,7 @@
       disableGrid: true,
     },
     yAxis: {
-      gridType: "dash",
+      gridType: 'dash',
       dashLength: 2,
       data: [
         {
@@ -130,13 +130,11 @@
       ]
     },
     extra: {
-      area: {
-        type: "straight",
-        opacity: 0.2,
-        addLine: true,
-        width: 2,
-        gradient: false,
-        activeType: "hollow",
+      column: {
+        type: 'group',
+        width: 30,
+        activeBgColor: '#000000',
+        activeBgOpacity: 0.08
       },
     },
   }

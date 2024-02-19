@@ -8,23 +8,25 @@ export const popularClass = async summarizeLineData => {
   const startDate = currentDate.toISOString().split('T')[0] + 'T00:00:00Z';
 
   return new Promise(async resolve => {
-    const res = await popularClassAPI('2024-01-10T00:00:00Z', '2024-01-30T23:59:59Z');
+    const res = await popularClassAPI('2024-01-10T00:00:00Z', '2024-02-20T23:59:59Z');
     // const res = await popularClassAPI(startDate, endDate);
 
     res.data.sort((a, b) => b._count - a._count);
     res.data = res.data.slice(0, 6);
     res.data.forEach(item => {
-      item.name = item.grade + item.class;
+      // item.name = item.grade + item.class;
+      item.name = item.grade.slice(0, 2) + item.grade.slice(7, 9) + '-' + item.class.slice(0, 1);
     });
+    console.log(res.data);
 
-    const y = res.data.map(item => item.name);
-    const x = res.data.map(item => item._count);
+    const x = res.data.map(item => item.name);
+    const y = res.data.map(item => item._count);
 
     summarizeLineData.value = {
-      categories: y,
+      categories: x,
       series: [{
         name: '总数',
-        data: x,
+        data: y,
       }],
     };
 
@@ -40,25 +42,28 @@ export const popularStudent = async (personageAreaDataL, personageAreaDataR, stu
   const startDate = currentDate.toISOString().split('T')[0] + 'T00:00:00Z';
 
   return new Promise(async resolve => {
-    // const res = await popularStudentAPI('2024-01-10T00:00:00Z', '2024-02-20T23:59:59Z');
-    const res = await popularStudentAPI(startDate, endDate);
+    const res = await popularStudentAPI('2024-01-10T00:00:00Z', '2024-02-20T23:59:59Z');
+    // const res = await popularStudentAPI(startDate, endDate);
+
     const stuLCategories = [];
     const stuLData = [];
     const stuRCategories = [];
     const stuRData = [];
 
-    stuInfo.value[0].count = res.data[0].reduce((total, cur) => total + cur._count, 0);
-    stuInfo.value[1].count = res.data[1].reduce((total, cur) => total + cur._count, 0);
-    for (const k of res.data[0]) {
-      stuInfo.value[0].name = k.studentName;
-      stuLCategories.push(k.courseName);
-      stuLData.push(k._count);
-    }
+    if (res.data.length !== 0) {
+      stuInfo.value[0].count = res.data[0].reduce((total, cur) => total + cur._count, 0);
+      stuInfo.value[1].count = res.data[1].reduce((total, cur) => total + cur._count, 0);
+      for (const k of res.data[0]) {
+        stuInfo.value[0].name = k.studentName;
+        stuLCategories.push(k.courseName);
+        stuLData.push(k._count);
+      }
 
-    for (const k of res.data[1]) {
-      stuInfo.value[1].name = k.studentName;
-      stuRCategories.push(k.courseName);
-      stuRData.push(k._count);
+      for (const k of res.data[1]) {
+        stuInfo.value[1].name = k.studentName;
+        stuRCategories.push(k.courseName);
+        stuRData.push(k._count);
+      }
     }
 
     personageAreaDataL.value = {

@@ -85,7 +85,6 @@ export const getUserInfo = async () => {
     deptIdList: res.data.result.dept_id_list,
     roleList: res.data.result.role_list,
   }
-  // console.log(res.data.result);
 };
 
 export const getDeptName = async () => {
@@ -142,31 +141,23 @@ export const getTeacherSubject = async () => {
     res = await deptListAPI(next);
     next = res.data.result.filter(item => item.name === '各学科教师')[0].dept_id;
     res = await deptListAPI(next);
-    const subjectList = res.data.result.map(item => item.name);
+    const subjectList = res.data.result.map(item => {
+      return {
+        name: item.name,
+        deptid: item.dept_id
+      }
+    });
+
+    memberStore.userInfo.allCourse = subjectList;
 
     memberStore.userInfo.teacherSubjectList = [];
 
     subjectList.forEach(item => {
-      if (memberStore.userInfo.deptNameList.includes(item)) {
+      if (memberStore.userInfo.deptNameList.includes(item.name)) {
         memberStore.userInfo.teacherSubjectList.push(item);
       }
     });
 
-    resolve();
-  });
-};
-
-// allCourse
-export const courseAll = async () => {
-  return new Promise(async resolve => {
-    let res = await deptListAPI();
-    let next = res.data.result.filter(item => item.name === '全体教师')[0].dept_id;
-    res = await deptListAPI(next);
-    next = res.data.result.filter(item => item.name === '各学科教师')[0].dept_id;
-    res = await deptListAPI(next);
-    const subjectList = res.data.result.map(item => item.name);
-
-    memberStore.userInfo.allCourse = subjectList;
     resolve();
   });
 };

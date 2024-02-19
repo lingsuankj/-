@@ -7,8 +7,7 @@ const memberStore = useMemberStore();
 export const getStatisticsData = async (sendDateRange, statisticsData, statisticsTotal, totalData, stuIndex) => {
   return new Promise(async resolve => {
     const res = await statisticsAPI(memberStore.userInfo.studentInfoList[stuIndex.value].userId, sendDateRange[0], sendDateRange[1]);
-    console.log('饼状图');
-    console.log(res.data);
+
     statisticsTotal.value = res.data.reduce((total, cur) => {
       return total + cur._count;
     }, 0);
@@ -22,8 +21,6 @@ export const getStatisticsData = async (sendDateRange, statisticsData, statistic
       });
     }
     totalData.value = newData;
-    console.log('totalData.value:::::::::');
-    console.log(totalData.value);
 
     if (!totalData.value.length) {
       uni.showToast({
@@ -32,16 +29,11 @@ export const getStatisticsData = async (sendDateRange, statisticsData, statistic
       });
     }
 
-    console.log('statisticsData.value-----------');
-    console.log(statisticsData.value);
     statisticsData.value = {
       series: [{
         data: newData,
       }],
     };
-    console.log('statisticsData.value=============:');
-    console.log(statisticsData.value);
-    console.log('饼状图：完成');
     resolve();
   });
 };

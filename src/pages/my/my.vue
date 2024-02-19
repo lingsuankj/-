@@ -49,8 +49,7 @@
     getStuInfo,
     getSchoolDeptDetail,
     getDeptStr,
-    getNameStr,
-    courseAll
+    getNameStr
   } from '../../utils/http/my.js';
 
   // #ifndef H5
@@ -81,21 +80,15 @@
     await getUserInfo();
     await getDeptName();
 
-    // start no await
     await getTeacherSubject();
     getDeptStr();
-    // end
 
     await getDeptParentId();
     await getUserRelationList();
     await getStuInfo();
 
-    // start no await
     getNameStr();
-    await getSchoolDeptDetail();
-    // end
-
-    await courseAll();
+    getSchoolDeptDetail();
 
     console.log(memberStore.userInfo);
   });
