@@ -1,16 +1,5 @@
 {
-  "pages": [
-    {
-      "path": "pages/home/home",
-      "style": {
-        "navigationBarTitleText": "首页"
-      }
-    }, {
-      "path": "pages/my/my",
-      "style": {
-        "navigationBarTitleText": "我的"
-      }
-    }, {
+  "pages": [{
       "path": "pages/details/details",
       "style": {
         "navigationBarTitleText": "个人详情"
@@ -34,15 +23,16 @@
   "tabBar": {
     "color": "#333333",
     "selectedColor": "#33BEA0",
-    "list": [{
-        "pagePath": "pages/home/home",
-        "text": "首页",
+    "list": [
+      {
+        "pagePath": "pages/details/details",
+        "text": "学生",
         "iconPath": "static/tabs/home_default.png",
         "selectedIconPath": "static/tabs/home_selected.png"
       },
       {
-        "pagePath": "pages/my/my",
-        "text": "我的",
+        "pagePath": "pages/inquire/inquire",
+        "text": "查询",
         "iconPath": "static/tabs/user_default.png",
         "selectedIconPath": "static/tabs/user_selected.png"
       }

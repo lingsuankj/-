@@ -11,7 +11,25 @@ export const useMemberStore = defineStore(
     let authCode = ref('');
     let userId = ref('');
     const token = ref({});
-    const userInfo = ref({});
+    const userInfo = ref({
+      userid: '',
+      name: '',
+      allCourse: [],
+      deptIdList: [],
+      deptNameList: [],
+      deptIdGuardianList: [],
+      deptIdTeacherList: [],
+      deptIdGuardianParentList: [],
+      teacherInfoList: [],
+      teacherSubjectList: [],
+      isStudent: false,
+      isGuardian: false,
+      isTeacher: false,
+      isHeadTeacher: false,
+      isHeadMaster: false,
+      studentInfoList: [],
+      roleList: [],
+    });
 
     return {
       token,

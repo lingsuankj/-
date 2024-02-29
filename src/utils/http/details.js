@@ -1,6 +1,13 @@
-/* eslint-disable no-undef */
 import { statisticsAPI, accuracyAPI } from '../request/details.js';
-import { useMemberStore } from '../../stores/modules/member.js';
+
+import { useMemberStore } from
+// #ifndef H5
+  '../../stores/modules/member.js';
+// #endif
+
+// #ifdef H5
+'../../stores/modules/memberH5.js';
+// #endif
 
 const memberStore = useMemberStore();
 
@@ -62,3 +69,4 @@ export const getAccuracyData = async (sendDateRange, accuracyData, totalData, st
     resolve();
   });
 };
+

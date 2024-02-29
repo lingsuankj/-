@@ -1,93 +1,91 @@
 import { request } from '../request.js';
-import { useMemberStore } from '../../stores/modules/member.js';
+import { useMemberStore } from
+// #ifndef H5
+  '../../stores/modules/member.js';
+// #endif
+
+// #ifdef H5
+'../../stores/modules/memberH5.js';
+// #endif
 
 const memberStore = useMemberStore();
 
-// headTeacher
-export function headTeacherScoreAPI(gradeNum, classNum, startDate, endDate) {
+export function headTeacherScoreAPI(classDingId, startDate, endDate) {
   return request({
     method: 'POST',
-    url: '/ling/api/v1/rollCall/count-by-course-class',
+    url: '/ling/api/v1/rollCall/count-by-classId',
     data: {
-      grade: gradeNum,
-      class: classNum,
+      classDingId,
       startDate,
       endDate,
     },
   });
 }
 
-// headTeacherCorrect
-export function headTeacherCorrectScoreAPI(gradeNum, classNum, startDate, endDate) {
+export function headTeacherCorrectScoreAPI(classDingId, startDate, endDate) {
   return request({
     method: 'POST',
-    url: '/ling/api/v1/rollCall/correct-count-by-course-class',
+    url: '/ling/api/v1/rollCall/correct-count-by-classId',
     data: {
-      grade: gradeNum,
-      class: classNum,
+      classDingId,
       startDate,
       endDate,
     },
   });
 }
 
-// teacher
-export function teacherScoreAPI(courseDingId, teacherDingId, startDate, endDate) {
+export function teacherScoreAPI(teacherDingId, courseDingId, startDate, endDate) {
   return request({
     method: 'POST',
-    url: '/ling/api/v1/rollCall/count-by-class-course',
+    url: '/ling/api/v1/rollCall/count-by-teacherId-courseId',
     data: {
-      courseDingId,
       teacherDingId,
+      courseDingId,
       startDate,
       endDate,
     },
   });
 }
 
-// teacherCorrect
-export function teacherCorrectScoreAPI(courseDingId, teacherDingId, startDate, endDate) {
+export function teacherCorrectScoreAPI(teacherDingId, courseDingId, startDate, endDate) {
   return request({
     method: 'POST',
-    url: '/ling/api/v1/rollCall/correct-count-by-class-course',
+    url: '/ling/api/v1/rollCall/correct-count-by-teacherId-courseId',
     data: {
-      courseDingId,
       teacherDingId,
+      courseDingId,
       startDate,
       endDate,
     },
   });
 }
 
-// headMaster
-export function headMasterScoreAPI(courseDingId, grade, startDate, endDate) {
+export function headMasterScoreAPI(gradeDingId, courseDingId, startDate, endDate) {
   return request({
     method: 'POST',
-    url: '/ling/api/v1/rollCall/count-by-grade-course',
+    url: '/ling/api/v1/rollCall/count-by-gradeId-courseId',
     data: {
+      gradeDingId,
       courseDingId,
-      grade,
       startDate,
       endDate,
     },
   });
 }
 
-// headMasterCorrect
-export function headMasterCorrectScoreAPI(courseDingId, grade, startDate, endDate) {
+export function headMasterCorrectScoreAPI(gradeDingId, courseDingId, startDate, endDate) {
   return request({
     method: 'POST',
-    url: '/ling/api/v1/rollCall/correct-count-by-grade-course',
+    url: '/ling/api/v1/rollCall/correct-count-by-gradeId-courseId',
     data: {
+      gradeDingId,
       courseDingId,
-      grade,
       startDate,
       endDate,
     },
   });
 }
 
-// 家校通讯录 - 获取部门列表
 export function schoolDeptListAPI(super_id = undefined) {
   return request({
     method: 'POST',
@@ -100,7 +98,6 @@ export function schoolDeptListAPI(super_id = undefined) {
   });
 }
 
-// 家校通讯录 - 获取部门详情
 export function schoolDeptDetailAPI(deptId) {
   return request({
     method: 'POST',

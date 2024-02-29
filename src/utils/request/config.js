@@ -1,11 +1,9 @@
 import { request } from '../request.js';
-
 import { useMemberStore } from '../../stores/modules/member.js';
 import { appClient } from '../globals.js';
 
 const memberStore = useMemberStore();
 
-// 获取 token
 export function tokenAPI() {
   return request({
     method: 'POST',
@@ -20,7 +18,6 @@ export function tokenAPI() {
   });
 }
 
-// 获取用户 userid
 export function userIdAPI() {
   return request({
     method: 'POST',
@@ -31,7 +28,6 @@ export function userIdAPI() {
   });
 }
 
-// 获取用户信息
 export function userInfoAPI() {
   return request({
     method: 'POST',
@@ -42,7 +38,6 @@ export function userInfoAPI() {
   });
 }
 
-// 通讯录 - 获取部门详情
 export function deptDetailAPI(deptId) {
   return request({
     method: 'POST',
@@ -53,7 +48,6 @@ export function deptDetailAPI(deptId) {
   });
 }
 
-// 通讯录 - 获取部门列表
 export function deptListAPI(deptId = 1) {
   return request({
     method: 'POST',
@@ -64,7 +58,6 @@ export function deptListAPI(deptId = 1) {
   });
 }
 
-// 家校通讯录 获取学生监护人详情
 export function userRelationListAPI(from_userid, class_id) {
   return request({
     method: 'POST',
@@ -76,7 +69,6 @@ export function userRelationListAPI(from_userid, class_id) {
   });
 }
 
-// 家校通讯录 - 获取人员详情
 export function schoolUserInfoAPI(class_id, userid, role = 'student') {
   return request({
     method: 'POST',
@@ -89,7 +81,6 @@ export function schoolUserInfoAPI(class_id, userid, role = 'student') {
   });
 }
 
-// 家校通讯录 - 获取部门详情
 export function schoolDeptDetailAPI(deptId) {
   return request({
     method: 'POST',

@@ -3,10 +3,10 @@
     <view class="dateSelector">
       <uni-datetime-picker v-model="dateRange" type="daterange" :clear-icon="false" @change="dateChange" />
     </view>
-    <view class="stuSelector">
+    <view class="stuSelector" v-if="memberStore.userInfo.studentInfoList">
       <picker mode="selector" @change="stuChange" :range="memberStore.userInfo.studentInfoList" range-key="name">
         <view class="stuContent">
-          <view class="stuText">{{ memberStore.userInfo.studentInfoList[stuIndex].name }}</view>
+          <view class="stuText">{{ memberStore.userInfo.studentInfoList[stuIndex]?.name }}</view>
           <view class="stuIcon"></view>
         </view>
       </picker>
@@ -36,10 +36,26 @@
 </template>
 
 <script setup>
-  import { onLoad, onReady } from '@dcloudio/uni-app';
+  import { onLoad } from '@dcloudio/uni-app';
+
   import { ref } from 'vue';
 
   import { getStatisticsData, getAccuracyData } from '../../utils/http/details.js';
+
+  import {
+    getDeptName,
+    getDeptParentId,
+    getUserRelationList,
+    getStuInfo,
+  } from '../../utils/http/detailDing';
+
+  import {
+    getAuthCode,
+    getToken,
+    getUserId,
+    getUserInfo,
+  } from '../../utils/http/config';
+
   import { useMemberStore } from '../../stores/modules/member.js';
 
   const memberStore = useMemberStore();
@@ -59,22 +75,20 @@
   };
 
   let stuIndex = ref(0);
+
   const stuChange = async (e) => {
     stuIndex.value = e.detail.value;
+
     uni.setNavigationBarTitle({
       title: memberStore.userInfo.studentInfoList[stuIndex.value].name + '的主页',
     });
+
     await getStatisticsData(sendDateRange, statisticsData, statisticsTotal, totalData, stuIndex);
     await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex);
   };
 
   let statisticsTotal = ref('');
   const statisticsData = ref({});
-  // const statisticsData = ref({
-  //     series: [{
-  //       data: [{name: 's',value: 1}],
-  //     }],
-  //   });
   const accuracyData = ref({});
 
   const statisticsOpts = {
@@ -142,12 +156,34 @@
   let totalData = ref([]);
 
   onLoad(async () => {
-    uni.setNavigationBarTitle({
-      title: memberStore.userInfo.studentInfoList[stuIndex.value].name + '的主页',
-    });
+    uni.hideTabBar();
+    await getAuthCode();
+    await getToken();
+    await getUserId();
+    await getUserInfo();
+    await getDeptName();
 
-    await getStatisticsData(sendDateRange, statisticsData, statisticsTotal, totalData, stuIndex);
-    await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex);
+    const showTabBar = memberStore.userInfo.isGuardian && (memberStore.userInfo.isTeacher || memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isHeadMaster);
+    if (showTabBar) uni.showTabBar();
+
+    if (!(memberStore.userInfo.isStudent || memberStore.userInfo.isGuardian)) {
+      uni.switchTab({
+        url: '/pages/inquire/inquire',
+      });
+    } else {
+      if (memberStore.userInfo.isGuardian) {
+        await getDeptParentId();
+        await getUserRelationList();
+        await getStuInfo();
+      }
+
+      uni.setNavigationBarTitle({
+        title: memberStore.userInfo.studentInfoList[stuIndex.value].name + '的主页',
+      });
+
+      await getStatisticsData(sendDateRange, statisticsData, statisticsTotal, totalData, stuIndex);
+      await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex);
+    }
   });
 </script>
 

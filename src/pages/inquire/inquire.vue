@@ -6,7 +6,7 @@
       <uni-datetime-picker v-model="dateRange" type="daterange" :clear-icon="false" @change="dateRangeChange" />
     </view>
     <view class="classAllSelector" v-if="memberStore.userInfo.isHeadMaster">
-      <uni-data-picker placeholder="请选择班级" :clear-icon="false" :localdata="classAllData" v-model="classAllId"
+      <uni-data-picker placeholder="请选择班级" :clear-icon="false" :localdata="gradeAllData" v-model="gradeAllDefaultId"
         @change="classAllChange">
       </uni-data-picker>
     </view>
@@ -26,25 +26,24 @@
         </view>
       </picker>
     </view>
-    <!-- 图表-班主任 -->
-    <view class="teacherBoss" v-if="memberStore?.userInfo?.isHeadTeacher && !memberStore?.userInfo?.isHeadMaster">
+    <!-- chart - headTeacher -->
+    <view class="headTeacher" v-if="memberStore?.userInfo?.isHeadTeacher && !memberStore?.userInfo?.isHeadMaster">
       <qiun-data-charts type="column" :opts="optsAll" :ontouch='true' :chartData="headTeacherData"
         @getIndex="clickHeadTeacher" />
     </view>
-    <!-- 图表-任课老师 -->
-    <view class="teacherOrdinary" v-else>
+    <!-- chart - teacher / headMaster -->
+    <view class="teacher" v-else>
       <view class="title">{{ course }}</view>
       <qiun-data-charts type="column" :opts="optsAll" :ontouch='true' :chartData="teacherData"
         @getIndex="clickTeacher" />
     </view>
 
-    <!-- 表格 -->
+    <!-- table -->
     <view class="tableBox" v-show="tableFlag">
       <view class="title">
         {{ classText }}&nbsp;{{ course }}
         <view class="btnOff" @tap="tableFlag = !tableFlag">x</view>
       </view>
-      <!-- 表头 -->
       <view class="th">
         <view class="td">姓名</view>
         <view class="td">答题数量</view>
@@ -64,42 +63,50 @@
 </template>
 
 <script setup>
-  import { onLoad, onReady } from '@dcloudio/uni-app';
+  import { onLoad } from '@dcloudio/uni-app';
+
   import { ref } from 'vue';
 
+  import { useMemberStore } from
   // #ifndef H5
-  import { useMemberStore } from '../../stores/modules/member.js';
+    '../../stores/modules/member.js';
   // #endif
 
   // #ifdef H5
-  import { useMemberStore } from '../../stores/modules/memberH5.js';
+  '../../stores/modules/memberH5.js';
   // #endif
 
-  import { teacherScore,
+  import {
+    getDeptName,
+    getTeacherCourse,
+    getDeptParentId,
+    getSchoolDeptDetail,
+  } from '../../utils/http/inquireDing';
+
+  import {
+    teacherScore,
     teacherCorrectScore,
     headTeacherScore,
     headTeacherCorrectScore,
-    classAll,
+    gradeAll,
     headMasterScore,
     headMasterCorrectScore,
-    teacherClassDetail } from '../../utils/http/inquire';
+    getGradeAllDeptType,
+  } from '../../utils/http/inquire';
+
+  import {
+    getAuthCode,
+    getToken,
+    getUserId,
+    getUserInfo,
+  } from '../../utils/http/config';
 
   const memberStore = useMemberStore();
 
-  let classId = ref(memberStore.userInfo.teacherInfoList[0] ? memberStore.userInfo.teacherInfoList[0].classId : '');
-
   // getChartData argument
-  let headMasterCourseId = ref(memberStore.userInfo.allCourse[0]?.deptid);
-  let headMasterGrade = ref(''); // '小学一年级2024级'
-
-  let headTeacherGrade = ref(memberStore.userInfo.teacherInfoList[0]?.gradeName); // '小学一年级2024级'
-  let headTeacherClass = ref(memberStore.userInfo.teacherInfoList[0]?.className); // '1班' (一年级一班 => 1班)
-  if (headTeacherClass.value?.includes('级')) {
-    headTeacherClass.value = headTeacherClass.value.slice(headTeacherClass.value.indexOf('级') + 1);
-  } else if (headTeacherClass.value?.includes('班')) {
-    headTeacherClass.value = headTeacherClass.value.slice(headTeacherClass.value.indexOf('班') + 1);
-  }
-
+  let headMasterGradeId = ref('');
+  let headMasterCourseId = ref();
+  let headTeacherClassId = ref('');
   let teacherCourseId = ref(memberStore.userInfo.teacherSubjectList[0]?.deptid);
 
   // 日期
@@ -117,50 +124,40 @@
     await getChartData();
   };
 
-  // 选择班级
-  let classAllId = ref();
+  let gradeAllDefaultId = ref();
+  const gradeAllData = ref([]);
 
-  const classAllData = ref([]);
-
-  // 校长 - 选择班级
+  // headMaster: choose grade
   const classAllChange = async (e) => {
-    // if (e.detail.value.length === 3) {
-    //   console.log(e.detail.value[1].text + e.detail.value[2].text);
-    // }
+    const deptType = getGradeAllDeptType(gradeAllData.value, e.detail.value[e.detail.value.length - 1].value);
+    if (deptType === 'grade') {
+      classText.value = '';
+      e.detail.value.forEach(item => {
+        classText.value = classText.value + item.text + ' ';
+      })
 
-    classId.value = e.detail.value[e.detail.value.length - 1].value;
-    classText.value = '';
-    e.detail.value.forEach(item => {
-      classText.value = classText.value + item.text + ' ';
-    })
+      headMasterGradeId.value = e.detail.value[2].value;
 
-    headMasterGrade.value = e.detail.value[1].text + e.detail.value[2].text;
-    await getChartData();
+      await getChartData();
+    }
   }
 
-  const classRange = ref(memberStore.userInfo.teacherInfoList);
-  let classText = ref(classRange.value[0] ? classRange.value[0].className : '');
+  const classRange = ref([]);
+  let classText = ref('');
   
-  // 老师 - 选择班级
+  // teacher: choose class
   const classChange = async (e) => {
     classText.value = memberStore.userInfo.teacherInfoList[e.detail.value].className;
-    classId.value = memberStore.userInfo.teacherInfoList[e.detail.value].classId;
 
-    headTeacherGrade.value = memberStore.userInfo.teacherInfoList[e.detail.value].gradeName;
-    headTeacherClass.value = memberStore.userInfo.teacherInfoList[e.detail.value].className;
-    if (headTeacherClass.value.includes('级')) {
-      headTeacherClass.value = headTeacherClass.value.slice(headTeacherClass.value.indexOf('级') + 1);
-    } else {
-      headTeacherClass.value = headTeacherClass.value.slice(headTeacherClass.value.indexOf('班') + 1);
-    }
+    headTeacherClassId.value = classRange.value[e.detail.value].classId;
 
     await getChartData();
   };
 
-  const courseList = ref(memberStore.userInfo.allCourse);
-  let course = ref(courseList?.value[0].name);
+  // headMaster: choose course
+  let courseList = ref([]);
+  let course = ref('');
 
-  // 选择科目
   const courseChange = async (e) => {
     headMasterCourseId.value = courseList.value[e.detail.value].deptid;
 
@@ -173,7 +170,6 @@
   const tableDataShow = ref([]);
   let tableFlag = ref(false);
 
-  // 点击班主任 图表
   const clickHeadTeacher = (e) => {
     if (e.currentIndex.index !== -1) {
       tableFlag.value = true;
@@ -187,8 +183,7 @@
     if (e.currentIndex.index !== -1) {
       tableFlag.value = true;
       classText.value = e.opts.categories[e.currentIndex.index];
-      tableDataShow.value = tableData.value.filter(item => e.opts.categories[e.currentIndex.index].includes(item.class));
-      // // classId.value = memberStore.userInfo.teacherInfoList[e.currentIndex.index].classId;
+      tableDataShow.value = tableData.value.filter(item => e.opts.categories[e.currentIndex.index] === item.className);
     }
   };
 
@@ -210,35 +205,60 @@
     },
     extra: {
       column: {
-        type: 'stack',
+        type: "meter",
         width: 30,
-        activeBgColor: '#000000',
+        activeBgColor: "#000000",
         activeBgOpacity: 0.08,
-        labelPosition: 'center'
+        meterBorder: 3,
+        meterFillColor: "#EBFBD6"
       }
-    },
+    }
   };
 
   const getChartData = async () => {
     if (memberStore.userInfo.isHeadMaster) {
-      await headMasterScore(headMasterCourseId.value, headMasterGrade.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
-      await headMasterCorrectScore(headMasterCourseId.value, headMasterGrade.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
+      await headMasterScore(headMasterGradeId.value, headMasterCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
+      await headMasterCorrectScore(headMasterGradeId.value, headMasterCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
     } else if (memberStore.userInfo.isHeadTeacher) {
-      await headTeacherScore(headTeacherGrade.value, headTeacherClass.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
-      await headTeacherCorrectScore(headTeacherGrade.value, headTeacherClass.value, sendDateRange.value[0], sendDateRange.value[1], tableData, headTeacherData);
+      await headTeacherScore(headTeacherClassId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
+      await headTeacherCorrectScore(headTeacherClassId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, headTeacherData);
     } else {
-      await teacherScore(teacherCourseId.value, '44581120626478', sendDateRange.value[0], sendDateRange.value[1], tableData);
-      await teacherCorrectScore(teacherCourseId.value, '44581120626478', sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
-      // 完成 ⬇
-      // await teacherScore(teacherCourseId.value, memberStore.userInfo.userid, sendDateRange.value[0], sendDateRange.value[1], tableData);
-      // await teacherCorrectScore(teacherCourseId.value, memberStore.userInfo.userid, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
+      await teacherScore(memberStore.userInfo.userid, teacherCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
+      await teacherCorrectScore(memberStore.userInfo.userid, teacherCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
     }
   }
 
+  const getChartDataArgument = () => {
+    if (memberStore.userInfo.isHeadMaster) {
+      headMasterGradeId.value = gradeAllDefaultId.value;
+      headMasterCourseId.value = memberStore.userInfo.allCourse[0]?.deptid;
+    } else if (memberStore.userInfo.isHeadTeacher) {
+      headTeacherClassId.value = classRange.value[0] ? classRange.value[0].classId : '';
+    } else {
+      teacherCourseId.value = memberStore.userInfo.teacherSubjectList[0]?.deptid;
+    }
+  };
+
   onLoad(async () => {
-    // 校长/年级主任 - 选择年级
-    await classAll(classAllData, classAllId, headMasterGrade);
-    await teacherClassDetail(headTeacherGrade);
+    await getAuthCode();
+    await getToken();
+    await getUserId();
+    await getUserInfo();
+    await getDeptName();
+    await getTeacherCourse();
+    courseList.value = memberStore.userInfo.allCourse;
+    course.value = courseList.value[0] ? courseList.value[0].name : '';
+
+    await getDeptParentId();
+    await getSchoolDeptDetail();
+    classRange.value = memberStore.userInfo.teacherInfoList;
+    classText.value = classRange.value[0] ? classRange.value[0].className : '';
+
+    if (memberStore.userInfo.isHeadMaster) {
+      await gradeAll(gradeAllData, gradeAllDefaultId, classText);
+    }
+
+    getChartDataArgument();
     await getChartData();
   })
 </script>
@@ -353,14 +373,14 @@
     }
 
     // 图表 - 班主任及以上可见
-    .teacherBoss {
+    .headTeacher {
       margin: 40rpx auto;
       width: 680rpx;
       // height: 500rpx;
     }
 
     // 图表 - 任课老师可见
-    .teacherOrdinary {
+    .teacher {
       margin: 40rpx auto;
       width: 680rpx;
 
