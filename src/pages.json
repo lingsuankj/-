@@ -21,20 +21,20 @@
     "rpxCalcIncludeWidth": 750
   },
   "tabBar": {
-    "color": "#333333",
-    "selectedColor": "#33BEA0",
+    "color": "#DBDBDB",
+    "selectedColor": "#7DC5EB",
     "list": [
       {
         "pagePath": "pages/details/details",
         "text": "学生",
-        "iconPath": "static/tabs/home_default.png",
-        "selectedIconPath": "static/tabs/home_selected.png"
+        "iconPath": "static/tabs/student.svg",
+        "selectedIconPath": "static/tabs/student_select.svg"
       },
       {
         "pagePath": "pages/inquire/inquire",
-        "text": "查询",
-        "iconPath": "static/tabs/user_default.png",
-        "selectedIconPath": "static/tabs/user_selected.png"
+        "text": "老师",
+        "iconPath": "static/tabs/teacher.svg",
+        "selectedIconPath": "static/tabs/teacher_select.svg"
       }
     ]
   }

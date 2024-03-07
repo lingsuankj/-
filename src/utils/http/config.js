@@ -42,7 +42,6 @@ export const getAuthCode = async () => {
     dd.runtime.permission.requestAuthCode({
       corpId: appClient.corpId,
       onSuccess(res) {
-        // code: 'hYLK98jkf0m';
         memberStore.authCode = res.code;
         resolve(res.code);
       },

@@ -2,15 +2,18 @@
   <view class="body">
     <image class="bannerImg" src="../../static/images/e550b088ea89cdd2854d9b45878f7c0.png" mode="aspectFill">
     </image>
+
     <view class="dateSelector">
       <uni-datetime-picker v-model="dateRange" type="daterange" :clear-icon="false" @change="dateRangeChange" />
     </view>
-    <view class="classAllSelector" v-if="memberStore.userInfo.isHeadMaster">
+
+    <view class="classAllSelector" v-if="memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector">
       <uni-data-picker placeholder="请选择班级" :clear-icon="false" :localdata="gradeAllData" v-model="gradeAllDefaultId"
         @change="classAllChange">
       </uni-data-picker>
     </view>
-    <view class="classSelector" v-if="memberStore.userInfo.isHeadTeacher && !memberStore.userInfo.isHeadMaster">
+
+    <view class="classSelector" v-if="memberStore.userInfo.isHeadTeacher && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector">
       <picker mode="selector" @change="classChange" :range="classRange" range-key="className">
         <view class="classContent">
           <view class="classText">{{ classText }}</view>
@@ -18,7 +21,8 @@
         </view>
       </picker>
     </view>
-    <view class="courseSelector" v-if="memberStore.userInfo.isHeadMaster">
+
+    <view class="courseSelector" v-if="memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector">
       <picker mode="selector" @change="courseChange" :range="courseList" range-key="name">
         <view class="courseContent">
           <view class="courseText">{{ course }}</view>
@@ -26,19 +30,18 @@
         </view>
       </picker>
     </view>
-    <!-- chart - headTeacher -->
-    <view class="headTeacher" v-if="memberStore?.userInfo?.isHeadTeacher && !memberStore?.userInfo?.isHeadMaster">
+
+    <view class="headTeacher" v-if="memberStore.userInfo.isHeadTeacher && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector">
       <qiun-data-charts type="column" :opts="optsAll" :ontouch='true' :chartData="headTeacherData"
         @getIndex="clickHeadTeacher" />
     </view>
-    <!-- chart - teacher / headMaster -->
+
     <view class="teacher" v-else>
       <view class="title">{{ course }}</view>
       <qiun-data-charts type="column" :opts="optsAll" :ontouch='true' :chartData="teacherData"
         @getIndex="clickTeacher" />
     </view>
 
-    <!-- table -->
     <view class="tableBox" v-show="tableFlag">
       <view class="title">
         {{ classText }}&nbsp;{{ course }}
@@ -109,7 +112,6 @@
   let headTeacherClassId = ref('');
   let teacherCourseId = ref(memberStore.userInfo.teacherSubjectList[0]?.deptid);
 
-  // 日期
   const currentDate = new Date();
   const startDay = 1;
   currentDate.setDate(startDay);
@@ -165,7 +167,6 @@
     await getChartData();
   };
 
-  // 表格
   const tableData = ref([]);
   const tableDataShow = ref([]);
   let tableFlag = ref(false);
@@ -216,7 +217,7 @@
   };
 
   const getChartData = async () => {
-    if (memberStore.userInfo.isHeadMaster) {
+    if (memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector) {
       await headMasterScore(headMasterGradeId.value, headMasterCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
       await headMasterCorrectScore(headMasterGradeId.value, headMasterCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
     } else if (memberStore.userInfo.isHeadTeacher) {
@@ -229,7 +230,7 @@
   }
 
   const getChartDataArgument = () => {
-    if (memberStore.userInfo.isHeadMaster) {
+    if (memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector) {
       headMasterGradeId.value = gradeAllDefaultId.value;
       headMasterCourseId.value = memberStore.userInfo.allCourse[0]?.deptid;
     } else if (memberStore.userInfo.isHeadTeacher) {
@@ -246,6 +247,7 @@
     await getUserInfo();
     await getDeptName();
     await getTeacherCourse();
+
     courseList.value = memberStore.userInfo.allCourse;
     course.value = courseList.value[0] ? courseList.value[0].name : '';
 
@@ -254,7 +256,7 @@
     classRange.value = memberStore.userInfo.teacherInfoList;
     classText.value = classRange.value[0] ? classRange.value[0].className : '';
 
-    if (memberStore.userInfo.isHeadMaster) {
+    if (memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector) {
       await gradeAll(gradeAllData, gradeAllDefaultId, classText);
     }
 

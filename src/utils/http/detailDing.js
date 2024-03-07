@@ -4,6 +4,8 @@ import {
   schoolUserInfoAPI,
 } from '../request/config.js';
 
+import { roleList } from '../globals.js';
+
 import { useMemberStore } from
 // #ifndef H5
   '../../stores/modules/member.js';
@@ -19,8 +21,9 @@ export const getDeptName = async () => {
   memberStore.userInfo.isStudent = false;
   memberStore.userInfo.isGuardian = false;
   memberStore.userInfo.isTeacher = false;
-  memberStore.userInfo.isHeadTeacher = false;
-  memberStore.userInfo.isHeadMaster = false;
+  for (const item of roleList) {
+    memberStore.userInfo[item.role] = false;
+  }
   memberStore.userInfo.studentInfoList = [];
   memberStore.userInfo.deptIdGuardianList = [];
   memberStore.userInfo.deptIdTeacherList = [];
@@ -48,12 +51,10 @@ export const getDeptName = async () => {
         memberStore.userInfo.deptIdTeacherList.push(item);
       }
 
-      if (res.data.result.name.includes('班主任')) {
-        memberStore.userInfo.isHeadTeacher = true;
-      }
-
-      if (res.data.result.name.includes('校长')) {
-        memberStore.userInfo.isHeadMaster = true;
+      for (const item of roleList) {
+        if (res.data.result.name.includes(item.name)) {
+          memberStore.userInfo[item.role] = true;
+        }
       }
     });
   });

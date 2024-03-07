@@ -163,7 +163,7 @@
     await getUserInfo();
     await getDeptName();
 
-    const showTabBar = memberStore.userInfo.isGuardian && (memberStore.userInfo.isTeacher || memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isHeadMaster);
+    const showTabBar = memberStore.userInfo.isGuardian && (memberStore.userInfo.isTeacher || memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isGradeDirector || memberStore.userInfo.isHeadMaster);
     if (showTabBar) uni.showTabBar();
 
     if (!(memberStore.userInfo.isStudent || memberStore.userInfo.isGuardian)) {
