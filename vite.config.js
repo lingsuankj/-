@@ -18,7 +18,7 @@ export default defineConfig({
         rewrite: path => path.replace(/^\/oding/, ''),
       },
       '/ling': {
-        target: 'http://10.0.1.224:7001',
+        target: 'http://10.0.1.224:7002',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/ling/, ''),
       },

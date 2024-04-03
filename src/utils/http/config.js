@@ -4,7 +4,7 @@ import {
   userInfoAPI,
 } from '../request/config.js';
 
-import { appClient } from '../globals.js';
+import { appClient } from '../config.js';
 
 import { useMemberStore } from
 // #ifndef H5

@@ -4,7 +4,7 @@ import {
   schoolUserInfoAPI,
 } from '../request/config.js';
 
-import { roleList } from '../globals.js';
+import { roleList } from '../config.js';
 
 import { useMemberStore } from
 // #ifndef H5

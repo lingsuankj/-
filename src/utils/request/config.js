@@ -1,6 +1,6 @@
 import { request } from '../request.js';
 import { useMemberStore } from '../../stores/modules/member.js';
-import { appClient } from '../globals.js';
+import { appClient } from '../config.js';
 
 const memberStore = useMemberStore();
 
