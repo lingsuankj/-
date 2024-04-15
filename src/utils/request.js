@@ -11,7 +11,7 @@ function getUrl(url) {
 
   if (url.startsWith('/ling')) {
     url = url.replace(new RegExp('^/ling'), '');
-    url = 'http://10.0.1.224:7002' + url;
+    url = 'http://192.168.8.110:7002' + url;
   }
 
   return url;
