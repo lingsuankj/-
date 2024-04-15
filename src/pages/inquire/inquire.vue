@@ -249,7 +249,7 @@
     await getTeacherCourse();
 
     courseList.value = memberStore.userInfo.allCourse;
-    course.value = courseList.value[0] ? courseList.value[0].name : '';
+    course.value = memberStore.userInfo.teacherSubjectList[0] ? memberStore.userInfo.teacherSubjectList[0].name : '';
 
     await getDeptParentId();
     await getSchoolDeptDetail();

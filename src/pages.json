@@ -7,7 +7,7 @@
     }, {
       "path": "pages/inquire/inquire",
       "style": {
-        "navigationBarTitleText": "成绩查询"
+        "navigationBarTitleText": "课堂互动信息"
       }
     }
   ],
