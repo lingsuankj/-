@@ -11,7 +11,7 @@ function getUrl(url) {
 
   if (url.startsWith('/ling')) {
     url = url.replace(new RegExp('^/ling'), '');
-    url = 'http://192.168.8.110:7002' + url;
+    url = `${import.meta.env.VITE_REQUESTIP}` + url;
   }
 
   return url;

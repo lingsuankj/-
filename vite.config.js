@@ -18,7 +18,7 @@ export default defineConfig({
         rewrite: path => path.replace(/^\/oding/, ''),
       },
       '/ling': {
-        target: 'http://192.168.8.110:7002',
+        target: `${process.env.VITE_REQUESTIP}`,
         changeOrigin: true,
         rewrite: path => path.replace(/^\/ling/, ''),
       },
