@@ -21,39 +21,41 @@ const memberStore = useMemberStore();
 
 export const getAuthCode = async () => {
   await new Promise((resolve, reject) => {
-    // #ifndef H5
-    dd.getAuthCode({
-      corpId: appClient.corpId,
-      success(res) {
-        memberStore.authCode = res.authCode;
-        resolve(res.authCode);
-      },
-      fail(err) {
-        uni.showToast({
-          icon: 'none',
-          title: '自动登陆失败',
-        });
-        reject(err);
-      },
-    });
-    // #endif
+    dd.ready(function() {
+      // #ifndef H5
+      dd.getAuthCode({
+        corpId: appClient.corpId,
+        success(res) {
+          memberStore.authCode = res.authCode ? res.authCode : res.code;
+          resolve(res.authCode);
+        },
+        fail(err) {
+          uni.showToast({
+            icon: 'none',
+            title: '自动登陆失败',
+          });
+          reject(err);
+        },
+      });
+      // #endif
 
-    // #ifdef H5
-    dd.runtime.permission.requestAuthCode({
-      corpId: appClient.corpId,
-      onSuccess(res) {
-        memberStore.authCode = res.code;
-        resolve(res.code);
-      },
-      onFail(err) {
-        uni.showToast({
-          icon: 'none',
-          title: '自动登陆失败',
-        });
-        reject(err);
-      },
+      // #ifdef H5
+      dd.runtime.permission.requestAuthCode({
+        corpId: appClient.corpId,
+        onSuccess(res) {
+          memberStore.authCode = res.code;
+          resolve(res.code);
+        },
+        onFail(err) {
+          uni.showToast({
+            icon: 'none',
+            title: '自动登陆失败',
+          });
+          reject(err);
+        },
+      });
+      // #endif
     });
-    // #endif
   });
 };
 

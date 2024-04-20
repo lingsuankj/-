@@ -1,4 +1,5 @@
 function getUrl(url) {
+  // #ifndef H5
   if (url.startsWith('/ding')) {
     url = url.replace(new RegExp('^/ding'), '');
     url = 'https://api.dingtalk.com' + url;
@@ -8,6 +9,7 @@ function getUrl(url) {
     url = url.replace(new RegExp('^/oding'), '');
     url = 'https://oapi.dingtalk.com' + url;
   }
+  // #endif
 
   if (url.startsWith('/ling')) {
     url = url.replace(new RegExp('^/ling'), '');
@@ -29,9 +31,11 @@ export async function request(options) {
     if (!options.headers) options.headers = {};
     options.headers = getHeaders(options.headers);
 
-    // #ifndef H5
+    if (options.url.startsWith('/ling')) {
+      options.data.clientId = import.meta.env.VITE_CLIENTID;
+    }
+
     options.url = getUrl(options.url);
-    // #endif
 
     uni.request({
       timeout: 30000,
