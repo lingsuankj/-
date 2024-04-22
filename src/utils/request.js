@@ -9,12 +9,12 @@ function getUrl(url) {
     url = url.replace(new RegExp('^/oding'), '');
     url = 'https://oapi.dingtalk.com' + url;
   }
-  // #endif
 
   if (url.startsWith('/ling')) {
     url = url.replace(new RegExp('^/ling'), '');
     url = `${import.meta.env.VITE_REQUESTIP}` + url;
   }
+  // #endif
 
   return url;
 }
