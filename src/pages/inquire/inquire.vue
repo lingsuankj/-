@@ -50,14 +50,13 @@
       <view class="th">
         <view class="td">姓名</view>
         <view class="td">答题数量</view>
-        <view class="td">平均分数</view>
         <view class="td">正确率</view>
       </view>
       <scroll-view scroll-y=true class="table">
         <view class="tr" v-for="(item, index) in tableDataShow" :key='index'>
           <view class="td">{{ item.studentName }}</view>
           <view class="td">{{ item._count }}</view>
-          <view class="td">{{ item._avg.score }}</view>
+          <!-- <view class="td">{{ item._avg.score }}</view> -->
           <view class="td">{{ item.accuracy }}</view>
         </view>
       </scroll-view>
@@ -191,7 +190,7 @@
   const headTeacherData = ref({});
   const teacherData = ref({});
   const optsAll = {
-    color: ['#1890FF', '#91CB74', '#FAC858', '#EE6666', '#73C0DE', '#3CA272', '#FC8452', '#9A60B4', '#ea7ccc'],
+    color: ["#C3E7FE", "#4080FF"],
     padding: [15, 15, 0, 15],
     enableScroll: true,
     legend: {},
@@ -210,8 +209,9 @@
         width: 30,
         activeBgColor: "#000000",
         activeBgOpacity: 0.08,
-        meterBorder: 3,
-        meterFillColor: "#EBFBD6"
+        meterBorder: 0,
+        meterFillColor: "#C3E7FE",
+        labelPosition: "outside"
       }
     }
   };
