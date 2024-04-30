@@ -13,7 +13,7 @@
       </uni-data-picker>
     </view>
 
-    <view class="classSelector" v-if="memberStore.userInfo.isHeadTeacher && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector">
+    <view class="classSelector" v-if="(memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector">
       <picker mode="selector" @change="classChange" :range="classRange" range-key="className">
         <view class="classContent">
           <view class="classText">{{ classText }}</view>
@@ -31,7 +31,7 @@
       </picker>
     </view>
 
-    <view class="headTeacher" v-if="memberStore.userInfo.isHeadTeacher && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector">
+    <view class="headTeacher" v-if="(memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector">
       <qiun-data-charts type="column" :opts="optsAll" :ontouch='true' :chartData="headTeacherData"
         @getIndex="clickHeadTeacher" />
     </view>
@@ -48,16 +48,21 @@
         <view class="btnOff" @tap="tableFlag = !tableFlag">x</view>
       </view>
       <view class="th">
-        <view class="td">姓名</view>
-        <view class="td">答题数量</view>
-        <view class="td">正确率</view>
+        <view class="td" style="width: 20%;">姓名</view>
+        <view class="td" style="width: 20%;">点到次数</view>
+        <view class="td" style="width: 15%;">正确</view>
+        <view class="td" style="width: 15%;">错误</view>
+        <view class="td" style="width: 15%;">缺勤</view>
+        <view class="td" style="width: 15%;">正确率</view>
       </view>
-      <scroll-view scroll-y=true class="table">
+      <scroll-view scroll-y=true class="tableBody">
         <view class="tr" v-for="(item, index) in tableDataShow" :key='index'>
-          <view class="td">{{ item.studentName }}</view>
-          <view class="td">{{ item._count }}</view>
-          <!-- <view class="td">{{ item._avg.score }}</view> -->
-          <view class="td">{{ item.accuracy }}</view>
+          <view class="td" style="width: 20%;">{{ item.studentName }}</view>
+          <view class="td" style="width: 20%;">{{ item._count }}</view>
+          <view class="td" style="width: 15%;">{{ item.correctCount }}</view>
+          <view class="td" style="width: 15%;">{{ item.incorrectCount }}</view>
+          <view class="td" style="width: 15%;">{{ item.absentCount }}</view>
+          <view class="td" style="width: 15%;">{{ item.accuracy }}</view>
         </view>
       </scroll-view>
     </view>
@@ -65,7 +70,7 @@
 </template>
 
 <script setup>
-  import { onLoad } from '@dcloudio/uni-app';
+  import { onLoad, onShow } from '@dcloudio/uni-app';
 
   import { ref } from 'vue';
 
@@ -102,12 +107,15 @@
     getUserId,
     getUserInfo,
   } from '../../utils/http/config';
+  
+  import * as dd from 'dingtalk-jsapi';
 
   const memberStore = useMemberStore();
 
   // getChartData argument
   let headMasterGradeId = ref('');
   let headMasterCourseId = ref();
+  // headTeacherClassId + guardianClassId
   let headTeacherClassId = ref('');
   let teacherCourseId = ref(memberStore.userInfo.teacherSubjectList[0]?.deptid);
 
@@ -148,7 +156,7 @@
   
   // teacher: choose class
   const classChange = async (e) => {
-    classText.value = memberStore.userInfo.teacherInfoList[e.detail.value].className;
+    classText.value = classRange.value[e.detail.value].className;
 
     headTeacherClassId.value = classRange.value[e.detail.value].classId;
 
@@ -172,10 +180,12 @@
 
   const clickHeadTeacher = (e) => {
     if (e.currentIndex.index !== -1) {
-      tableFlag.value = true;
-      course.value = e.opts.categories[e.currentIndex.index];
-  
-      tableDataShow.value = tableData.value.filter(item => item.courseName === e.opts.categories[e.currentIndex.index]);
+      if (memberStore.userInfo.isHeadTeacher) {
+        tableFlag.value = true;
+        course.value = e.opts.categories[e.currentIndex.index];
+    
+        tableDataShow.value = tableData.value.filter(item => item.courseName === e.opts.categories[e.currentIndex.index]);
+      }
     }
   };
 
@@ -202,6 +212,11 @@
     yAxis: {
       gridType: 'dash',
       dashLength: 2,
+      data: [
+        {
+          tofix: 1,
+        }
+      ]
     },
     extra: {
       column: {
@@ -220,7 +235,7 @@
     if (memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector) {
       await headMasterScore(headMasterGradeId.value, headMasterCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
       await headMasterCorrectScore(headMasterGradeId.value, headMasterCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
-    } else if (memberStore.userInfo.isHeadTeacher) {
+    } else if (memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) {
       await headTeacherScore(headTeacherClassId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
       await headTeacherCorrectScore(headTeacherClassId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, headTeacherData);
     } else {
@@ -233,12 +248,24 @@
     if (memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector) {
       headMasterGradeId.value = gradeAllDefaultId.value;
       headMasterCourseId.value = memberStore.userInfo.allCourse[0]?.deptid;
-    } else if (memberStore.userInfo.isHeadTeacher) {
+    } else if (memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) {
       headTeacherClassId.value = classRange.value[0] ? classRange.value[0].classId : '';
     } else {
       teacherCourseId.value = memberStore.userInfo.teacherSubjectList[0]?.deptid;
     }
   };
+
+  // h5
+  uni.setNavigationBarTitle({
+    title: '',
+  });
+
+  // h5
+  onShow(() => {
+    dd.setNavigationTitle({
+      title: '智慧课堂互动信息',
+    });
+  });
 
   onLoad(async () => {
     await getAuthCode();
@@ -253,7 +280,22 @@
 
     await getDeptParentId();
     await getSchoolDeptDetail();
-    classRange.value = memberStore.userInfo.teacherInfoList;
+
+    if (memberStore.userInfo.isHeadTeacher && memberStore.userInfo.isGuardian) {
+      classRange.value = [...memberStore.userInfo.teacherInfoList, ...memberStore.userInfo.studentInfoList];
+    } else if (memberStore.userInfo.isHeadTeacher) {
+      classRange.value = memberStore.userInfo.teacherInfoList;
+    } else if (memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) {
+      classRange.value = memberStore.userInfo.studentInfoList;
+    }
+
+    classRange.value = classRange.value.reduce((acc, cur) => {
+      if (!acc.some(item => item.classId === cur.classId)) {
+        acc.push(cur);
+      }
+      return acc;
+    }, []);
+
     classText.value = classRange.value[0] ? classRange.value[0].className : '';
 
     if (memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector) {
@@ -374,14 +416,11 @@
       }
     }
 
-    // 图表 - 班主任及以上可见
     .headTeacher {
       margin: 40rpx auto;
       width: 680rpx;
-      // height: 500rpx;
     }
 
-    // 图表 - 任课老师可见
     .teacher {
       margin: 40rpx auto;
       width: 680rpx;
@@ -391,14 +430,12 @@
       }
     }
 
-    // 弹框 - 表格
     .tableBox {
+      font-size: 10px;
       position: fixed;
       top: 10%;
       left: 50%;
       transform: translateX(-50%);
-      // width: 680rpx;
-      // height: 800rpx;
       width: 90%;
       height: 80%;
       background-color: #e0e0e0;
@@ -413,7 +450,7 @@
         height: 80rpx;
         line-height: 80rpx;
         text-align: center;
-        font-size: 36rpx;
+        font-size: 30rpx;
         font-weight: 800;
 
         .btnOff {
@@ -433,14 +470,13 @@
         background-color: #e4ebeb;
 
         .td {
-          width: 25%;
+          // width: 33%;
           border: 1rpx solid #ccc;
           padding: 10rpx;
         }
       }
 
-      .table {
-        // position: relative;
+      .tableBody {
         display: flex;
         flex-direction: column;
         width: 90%;
@@ -454,7 +490,7 @@
         }
 
         .td {
-          width: 25%;
+          // width: 33%;
           border: 1rpx solid #ccc;
           padding: 10rpx;
         }

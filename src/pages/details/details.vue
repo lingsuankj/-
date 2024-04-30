@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-  import { onLoad } from '@dcloudio/uni-app';
+  import { onLoad, onShow } from '@dcloudio/uni-app';
 
   import { ref } from 'vue';
 
@@ -57,6 +57,8 @@
   } from '../../utils/http/config';
 
   import { useMemberStore } from '../../stores/modules/member.js';
+  
+  import * as dd from 'dingtalk-jsapi';
 
   const memberStore = useMemberStore();
 
@@ -78,10 +80,6 @@
 
   const stuChange = async (e) => {
     stuIndex.value = e.detail.value;
-
-    uni.setNavigationBarTitle({
-      title: memberStore.userInfo.studentInfoList[stuIndex.value].name + '的主页',
-    });
 
     await getStatisticsData(sendDateRange, statisticsData, statisticsTotal, totalData, stuIndex);
     await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex);
@@ -155,6 +153,18 @@
 
   let totalData = ref([]);
 
+  // h5
+  uni.setNavigationBarTitle({
+    title: '',
+  });
+
+  // h5
+  onShow(() => {
+    dd.setNavigationTitle({
+      title: '个人详情',
+    });
+  });
+
   onLoad(async () => {
     uni.hideTabBar();
     await getAuthCode();
@@ -163,7 +173,7 @@
     await getUserInfo();
     await getDeptName();
 
-    const showTabBar = memberStore.userInfo.isGuardian && (memberStore.userInfo.isTeacher || memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isGradeDirector || memberStore.userInfo.isHeadMaster);
+    const showTabBar = memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent;
     if (showTabBar) uni.showTabBar();
 
     if (!(memberStore.userInfo.isStudent || memberStore.userInfo.isGuardian)) {
@@ -176,10 +186,6 @@
         await getUserRelationList();
         await getStuInfo();
       }
-
-      uni.setNavigationBarTitle({
-        title: memberStore.userInfo.studentInfoList[stuIndex.value].name + '的主页',
-      });
 
       await getStatisticsData(sendDateRange, statisticsData, statisticsTotal, totalData, stuIndex);
       await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex);

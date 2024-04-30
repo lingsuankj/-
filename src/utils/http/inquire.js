@@ -27,6 +27,8 @@ export const headTeacherCorrectScore = async (classDingId, startDate, endDate, t
     item.accuracy = res.data.filter(e => e.studentId === item.studentId && e.courseId === item.courseId)[0]?._count / item._count || 0;
     item.accuracy = Math.floor(item.accuracy * 100) + '%';
     item.correctCount = res.data.filter(e => e.studentId === item.studentId && e.courseId === item.courseId)[0]?._count || 0;
+    item.absentCount = res.data.filter(e => e.studentId === item.studentId && e.courseId === item.courseId)[0]?.absentCount || 0;
+    item.incorrectCount = item._count - item.correctCount - item.absentCount;
   });
 
   let course = [];
@@ -55,7 +57,7 @@ export const headTeacherCorrectScore = async (classDingId, startDate, endDate, t
   }
 
   headTeacherData.value = {
-    categories: course,
+    categories: course.length !== 0 ? course : [ '' ],
     series: [{
       name: '提问数量',
       data: count,
@@ -84,6 +86,8 @@ export const teacherCorrectScore = async (teacherDingId, courseDingId, startDate
     item.accuracy = res.data.filter(e => e.studentId === item.studentId && e.classId === item.classId)[0]?._count / item._count || 0;
     item.accuracy = Math.floor(item.accuracy * 100) + '%';
     item.correctCount = res.data.filter(e => e.studentId === item.studentId && e.classId === item.classId)[0]?._count || 0;
+    item.absentCount = res.data.filter(e => e.studentId === item.studentId && e.classId === item.classId)[0]?.absentCount || 0;
+    item.incorrectCount = item._count - item.correctCount - item.absentCount;
   });
 
   let course = [];
@@ -111,7 +115,7 @@ export const teacherCorrectScore = async (teacherDingId, courseDingId, startDate
   }
 
   teacherData.value = {
-    categories: course,
+    categories: course.length !== 0 ? course : [ '' ],
     series: [{
       name: '提问数量',
       data: count,
@@ -140,6 +144,8 @@ export const headMasterCorrectScore = async (gradeDingId, courseDingId, startDat
     item.accuracy = res.data.filter(e => e.studentId === item.studentId && e.classId === item.classId)[0]?._count / item._count || 0;
     item.accuracy = Math.floor(item.accuracy * 100) + '%';
     item.correctCount = res.data.filter(e => e.studentId === item.studentId && e.classId === item.classId)[0]?._count || 0;
+    item.absentCount = res.data.filter(e => e.studentId === item.studentId && e.classId === item.classId)[0]?.absentCount || 0;
+    item.incorrectCount = item._count - item.correctCount - item.absentCount;
   });
 
   let course = [];
@@ -167,7 +173,7 @@ export const headMasterCorrectScore = async (gradeDingId, courseDingId, startDat
   }
 
   teacherData.value = {
-    categories: course,
+    categories: course.length !== 0 ? course : [ '' ],
     series: [{
       name: '提问数量',
       data: count,

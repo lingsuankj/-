@@ -1,17 +1,18 @@
 {
   "pages": [{
-      "path": "pages/details/details",
-      "style": {
-        "navigationBarTitleText": "个人详情"
-      }
-    }, {
-      "path": "pages/inquire/inquire",
-      "style": {
-        "navigationBarTitleText": "课堂互动信息"
-      }
+    "path": "pages/details/details",
+    "style": {
+      "navigationBarTitleText": "个人详情"
     }
-  ],
+  }, {
+    "path": "pages/inquire/inquire",
+    "style": {
+      "navigationBarTitleText": "智慧课堂互动信息"
+    }
+  }],
   "globalStyle": {
+    // h5
+    "navigationStyle": "custom",
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "uniapp",
     "navigationBarBackgroundColor": "#F8F8F8",
@@ -32,7 +33,7 @@
       },
       {
         "pagePath": "pages/inquire/inquire",
-        "text": "老师",
+        "text": "班级",
         "iconPath": "static/tabs/teacher.svg",
         "selectedIconPath": "static/tabs/teacher_select.svg"
       }

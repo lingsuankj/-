@@ -2,6 +2,7 @@ import {
   deptDetailAPI,
   userRelationListAPI,
   schoolUserInfoAPI,
+  schoolDeptDetailAPI,
 } from '../request/config.js';
 
 import { roleList } from '../config.js';
@@ -104,12 +105,17 @@ export const getUserRelationList = async () => {
 export const getStuInfo = async () => {
   if (memberStore.userInfo.isStudent) return;
 
-  const promiseAll = memberStore.userInfo.studentInfoList.map(item => {
-    // 获取用户详情
+  const userNameList = memberStore.userInfo.studentInfoList.map(item => {
     return schoolUserInfoAPI(item.classId, item.userId, 'student').then(res => {
       item.name = res.data.result.details[0].name;
     });
   });
 
-  await Promise.all(promiseAll);
+  const classNameList = memberStore.userInfo.studentInfoList.map(item => {
+    return schoolDeptDetailAPI(item.classId).then(res => {
+      item.className = res.data.result.detail.name;
+    });
+  });
+
+  await Promise.all([ ...userNameList, ...classNameList ]);
 };

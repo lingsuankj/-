@@ -60,7 +60,7 @@ export const getAccuracyData = async (sendDateRange, accuracyData, totalData, st
     });
 
     accuracyData.value = {
-      categories: newCategories,
+      categories: newCategories.length === 0 ? [ '' ] : newCategories,
       series: [{
         name: '正确率',
         data: newSeries,
