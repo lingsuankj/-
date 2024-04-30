@@ -7,13 +7,15 @@
       <uni-datetime-picker v-model="dateRange" type="daterange" :clear-icon="false" @change="dateRangeChange" />
     </view>
 
+    <!-- isHeadMaster / isGradeDirector -->
     <view class="classAllSelector" v-if="memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector">
       <uni-data-picker placeholder="请选择班级" :clear-icon="false" :localdata="gradeAllData" v-model="gradeAllDefaultId"
         @change="classAllChange">
       </uni-data-picker>
     </view>
 
-    <view class="classSelector" v-if="(memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector">
+    <!-- isHeadTeacher / isGuardian / isStudent -->
+    <view class="classSelector" v-if="(memberStore.userInfo.isHeadTeacher || ((memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) && !memberStore.userInfo.isTeacher)) && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector">
       <picker mode="selector" @change="classChange" :range="classRange" range-key="className">
         <view class="classContent">
           <view class="classText">{{ classText }}</view>
@@ -22,6 +24,7 @@
       </picker>
     </view>
 
+    <!-- isHeadMaster / isGradeDirector -->
     <view class="courseSelector" v-if="memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector">
       <picker mode="selector" @change="courseChange" :range="courseList" range-key="name">
         <view class="courseContent">
@@ -31,15 +34,17 @@
       </picker>
     </view>
 
-    <view class="headTeacher" v-if="(memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector">
-      <qiun-data-charts type="column" :opts="optsAll" :ontouch='true' :chartData="headTeacherData"
-        @getIndex="clickHeadTeacher" />
-    </view>
-
-    <view class="teacher" v-else>
+    <!-- isTeacher / isHeadMaster / isGradeDirector -->
+    <view class="teacher" v-if="memberStore.userInfo.isTeacher && !memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector">
       <view class="title">{{ course }}</view>
       <qiun-data-charts type="column" :opts="optsAll" :ontouch='true' :chartData="teacherData"
         @getIndex="clickTeacher" />
+    </view>
+
+    <!-- isHeadTeacher / isGuardian -->
+    <view class="headTeacher" v-else-if="(memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector">
+      <qiun-data-charts type="column" :opts="optsAll" :ontouch='true' :chartData="headTeacherData"
+        @getIndex="clickHeadTeacher" />
     </view>
 
     <view class="tableBox" v-show="tableFlag">
@@ -235,13 +240,23 @@
     if (memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector) {
       await headMasterScore(headMasterGradeId.value, headMasterCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
       await headMasterCorrectScore(headMasterGradeId.value, headMasterCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
-    } else if (memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) {
+    } else if ((memberStore.userInfo.isHeadTeacher || ((memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) && !memberStore.userInfo.isTeacher)) && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector) {
       await headTeacherScore(headTeacherClassId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
       await headTeacherCorrectScore(headTeacherClassId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, headTeacherData);
     } else {
       await teacherScore(memberStore.userInfo.userid, teacherCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
       await teacherCorrectScore(memberStore.userInfo.userid, teacherCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
     }
+    // if (memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector) {
+    //   await headMasterScore(headMasterGradeId.value, headMasterCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
+    //   await headMasterCorrectScore(headMasterGradeId.value, headMasterCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
+    // } else if (memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) {
+    //   await headTeacherScore(headTeacherClassId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
+    //   await headTeacherCorrectScore(headTeacherClassId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, headTeacherData);
+    // } else {
+    //   await teacherScore(memberStore.userInfo.userid, teacherCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
+    //   await teacherCorrectScore(memberStore.userInfo.userid, teacherCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
+    // }
   }
 
   const getChartDataArgument = () => {
