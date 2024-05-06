@@ -1,5 +1,5 @@
+/* eslint-disable no-unused-vars */
 function getUrl(url) {
-  // #ifndef H5
   if (url.startsWith('/ding')) {
     url = url.replace(new RegExp('^/ding'), '');
     url = 'https://api.dingtalk.com' + url;
@@ -14,7 +14,6 @@ function getUrl(url) {
     url = url.replace(new RegExp('^/ling'), '');
     url = `${import.meta.env.VITE_REQUESTIP}` + url;
   }
-  // #endif
 
   return url;
 }
@@ -35,7 +34,11 @@ export async function request(options) {
       options.data.clientId = import.meta.env.VITE_CLIENTID;
     }
 
-    options.url = getUrl(options.url);
+    // if (process.env.NODE_ENV === 'development') {
+    //   // #ifndef H5
+    //   options.url = getUrl(options.url);
+    //   // #endif
+    // }
 
     uni.request({
       timeout: 30000,

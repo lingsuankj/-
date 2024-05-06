@@ -21,7 +21,7 @@ export default defineConfig({
       '/ling': {
         target: 'https://dmq.lingsuankj.com',
         changeOrigin: true,
-        rewrite: path => path.replace(/^\/ling/, ''),
+        // rewrite: path => path.replace(/^\/ling/, ''),
       },
     },
   },

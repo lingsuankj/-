@@ -34,6 +34,7 @@ export const headTeacherCorrectScore = async (classDingId, startDate, endDate, t
   let course = [];
   let count = [];
   let correctCount = [];
+  let correctRate = [];
 
   tableData.value.forEach(item => {
     course.push(item.courseName);
@@ -49,6 +50,10 @@ export const headTeacherCorrectScore = async (classDingId, startDate, endDate, t
     return tableData.value.filter(item => item.courseName === countItem).reduce((total, cur) => total + cur.correctCount, 0);
   });
 
+  correctRate = count.map((countItem, index) => {
+    return Math.round((correctCount[index] / countItem) * 100);
+  });
+
   if (!count.length) {
     uni.showToast({
       icon: 'none',
@@ -61,9 +66,19 @@ export const headTeacherCorrectScore = async (classDingId, startDate, endDate, t
     series: [{
       name: '提问数量',
       data: count,
+      type: 'column',
+      color: '#C3E7FE',
     }, {
       name: '正确数量',
       data: correctCount,
+      type: 'column',
+      color: '#4080FF',
+    }, {
+      name: '正确率%',
+      type: 'line',
+      color: '#91CB74',
+      index: 1,
+      data: correctRate,
     }],
   };
 };
@@ -93,6 +108,7 @@ export const teacherCorrectScore = async (teacherDingId, courseDingId, startDate
   let course = [];
   let count = [];
   let correctCount = [];
+  let correctRate = [];
 
   tableData.value.forEach(item => {
     course.push(item.className);
@@ -107,6 +123,10 @@ export const teacherCorrectScore = async (teacherDingId, courseDingId, startDate
     return tableData.value.filter(item => countItem === item.className).reduce((total, cur) => total + cur.correctCount, 0);
   });
 
+  correctRate = count.map((countItem, index) => {
+    return Math.round((correctCount[index] / countItem) * 100);
+  });
+
   if (!count.length) {
     uni.showToast({
       icon: 'none',
@@ -119,9 +139,19 @@ export const teacherCorrectScore = async (teacherDingId, courseDingId, startDate
     series: [{
       name: '提问数量',
       data: count,
+      type: 'column',
+      color: '#C3E7FE',
     }, {
       name: '正确数量',
       data: correctCount,
+      type: 'column',
+      color: '#4080FF',
+    }, {
+      name: '正确率%',
+      type: 'line',
+      color: '#91CB74',
+      index: 1,
+      data: correctRate,
     }],
   };
 };
@@ -151,6 +181,7 @@ export const headMasterCorrectScore = async (gradeDingId, courseDingId, startDat
   let course = [];
   let count = [];
   let correctCount = [];
+  let correctRate = [];
 
   tableData.value.forEach(item => {
     course.push(item.className);
@@ -165,6 +196,10 @@ export const headMasterCorrectScore = async (gradeDingId, courseDingId, startDat
     return tableData.value.filter(item => countItem === item.className).reduce((total, cur) => total + cur.correctCount, 0);
   });
 
+  correctRate = count.map((countItem, index) => {
+    return Math.round((correctCount[index] / countItem) * 100);
+  });
+
   if (!count.length) {
     uni.showToast({
       icon: 'none',
@@ -177,9 +212,19 @@ export const headMasterCorrectScore = async (gradeDingId, courseDingId, startDat
     series: [{
       name: '提问数量',
       data: count,
+      type: 'column',
+      color: '#C3E7FE',
     }, {
       name: '正确数量',
       data: correctCount,
+      type: 'column',
+      color: '#4080FF',
+    }, {
+      name: '正确率%',
+      type: 'line',
+      color: '#91CB74',
+      index: 1,
+      data: correctRate,
     }],
   };
 };

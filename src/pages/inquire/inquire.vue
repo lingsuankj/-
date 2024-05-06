@@ -37,13 +37,13 @@
     <!-- isTeacher / isHeadMaster / isGradeDirector -->
     <view class="teacher" v-if="memberStore.userInfo.isTeacher && !memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector">
       <view class="title">{{ course }}</view>
-      <qiun-data-charts type="column" :opts="optsAll" :ontouch='true' :chartData="teacherData"
+      <qiun-data-charts type="mix" :opts="optsAll" :ontouch='true' :chartData="teacherData"
         @getIndex="clickTeacher" />
     </view>
 
     <!-- isHeadTeacher / isGuardian -->
     <view class="headTeacher" v-else-if="(memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector">
-      <qiun-data-charts type="column" :opts="optsAll" :ontouch='true' :chartData="headTeacherData"
+      <qiun-data-charts type="mix" :opts="optsAll" :ontouch='true' :chartData="headTeacherData"
         @getIndex="clickHeadTeacher" />
     </view>
 
@@ -205,7 +205,6 @@
   const headTeacherData = ref({});
   const teacherData = ref({});
   const optsAll = {
-    color: ["#C3E7FE", "#4080FF"],
     padding: [15, 15, 0, 15],
     enableScroll: true,
     legend: {},
@@ -219,21 +218,35 @@
       dashLength: 2,
       data: [
         {
+          position: "left",
+          title: "",
+          min: 0,
           tofix: 1,
-        }
+        },
+        {
+          position: "left",
+          title: "正确率",
+          disabled: true,
+          min: 0,
+          max: 100,
+        },
       ]
     },
     extra: {
-      column: {
-        type: "meter",
-        width: 30,
-        activeBgColor: "#000000",
-        activeBgOpacity: 0.08,
-        meterBorder: 0,
-        meterFillColor: "#C3E7FE",
-        labelPosition: "outside"
+      mix: {
+        column: {
+          type: "meter",
+          width: 20,
+          meterBorder: 0,
+          activeBgOpacity: 0.08,
+          meterFillColor: '#C3E7FE',
+          activeBgColor: '#000000',
+          labelPosition: 'outside',
+        },
+        line: {
+        },
       }
-    }
+    },
   };
 
   const getChartData = async () => {
@@ -247,16 +260,6 @@
       await teacherScore(memberStore.userInfo.userid, teacherCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
       await teacherCorrectScore(memberStore.userInfo.userid, teacherCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
     }
-    // if (memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector) {
-    //   await headMasterScore(headMasterGradeId.value, headMasterCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
-    //   await headMasterCorrectScore(headMasterGradeId.value, headMasterCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
-    // } else if (memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) {
-    //   await headTeacherScore(headTeacherClassId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
-    //   await headTeacherCorrectScore(headTeacherClassId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, headTeacherData);
-    // } else {
-    //   await teacherScore(memberStore.userInfo.userid, teacherCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
-    //   await teacherCorrectScore(memberStore.userInfo.userid, teacherCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
-    // }
   }
 
   const getChartDataArgument = () => {
