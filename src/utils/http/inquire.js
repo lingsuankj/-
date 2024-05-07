@@ -20,7 +20,7 @@ export const headTeacherScore = async (classDingId, startDate, endDate, tableDat
   tableData.value = res.data;
 };
 
-export const headTeacherCorrectScore = async (classDingId, startDate, endDate, tableData, headTeacherData) => {
+export const headTeacherCorrectScore = async (classDingId, startDate, endDate, tableData, headTeacherData, optsAll) => {
   const res = await headTeacherCorrectScoreAPI(classDingId, startDate, endDate);
 
   tableData.value.forEach(item => {
@@ -46,6 +46,10 @@ export const headTeacherCorrectScore = async (classDingId, startDate, endDate, t
     return tableData.value.filter(item => item.courseName === countItem).reduce((total, cur) => total + cur._count, 0);
   });
 
+  if (count.length > 0) {
+    optsAll.yAxis.data[0].max = Math.round(Math.max(...count) * 2);
+  }
+
   correctCount = course.map(countItem => {
     return tableData.value.filter(item => item.courseName === countItem).reduce((total, cur) => total + cur.correctCount, 0);
   });
@@ -67,18 +71,23 @@ export const headTeacherCorrectScore = async (classDingId, startDate, endDate, t
       name: '提问数量',
       data: count,
       type: 'column',
-      color: '#C3E7FE',
+      color: '#FAC858',
+      textSize: 10,
     }, {
       name: '正确数量',
       data: correctCount,
       type: 'column',
-      color: '#4080FF',
-    }, {
-      name: '正确率%',
-      type: 'line',
       color: '#91CB74',
+      textSize: 10,
+    }, {
+      name: '正确率',
+      type: 'line',
+      color: '#FAC858',
       index: 1,
       data: correctRate,
+      format: 'mixLine',
+      addPoint: true,
+      textSize: 10,
     }],
   };
 };
@@ -94,7 +103,7 @@ export const teacherScore = async (teacherDingId, courseDingId, startDate, endDa
   tableData.value = res.data;
 };
 
-export const teacherCorrectScore = async (teacherDingId, courseDingId, startDate, endDate, tableData, teacherData) => {
+export const teacherCorrectScore = async (teacherDingId, courseDingId, startDate, endDate, tableData, teacherData, optsAll) => {
   const res = await teacherCorrectScoreAPI(teacherDingId, courseDingId, startDate, endDate);
 
   tableData.value.forEach(item => {
@@ -119,6 +128,10 @@ export const teacherCorrectScore = async (teacherDingId, courseDingId, startDate
     return tableData.value.filter(item => countItem === item.className).reduce((total, cur) => total + cur._count, 0);
   });
 
+  if (count.length > 0) {
+    optsAll.yAxis.data[0].max = Math.round(Math.max(...count) * 2);
+  }
+
   correctCount = course.map(countItem => {
     return tableData.value.filter(item => countItem === item.className).reduce((total, cur) => total + cur.correctCount, 0);
   });
@@ -140,18 +153,23 @@ export const teacherCorrectScore = async (teacherDingId, courseDingId, startDate
       name: '提问数量',
       data: count,
       type: 'column',
-      color: '#C3E7FE',
+      color: '#FAC858',
+      textSize: 10,
     }, {
       name: '正确数量',
       data: correctCount,
       type: 'column',
-      color: '#4080FF',
+      color: '#91CB74',
+      textSize: 10,
     }, {
       name: '正确率%',
       type: 'line',
-      color: '#91CB74',
+      color: '#FAC858',
       index: 1,
       data: correctRate,
+      format: 'mixLine',
+      addPoint: true,
+      textSize: 10,
     }],
   };
 };
@@ -167,7 +185,7 @@ export const headMasterScore = async (gradeDingId, courseDingId, startDate, endD
   tableData.value = res.data;
 };
 
-export const headMasterCorrectScore = async (gradeDingId, courseDingId, startDate, endDate, tableData, teacherData) => {
+export const headMasterCorrectScore = async (gradeDingId, courseDingId, startDate, endDate, tableData, teacherData, optsAll) => {
   const res = await headMasterCorrectScoreAPI(gradeDingId, courseDingId, startDate, endDate);
 
   tableData.value.forEach(item => {
@@ -192,6 +210,10 @@ export const headMasterCorrectScore = async (gradeDingId, courseDingId, startDat
     return tableData.value.filter(item => countItem === item.className).reduce((total, cur) => total + cur._count, 0);
   });
 
+  if (count.length > 0) {
+    optsAll.yAxis.data[0].max = Math.round(Math.max(...count) * 2);
+  }
+
   correctCount = course.map(countItem => {
     return tableData.value.filter(item => countItem === item.className).reduce((total, cur) => total + cur.correctCount, 0);
   });
@@ -213,18 +235,23 @@ export const headMasterCorrectScore = async (gradeDingId, courseDingId, startDat
       name: '提问数量',
       data: count,
       type: 'column',
-      color: '#C3E7FE',
+      color: '#FAC858',
+      textSize: 10,
     }, {
       name: '正确数量',
       data: correctCount,
       type: 'column',
-      color: '#4080FF',
+      color: '#91CB74',
+      textSize: 10,
     }, {
       name: '正确率%',
       type: 'line',
-      color: '#91CB74',
+      color: '#FAC858',
       index: 1,
       data: correctRate,
+      format: 'mixLine',
+      addPoint: true,
+      textSize: 10,
     }],
   };
 };

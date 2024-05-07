@@ -188,8 +188,9 @@
       if (memberStore.userInfo.isHeadTeacher) {
         tableFlag.value = true;
         course.value = e.opts.categories[e.currentIndex.index];
-    
+
         tableDataShow.value = tableData.value.filter(item => item.courseName === e.opts.categories[e.currentIndex.index]);
+        tableDataShow.value.sort((a, b) => (b.correctCount / b._count) - (a.correctCount / a._count));
       }
     }
   };
@@ -199,6 +200,7 @@
       tableFlag.value = true;
       classText.value = e.opts.categories[e.currentIndex.index];
       tableDataShow.value = tableData.value.filter(item => e.opts.categories[e.currentIndex.index] === item.className);
+      tableDataShow.value.sort((a, b) => (b.correctCount / b._count) - (a.correctCount / a._count));
     }
   };
 
@@ -207,11 +209,14 @@
   const optsAll = {
     padding: [15, 15, 0, 15],
     enableScroll: true,
-    legend: {},
+    legend: {
+      fontSize: 10,
+    },
     xAxis: {
       disableGrid: true,
       scrollShow: true,
-      itemCount: 4,
+      itemCount: 3,
+      fontSize: 10,
     },
     yAxis: {
       gridType: 'dash',
@@ -221,13 +226,16 @@
           position: "left",
           title: "",
           min: 0,
+          max: 100,
           tofix: 1,
+          fontSize: 10,
+          format: 'mixColumnyAxis',
         },
         {
           position: "left",
           title: "正确率",
           disabled: true,
-          min: 0,
+          min: -100,
           max: 100,
         },
       ]
@@ -236,7 +244,7 @@
       mix: {
         column: {
           type: "meter",
-          width: 20,
+          width: 18,
           meterBorder: 0,
           activeBgOpacity: 0.08,
           meterFillColor: '#C3E7FE',
@@ -252,13 +260,13 @@
   const getChartData = async () => {
     if (memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector) {
       await headMasterScore(headMasterGradeId.value, headMasterCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
-      await headMasterCorrectScore(headMasterGradeId.value, headMasterCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
+      await headMasterCorrectScore(headMasterGradeId.value, headMasterCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData, optsAll);
     } else if ((memberStore.userInfo.isHeadTeacher || ((memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) && !memberStore.userInfo.isTeacher)) && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector) {
       await headTeacherScore(headTeacherClassId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
-      await headTeacherCorrectScore(headTeacherClassId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, headTeacherData);
+      await headTeacherCorrectScore(headTeacherClassId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, headTeacherData, optsAll);
     } else {
       await teacherScore(memberStore.userInfo.userid, teacherCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
-      await teacherCorrectScore(memberStore.userInfo.userid, teacherCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData);
+      await teacherCorrectScore(memberStore.userInfo.userid, teacherCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData, optsAll);
     }
   }
 

@@ -71,6 +71,12 @@ const cfu = {
         return series[index].name+'：'+series[index].data+'元'
       }
     },
+		"mixLine":function(val, index,series, opts){
+			return val + '%';
+		},
+		"mixColumnyAxis":function(val, index,series, opts){
+			return Math.round(val);
+		},
   },
   //这里演示了自定义您的图表类型的option，可以随意命名，之后在组件上 type="demotype" 后，组件会调用这个花括号里的option，如果组件上还存在opts参数，会将demotype与opts中option合并后渲染图表。
   "demotype":{
