@@ -27,7 +27,6 @@ export const headTeacherCorrectScore = async (classDingId, startDate, endDate, t
     item.accuracy = res.data.filter(e => e.studentId === item.studentId && e.courseId === item.courseId)[0]?._count / item._count || 0;
     item.accuracy = Math.floor(item.accuracy * 100) + '%';
     item.correctCount = res.data.filter(e => e.studentId === item.studentId && e.courseId === item.courseId)[0]?._count || 0;
-    item.absentCount = res.data.filter(e => e.studentId === item.studentId && e.courseId === item.courseId)[0]?.absentCount || 0;
     item.incorrectCount = item._count - item.correctCount - item.absentCount;
   });
 
@@ -110,7 +109,6 @@ export const teacherCorrectScore = async (teacherDingId, courseDingId, startDate
     item.accuracy = res.data.filter(e => e.studentId === item.studentId && e.classId === item.classId)[0]?._count / item._count || 0;
     item.accuracy = Math.floor(item.accuracy * 100) + '%';
     item.correctCount = res.data.filter(e => e.studentId === item.studentId && e.classId === item.classId)[0]?._count || 0;
-    item.absentCount = res.data.filter(e => e.studentId === item.studentId && e.classId === item.classId)[0]?.absentCount || 0;
     item.incorrectCount = item._count - item.correctCount - item.absentCount;
   });
 
@@ -192,7 +190,6 @@ export const headMasterCorrectScore = async (gradeDingId, courseDingId, startDat
     item.accuracy = res.data.filter(e => e.studentId === item.studentId && e.classId === item.classId)[0]?._count / item._count || 0;
     item.accuracy = Math.floor(item.accuracy * 100) + '%';
     item.correctCount = res.data.filter(e => e.studentId === item.studentId && e.classId === item.classId)[0]?._count || 0;
-    item.absentCount = res.data.filter(e => e.studentId === item.studentId && e.classId === item.classId)[0]?.absentCount || 0;
     item.incorrectCount = item._count - item.correctCount - item.absentCount;
   });
 
