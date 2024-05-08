@@ -186,21 +186,45 @@
   const clickHeadTeacher = (e) => {
     if (e.currentIndex.index !== -1) {
       if (memberStore.userInfo.isHeadTeacher) {
-        tableFlag.value = true;
-        course.value = e.opts.categories[e.currentIndex.index];
+        if (e.currentIndex.index === (e.opts.categories.length - 1)) {
+          tableDataShow.value = tableData.value.reduce((acc, cur) => {
+            const index = acc.findIndex((el) => el.studentId === cur.studentId);
+            if (index === -1) {
+              acc.push(cur);
+            } else {
+              acc[index]._count += cur._count;
+              acc[index].correctCount += cur.correctCount;
+              acc[index].incorrectCount += cur.incorrectCount;
+              acc[index].absentCount += cur.absentCount;
+            }
+            return acc;
+          }, []);
 
-        tableDataShow.value = tableData.value.filter(item => item.courseName === e.opts.categories[e.currentIndex.index]);
+          tableDataShow.value.forEach((el) => {
+            el.accuracy = Math.round(el.correctCount / el._count * 100) + '%';
+          });
+        } else {
+          tableDataShow.value = tableData.value.filter(item => item.courseName === e.opts.categories[e.currentIndex.index]);
+        }
+
+        course.value = e.opts.categories[e.currentIndex.index];
         tableDataShow.value.sort((a, b) => (b.correctCount / b._count) - (a.correctCount / a._count));
+        tableFlag.value = true;
       }
     }
   };
 
   const clickTeacher = (e) => {
     if (e.currentIndex.index !== -1) {
-      tableFlag.value = true;
+      if (e.currentIndex.index === (e.opts.categories.length - 1)) {
+        tableDataShow.value = tableData.value;
+      } else {
+        tableDataShow.value = tableData.value.filter(item => e.opts.categories[e.currentIndex.index] === item.className);
+      }
+
       classText.value = e.opts.categories[e.currentIndex.index];
-      tableDataShow.value = tableData.value.filter(item => e.opts.categories[e.currentIndex.index] === item.className);
       tableDataShow.value.sort((a, b) => (b.correctCount / b._count) - (a.correctCount / a._count));
+      tableFlag.value = true;
     }
   };
 

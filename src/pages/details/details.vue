@@ -29,7 +29,7 @@
         <text class="titleLeft">正确率 %</text>
       </view>
       <view class="charts">
-        <qiun-data-charts type="column" :opts="accuracyOpts" :chartData="accuracyData" :ontouch="true" />
+        <qiun-data-charts type="mix" :opts="accuracyOpts" :chartData="accuracyData" :ontouch="true" />
       </view>
     </view>
   </view>
@@ -57,7 +57,7 @@
   } from '../../utils/http/config';
 
   import { useMemberStore } from '../../stores/modules/member.js';
-  
+
   import * as dd from 'dingtalk-jsapi';
 
   const memberStore = useMemberStore();
@@ -73,7 +73,7 @@
   const dateChange = async (e) => {
     sendDateRange = [e[0] + 'T00:00:00Z', e[1] + 'T23:59:59Z'];
     await getStatisticsData(sendDateRange, statisticsData, statisticsTotal, totalData, stuIndex);
-    await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex);
+    await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex, accuracyOpts);
   };
 
   let stuIndex = ref(0);
@@ -82,7 +82,7 @@
     stuIndex.value = e.detail.value;
 
     await getStatisticsData(sendDateRange, statisticsData, statisticsTotal, totalData, stuIndex);
-    await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex);
+    await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex, accuracyOpts);
   };
 
   let statisticsTotal = ref('');
@@ -121,33 +121,53 @@
     }
   }
   const accuracyOpts = {
-    color: ['#1890FF', '#91CB74', '#FAC858', '#EE6666', '#73C0DE', '#3CA272', '#FC8452', '#9A60B4', '#EA7CCC'],
     padding: [15, 15, 0, 15],
-    enableScroll: false,
+    enableScroll: true,
     legend: {
-      show: false,
+      fontSize: 10,
     },
     xAxis: {
       disableGrid: true,
+      scrollShow: true,
+      itemCount: 3,
+      fontSize: 10,
     },
     yAxis: {
       gridType: 'dash',
       dashLength: 2,
       data: [
         {
+          position: "left",
+          title: "",
           min: 0,
           max: 100,
-          unit: '%',
-        }
+          tofix: 1,
+          fontSize: 10,
+          format: 'mixColumnyAxis',
+        },
+        {
+          position: "left",
+          title: "正确率",
+          disabled: true,
+          min: -100,
+          max: 100,
+        },
       ]
     },
     extra: {
-      column: {
-        type: 'group',
-        width: 30,
-        activeBgColor: '#000000',
-        activeBgOpacity: 0.08
-      },
+      mix: {
+        column: {
+          type: "group",
+          width: 18,
+          meterBorder: 0,
+          activeBgOpacity: 0.08,
+          meterFillColor: '#C3E7FE',
+          activeBgColor: '#000000',
+          labelPosition: 'outside',
+        },
+        line: {
+        }
+      }
     },
   }
 
@@ -188,7 +208,7 @@
       }
 
       await getStatisticsData(sendDateRange, statisticsData, statisticsTotal, totalData, stuIndex);
-      await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex);
+      await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex, accuracyOpts);
     }
   });
 </script>

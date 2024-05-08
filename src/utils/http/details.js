@@ -45,25 +45,45 @@ export const getStatisticsData = async (sendDateRange, statisticsData, statistic
   });
 };
 
-export const getAccuracyData = async (sendDateRange, accuracyData, totalData, stuIndex) => {
+export const getAccuracyData = async (sendDateRange, accuracyData, totalData, stuIndex, accuracyOpts) => {
   return new Promise(async resolve => {
     const res = await accuracyAPI(memberStore.userInfo.studentInfoList[stuIndex.value].userId, sendDateRange[0], sendDateRange[1]);
+
     totalData.value.forEach(item => {
       item.correct = res.data.filter(items => items.courseName === item.name)[0]?._count || 0;
     });
 
-    const newCategories = [];
-    const newSeries = [];
+    const course = [];
+    const correctCount = [];
+    const correctRate = [];
+
     totalData.value.forEach(item => {
-      newCategories.push(item.name);
-      newSeries.push(Math.round(item.correct / item.value * 100));
+      course.push(item.name);
+      correctCount.push(item.correct);
+      correctRate.push(Math.round(item.correct / item.value * 100));
     });
 
+    if (correctCount.length > 0) {
+      accuracyOpts.yAxis.data[0].max = Math.round(Math.max(...correctCount) * 2);
+    }
+
     accuracyData.value = {
-      categories: newCategories.length === 0 ? [ '' ] : newCategories,
+      categories: course.length === 0 ? [ '' ] : course,
       series: [{
+        name: '正确数量',
+        data: correctCount,
+        type: 'column',
+        color: '#91CB74',
+        textSize: 10,
+      }, {
         name: '正确率',
-        data: newSeries,
+        data: correctRate,
+        type: 'line',
+        color: '#FAC858',
+        textSize: 10,
+        format: 'mixLine',
+        addPoint: true,
+        index: 1,
       }],
     };
     resolve();
