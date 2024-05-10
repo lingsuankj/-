@@ -61,7 +61,7 @@ export const headTeacherCorrectScore = async (classDingId, startDate, endDate, t
   }
 
   if (course.length > 1) {
-    course.push('总和');
+    course.push('综合');
 
     const countSum = count.reduce((acc, cur) => acc + cur, 0);
     count.push(countSum);
@@ -159,7 +159,7 @@ export const teacherCorrectScore = async (teacherDingId, courseDingId, startDate
   }
 
   if (course.length > 1) {
-    course.push('总和');
+    course.push('综合');
 
     const countSum = count.reduce((acc, cur) => acc + cur, 0);
     count.push(countSum);
@@ -257,7 +257,7 @@ export const headMasterCorrectScore = async (gradeDingId, courseDingId, startDat
   }
 
   if (course.length > 1) {
-    course.push('总和');
+    course.push('综合');
 
     const countSum = count.reduce((acc, cur) => acc + cur, 0);
     count.push(countSum);

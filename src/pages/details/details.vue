@@ -12,24 +12,21 @@
       </picker>
     </view>
 
-    <!-- 本次统计-饼状图 -->
     <view class="chartsBox" v-if="statisticsData?.series">
       <view class="title">
         <text class="titleLeft">本次统计</text>
-        <text class="titleRight">{{ statisticsTotal }}次</text>
       </view>
       <view class="charts">
-        <qiun-data-charts type="pie" :opts="statisticsOpts" :chartData="statisticsData" />
+        <qiun-data-charts type="ring" :opts="statisticsOpts" :chartData="statisticsData"  />
       </view>
     </view>
 
-    <!-- 正确率-柱状图 -->
     <view class="chartsBox">
       <view class="title">
         <text class="titleLeft">正确率 %</text>
       </view>
       <view class="charts">
-        <qiun-data-charts type="mix" :opts="accuracyOpts" :chartData="accuracyData" :ontouch="true" />
+        <qiun-data-charts type="mix" :opts="accuracyOpts" :chartData="accuracyData" :ontouch="true" background="#F8F8F8" />
       </view>
     </view>
   </view>
@@ -72,7 +69,7 @@
 
   const dateChange = async (e) => {
     sendDateRange = [e[0] + 'T00:00:00Z', e[1] + 'T23:59:59Z'];
-    await getStatisticsData(sendDateRange, statisticsData, statisticsTotal, totalData, stuIndex);
+    await getStatisticsData(sendDateRange, statisticsData, totalData, stuIndex, statisticsOpts);
     await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex, accuracyOpts);
   };
 
@@ -81,38 +78,31 @@
   const stuChange = async (e) => {
     stuIndex.value = e.detail.value;
 
-    await getStatisticsData(sendDateRange, statisticsData, statisticsTotal, totalData, stuIndex);
+    await getStatisticsData(sendDateRange, statisticsData, totalData, stuIndex, statisticsOpts);
     await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex, accuracyOpts);
   };
 
-  let statisticsTotal = ref('');
   const statisticsData = ref({});
   const accuracyData = ref({});
 
   const statisticsOpts = {
     color: ['#1890FF', '#91CB74', '#FAC858', '#EE6666', '#73C0DE', '#3CA272', '#FC8452', '#9A60B4', '#EA7CCC'],
-    padding: [5, 5, 5, 5],
+    padding: [0, 0, 10, 0],
     enableScroll: false,
     title: {
       name: '',
-      fontSize: 15,
+      fontSize: 12,
       color: '#666666',
     },
     subtitle: {
       name: '',
-      fontSize: 25,
+      fontSize: 14,
       color: '#7cb5ec',
     },
     extra: {
       ring: {
-        ringWidth: 30,
-        activeOpacity: 0.5,
-        activeRadius: 10,
-        offsetAngle: 0,
+        ringWidth: 25,
         labelWidth: 15,
-        border: true,
-        borderWidth: 2,
-        borderColor: '#FFFFFF',
         centerColor: '#F8F8F8',
       },
     },
@@ -121,13 +111,14 @@
     }
   }
   const accuracyOpts = {
-    padding: [15, 15, 0, 15],
+    padding: [0, 15, 0, 15],
     enableScroll: true,
     legend: {
       fontSize: 10,
     },
     xAxis: {
       disableGrid: true,
+      scrollShow: true,
       scrollShow: true,
       itemCount: 3,
       fontSize: 10,
@@ -207,7 +198,7 @@
         await getStuInfo();
       }
 
-      await getStatisticsData(sendDateRange, statisticsData, statisticsTotal, totalData, stuIndex);
+      await getStatisticsData(sendDateRange, statisticsData, totalData, stuIndex, statisticsOpts);
       await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex, accuracyOpts);
     }
   });
@@ -263,7 +254,7 @@
 
     .chartsBox {
       margin: 40rpx auto;
-      padding: 20rpx 60rpx 60rpx;
+      padding: 0 0 0;
       width: 680rpx;
       height: 500rpx;
       background-color: #F8F8F8;
@@ -271,6 +262,7 @@
       box-sizing: border-box;
 
       .title {
+        padding: 20rpx 60rpx 0;
         display: flex;
         justify-content: space-between;
 
@@ -300,7 +292,7 @@
 
       .charts {
         width: 100%;
-        height: 100%;
+        height: 85%;
       }
     }
   }

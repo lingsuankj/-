@@ -11,28 +11,36 @@ import { useMemberStore } from
 
 const memberStore = useMemberStore();
 
-export const getStatisticsData = async (sendDateRange, statisticsData, statisticsTotal, totalData, stuIndex) => {
+export const getStatisticsData = async (sendDateRange, statisticsData, totalData, stuIndex, statisticsOpts) => {
   return new Promise(async resolve => {
     const res = await statisticsAPI(memberStore.userInfo.studentInfoList[stuIndex.value].userId, sendDateRange[0], sendDateRange[1]);
 
-    statisticsTotal.value = res.data.reduce((total, cur) => {
+    const sum = res.data.reduce((total, cur) => {
       return total + cur._count;
     }, 0);
+
+    statisticsOpts.subtitle.name = `合计: ${sum}次`;
 
     const newData = [];
     for (const k of res.data) {
       newData.push({
         name: k.courseName,
         value: k._count,
-        labelText: `${k.courseName}:${k._count}`,
+        labelText: `${k.courseName}:${k._count}次`,
       });
     }
     totalData.value = newData;
 
-    if (!totalData.value.length) {
+    if (newData.length === 0) {
       uni.showToast({
         icon: 'none',
         title: '暂无数据',
+      });
+
+      newData.push({
+        name: '',
+        value: 0,
+        labelShow: false,
       });
     }
 
@@ -62,6 +70,20 @@ export const getAccuracyData = async (sendDateRange, accuracyData, totalData, st
       correctCount.push(item.correct);
       correctRate.push(Math.round(item.correct / item.value * 100));
     });
+
+    if (course.length > 1) {
+      course.push('综合');
+
+      const correctCountSum = correctCount.reduce((acc, cur) => acc + cur, 0);
+      correctCount.push(correctCountSum);
+
+      if (correctRate.length === 0) {
+        correctRate.push(0);
+      } else {
+        const correctRateSum = Math.round(correctRate.reduce((acc, cur) => acc + cur, 0) / correctRate.length);
+        correctRate.push(correctRateSum);
+      }
+    }
 
     if (correctCount.length > 0) {
       accuracyOpts.yAxis.data[0].max = Math.round(Math.max(...correctCount) * 2);
