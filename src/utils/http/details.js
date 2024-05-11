@@ -29,7 +29,7 @@ export const getStatisticsData = async (sendDateRange, statisticsData, totalData
         labelText: `${k.courseName}:${k._count}次`,
       });
     }
-    totalData.value = newData;
+    totalData.value = [ ...newData ];
 
     if (newData.length === 0) {
       uni.showToast({
@@ -68,7 +68,7 @@ export const getAccuracyData = async (sendDateRange, accuracyData, totalData, st
     totalData.value.forEach(item => {
       course.push(item.name);
       correctCount.push(item.correct);
-      correctRate.push(Math.round(item.correct / item.value * 100));
+      correctRate.push(Math.round(item.correct / item.value * 100) || 0);
     });
 
     if (course.length > 1) {

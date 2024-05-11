@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import {
   tokenAPI,
   userIdAPI,
@@ -15,32 +16,34 @@ import { useMemberStore } from
 '../../stores/modules/memberH5.js';
 // #endif
 
-import * as dd from 'dingtalk-jsapi';
+// Note: The name here cannot be dd. The dd of the micro application will overwrite the original dd of the mini program.
+import * as microappdd from 'dingtalk-jsapi';
 
 const memberStore = useMemberStore();
 
 export const getAuthCode = async () => {
   await new Promise((resolve, reject) => {
-    dd.ready(function() {
-      // #ifndef H5
-      dd.getAuthCode({
-        corpId: appClient.corpId,
-        success(res) {
-          memberStore.authCode = res.authCode ? res.authCode : res.code;
-          resolve(res.authCode);
-        },
-        fail(err) {
-          uni.showToast({
-            icon: 'none',
-            title: '自动登陆失败',
-          });
-          reject(err);
-        },
-      });
-      // #endif
+    // #ifndef H5
+    dd.getAuthCode({
+      success(res) {
+        memberStore.authCode = res.authCode;
 
-      // #ifdef H5
-      dd.runtime.permission.requestAuthCode({
+        resolve(res.authCode);
+      },
+      fail(err) {
+        uni.showToast({
+          icon: 'none',
+          title: '自动登录失败',
+        });
+
+        reject(err);
+      },
+    });
+    // #endif
+
+    // #ifdef H5
+    microappdd.ready(function() {
+      microappdd.runtime.permission.requestAuthCode({
         corpId: appClient.corpId,
         onSuccess(res) {
           memberStore.authCode = res.code;
@@ -54,8 +57,8 @@ export const getAuthCode = async () => {
           reject(err);
         },
       });
-      // #endif
     });
+    // #endif
   });
 };
 
