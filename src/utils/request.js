@@ -11,7 +11,8 @@ function getUrl(url) {
   }
 
   if (url.startsWith('/ling')) {
-    url = url.replace(new RegExp('^/ling'), '');
+    // When nginx is not used, uncomment
+    // url = url.replace(new RegExp('^/ling'), '');
     url = `${import.meta.env.VITE_REQUESTIP}` + url;
   }
 
@@ -34,11 +35,9 @@ export async function request(options) {
       options.data.clientId = import.meta.env.VITE_CLIENTID;
     }
 
-    // if (process.env.NODE_ENV === 'development') {
-    //   // #ifndef H5
-    //   options.url = getUrl(options.url);
-    //   // #endif
-    // }
+    // #ifndef H5
+    options.url = getUrl(options.url);
+    // #endif
 
     uni.request({
       timeout: 30000,

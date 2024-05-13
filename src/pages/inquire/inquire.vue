@@ -37,14 +37,16 @@
     <!-- isTeacher / isHeadMaster / isGradeDirector -->
     <view class="teacher" v-if="memberStore.userInfo.isTeacher && !memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector">
       <view class="title">{{ course }}</view>
+      <Loading :chartData="teacherData" />
       <qiun-data-charts type="mix" :opts="optsAll" :ontouch='true' :chartData="teacherData"
-        @getIndex="clickTeacher" />
+        @getIndex="clickTeacher" :loadingType="0" />
     </view>
 
     <!-- isHeadTeacher / isGuardian -->
     <view class="headTeacher" v-else-if="(memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector">
+      <Loading :chartData="headTeacherData" />
       <qiun-data-charts type="mix" :opts="optsAll" :ontouch='true' :chartData="headTeacherData"
-        @getIndex="clickHeadTeacher" />
+        @getIndex="clickHeadTeacher" :loadingType="0" />
     </view>
 
     <view class="tableBox" v-show="tableFlag">
@@ -113,7 +115,11 @@
     getUserInfo,
   } from '../../utils/http/config';
   
+  import Loading from '../../components/loading/index.vue';
+
+  // #ifdef H5
   import * as dd from 'dingtalk-jsapi';
+  // #endif
 
   const memberStore = useMemberStore();
 
@@ -305,17 +311,17 @@
     }
   };
 
-  // h5
-  uni.setNavigationBarTitle({
-    title: '',
-  });
-
-  // h5
+  // #ifdef H5
   onShow(() => {
+    uni.setNavigationBarTitle({
+      title: '',
+    });
     dd.setNavigationTitle({
       title: '智慧课堂互动信息',
     });
   });
+  // #endif
+
 
   onLoad(async () => {
     await getAuthCode();
@@ -467,11 +473,13 @@
     }
 
     .headTeacher {
+      position: relative;
       margin: 40rpx auto;
       width: 680rpx;
     }
 
     .teacher {
+      position: relative;
       margin: 40rpx auto;
       width: 680rpx;
 

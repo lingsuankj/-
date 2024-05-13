@@ -12,12 +12,14 @@
       </picker>
     </view>
 
-    <view class="chartsBox" v-if="statisticsData?.series">
+    <view class="chartsBox">
+    <!-- <view class="chartsBox" v-if="statisticsData?.series"> -->
       <view class="title">
         <text class="titleLeft">本次统计</text>
       </view>
       <view class="charts">
-        <qiun-data-charts type="ring" :opts="statisticsOpts" :chartData="statisticsData"  />
+        <Loading :chartData="statisticsData" />
+        <qiun-data-charts type="ring" :opts="statisticsOpts" :chartData="statisticsData" :loadingType="0" />
       </view>
     </view>
 
@@ -26,7 +28,8 @@
         <text class="titleLeft">正确率 %</text>
       </view>
       <view class="charts">
-        <qiun-data-charts type="mix" :opts="accuracyOpts" :chartData="accuracyData" :ontouch="true" background="#F8F8F8" />
+        <Loading :chartData="accuracyData" />
+        <qiun-data-charts type="mix" :opts="accuracyOpts" :chartData="accuracyData" :ontouch="true" :loadingType="0" background="#F8F8F8" />
       </view>
     </view>
   </view>
@@ -55,7 +58,11 @@
 
   import { useMemberStore } from '../../stores/modules/member.js';
 
+  import Loading from '../../components/loading/index.vue';
+
+  // #ifdef H5
   import * as dd from 'dingtalk-jsapi';
+  // #endif
 
   const memberStore = useMemberStore();
 
@@ -164,17 +171,16 @@
 
   let totalData = ref([]);
 
-  // h5
-  uni.setNavigationBarTitle({
-    title: '',
-  });
-
-  // h5
+  // #ifdef H5
   onShow(() => {
+    uni.setNavigationBarTitle({
+      title: '',
+    });
     dd.setNavigationTitle({
       title: '个人详情',
     });
   });
+  // #endif
 
   onLoad(async () => {
     uni.hideTabBar();
@@ -215,8 +221,6 @@
       margin: 0 auto 20rpx;
       width: 680rpx;
 
-      // 解决日期选择器大小不适配 H5 端的问题
-      /* #ifdef H5 */
       .uni-calendar:nth-of-type(2) {
         display: none;
       }
@@ -291,6 +295,8 @@
       }
 
       .charts {
+        position: relative;
+        overflow: hidden;
         width: 100%;
         height: 85%;
       }

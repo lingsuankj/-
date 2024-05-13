@@ -11,7 +11,6 @@
     }
   }],
   "globalStyle": {
-    // h5
     "navigationStyle": "custom",
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "uniapp",
