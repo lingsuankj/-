@@ -28,14 +28,14 @@
       {
         "pagePath": "pages/details/details",
         "text": "学生",
-        "iconPath": "static/tabs/student.svg",
-        "selectedIconPath": "static/tabs/student_select.svg"
+        "iconPath": "static/tabs/student.png",
+        "selectedIconPath": "static/tabs/student_select.png"
       },
       {
         "pagePath": "pages/inquire/inquire",
         "text": "班级",
-        "iconPath": "static/tabs/teacher.svg",
-        "selectedIconPath": "static/tabs/teacher_select.svg"
+        "iconPath": "static/tabs/teacher.png",
+        "selectedIconPath": "static/tabs/teacher_select.png"
       }
     ]
   }
