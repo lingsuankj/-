@@ -5,8 +5,6 @@ import {
   userInfoAPI,
 } from '../request/config.js';
 
-import { appClient } from '../config.js';
-
 import { useMemberStore } from
 // #ifndef H5
   '../../stores/modules/member.js';
@@ -44,7 +42,7 @@ export const getAuthCode = async () => {
     // #ifdef H5
     microappdd.ready(function() {
       microappdd.runtime.permission.requestAuthCode({
-        corpId: appClient.corpId,
+        corpId: import.meta.env.VITE_CORPID,
         onSuccess(res) {
           memberStore.authCode = res.code;
           resolve(res.code);

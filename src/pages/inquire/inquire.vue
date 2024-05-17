@@ -39,14 +39,14 @@
       <view class="title">{{ course }}</view>
       <Loading :chartData="teacherData" />
       <qiun-data-charts type="mix" :opts="optsAll" :ontouch='true' :chartData="teacherData"
-        @getIndex="clickTeacher" :loadingType="0" />
+        @getIndex="clickTeacher" :loadingType="0" background="#F8F8F8" />
     </view>
 
     <!-- isHeadTeacher / isGuardian -->
     <view class="headTeacher" v-else-if="(memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector">
       <Loading :chartData="headTeacherData" />
       <qiun-data-charts type="mix" :opts="optsAll" :ontouch='true' :chartData="headTeacherData"
-        @getIndex="clickHeadTeacher" :loadingType="0" />
+        @getIndex="clickHeadTeacher" :loadingType="0" background="#F8F8F8" />
     </view>
 
     <view class="tableBox" v-show="tableFlag">

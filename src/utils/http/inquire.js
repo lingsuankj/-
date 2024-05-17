@@ -8,6 +8,16 @@ import {
   headMasterCorrectScoreAPI,
 } from '../request/inquire.js';
 
+const getFontSize = num => {
+  if (num < 100) {
+    return 12;
+  } else if (num < 1000) {
+    return 10;
+  }
+
+  return 8;
+};
+
 export const headTeacherScore = async (classDingId, startDate, endDate, tableData) => {
   const res = await headTeacherScoreAPI(classDingId, startDate, endDate);
 
@@ -81,6 +91,8 @@ export const headTeacherCorrectScore = async (classDingId, startDate, endDate, t
     optsAll.yAxis.data[0].max = Math.round(Math.max(...count) * 2);
   }
 
+  const coutSize = getFontSize(Math.max(...count, ...correctCount));
+
   headTeacherData.value = {
     categories: course.length !== 0 ? course : [ '' ],
     series: [{
@@ -88,13 +100,13 @@ export const headTeacherCorrectScore = async (classDingId, startDate, endDate, t
       data: count,
       type: 'column',
       color: '#FAC858',
-      textSize: 10,
+      textSize: coutSize,
     }, {
       name: '正确数量',
       data: correctCount,
       type: 'column',
       color: '#91CB74',
-      textSize: 10,
+      textSize: coutSize,
     }, {
       name: '正确率',
       type: 'line',
@@ -179,6 +191,8 @@ export const teacherCorrectScore = async (teacherDingId, courseDingId, startDate
     optsAll.yAxis.data[0].max = Math.round(Math.max(...count) * 2);
   }
 
+  const coutSize = getFontSize(Math.max(...count, ...correctCount));
+
   teacherData.value = {
     categories: course.length !== 0 ? course : [ '' ],
     series: [{
@@ -186,13 +200,13 @@ export const teacherCorrectScore = async (teacherDingId, courseDingId, startDate
       data: count,
       type: 'column',
       color: '#FAC858',
-      textSize: 10,
+      textSize: coutSize,
     }, {
       name: '正确数量',
       data: correctCount,
       type: 'column',
       color: '#91CB74',
-      textSize: 10,
+      textSize: coutSize,
     }, {
       name: '正确率',
       type: 'line',
@@ -277,6 +291,8 @@ export const headMasterCorrectScore = async (gradeDingId, courseDingId, startDat
     optsAll.yAxis.data[0].max = Math.round(Math.max(...count) * 2);
   }
 
+  const coutSize = getFontSize(Math.max(...count, ...correctCount));
+
   teacherData.value = {
     categories: course.length !== 0 ? course : [ '' ],
     series: [{
@@ -284,13 +300,13 @@ export const headMasterCorrectScore = async (gradeDingId, courseDingId, startDat
       data: count,
       type: 'column',
       color: '#FAC858',
-      textSize: 10,
+      textSize: coutSize,
     }, {
       name: '正确数量',
       data: correctCount,
       type: 'column',
       color: '#91CB74',
-      textSize: 10,
+      textSize: coutSize,
     }, {
       name: '正确率',
       type: 'line',

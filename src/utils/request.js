@@ -32,7 +32,7 @@ export async function request(options) {
     options.headers = getHeaders(options.headers);
 
     if (options.url.startsWith('/ling')) {
-      options.data.clientId = import.meta.env.VITE_CLIENTID;
+      options.data.clientId = import.meta.env.VITE_APPKEY;
     }
 
     // #ifndef H5

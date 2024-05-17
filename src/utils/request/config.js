@@ -1,6 +1,5 @@
 import { request } from '../request.js';
 import { useMemberStore } from '../../stores/modules/member.js';
-import { appClient } from '../config.js';
 
 const memberStore = useMemberStore();
 
@@ -12,8 +11,8 @@ export function tokenAPI() {
       'Content-Type': 'application/json',
     },
     data: {
-      appKey: appClient.appKey,
-      appSecret: appClient.appSecret,
+      appKey: import.meta.env.VITE_APPKEY,
+      appSecret: import.meta.env.VITE_APPSRCRET,
     },
   });
 }
