@@ -9,9 +9,7 @@ import {
 } from '../request/inquire.js';
 
 const getFontSize = num => {
-  if (num < 100) {
-    return 12;
-  } else if (num < 1000) {
+  if (num < 1000) {
     return 10;
   }
 
@@ -115,7 +113,7 @@ export const headTeacherCorrectScore = async (classDingId, startDate, endDate, t
       data: correctRate,
       format: 'mixLine',
       addPoint: true,
-      textSize: 10,
+      textSize: coutSize,
     }],
   };
 };
@@ -215,7 +213,7 @@ export const teacherCorrectScore = async (teacherDingId, courseDingId, startDate
       data: correctRate,
       format: 'mixLine',
       addPoint: true,
-      textSize: 10,
+      textSize: coutSize,
     }],
   };
 };
@@ -315,7 +313,7 @@ export const headMasterCorrectScore = async (gradeDingId, courseDingId, startDat
       data: correctRate,
       format: 'mixLine',
       addPoint: true,
-      textSize: 10,
+      textSize: coutSize,
     }],
   };
 };

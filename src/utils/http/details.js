@@ -11,6 +11,14 @@ import { useMemberStore } from
 
 const memberStore = useMemberStore();
 
+const getFontSize = num => {
+  if (num < 1000) {
+    return 10;
+  }
+
+  return 8;
+};
+
 export const getStatisticsData = async (sendDateRange, statisticsData, totalData, stuIndex, statisticsOpts) => {
   return new Promise(async resolve => {
     const res = await statisticsAPI(memberStore.userInfo.studentInfoList[stuIndex.value].userId, sendDateRange[0], sendDateRange[1]);
@@ -89,6 +97,8 @@ export const getAccuracyData = async (sendDateRange, accuracyData, totalData, st
       accuracyOpts.yAxis.data[0].max = Math.round(Math.max(...correctCount) * 2);
     }
 
+    const coutSize = getFontSize(Math.max(...correctCount));
+
     accuracyData.value = {
       categories: course.length === 0 ? [ '' ] : course,
       series: [{
@@ -96,13 +106,13 @@ export const getAccuracyData = async (sendDateRange, accuracyData, totalData, st
         data: correctCount,
         type: 'column',
         color: '#91CB74',
-        textSize: 10,
+        textSize: coutSize,
       }, {
         name: '正确率',
         data: correctRate,
         type: 'line',
         color: '#FAC858',
-        textSize: 10,
+        textSize: coutSize,
         format: 'mixLine',
         addPoint: true,
         index: 1,
