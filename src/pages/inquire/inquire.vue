@@ -16,7 +16,7 @@
 
     <!-- isHeadTeacher / isGuardian / isStudent -->
     <view class="classSelector" v-if="(memberStore.userInfo.isHeadTeacher || ((memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) && !memberStore.userInfo.isTeacher)) && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector">
-      <picker mode="selector" @change="classChange" :range="classRange" range-key="className">
+      <picker mode="selector" :value="classIndex" @change="classChange" :range="classRange" range-key="className">
         <view class="classContent">
           <view class="classText">{{ classText }}</view>
           <view class="classIcon"></view>
@@ -26,7 +26,7 @@
 
     <!-- isHeadMaster / isGradeDirector -->
     <view class="courseSelector" v-if="memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector">
-      <picker mode="selector" @change="courseChange" :range="courseList" range-key="name">
+      <picker mode="selector" :value="courseIndex" @change="courseChange" :range="courseList" range-key="name">
         <view class="courseContent">
           <view class="courseText">{{ course }}</view>
           <view class="courseIcon"></view>
@@ -164,9 +164,11 @@
 
   const classRange = ref([]);
   let classText = ref('');
+  let classIndex = ref(0);
   
   // teacher: choose class
   const classChange = async (e) => {
+    classIndex.value = e.detail.value;
     classText.value = classRange.value[e.detail.value].className;
 
     headTeacherClassId.value = classRange.value[e.detail.value].classId;
@@ -177,8 +179,10 @@
   // headMaster: choose course
   let courseList = ref([]);
   let course = ref('');
+  let courseIndex = ref(0);
 
   const courseChange = async (e) => {
+    courseIndex.value = e.detail.value;
     headMasterCourseId.value = courseList.value[e.detail.value].deptid;
 
     course.value = courseList.value[e.detail.value].name;

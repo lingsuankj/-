@@ -4,7 +4,7 @@
       <uni-datetime-picker v-model="dateRange" type="daterange" :clear-icon="false" @change="dateChange" />
     </view>
     <view class="stuSelector" v-if="memberStore.userInfo.studentInfoList">
-      <picker mode="selector" @change="stuChange" :range="memberStore.userInfo.studentInfoList" range-key="name">
+      <picker mode="selector" :value=stuIndex @change="stuChange" :range="memberStore.userInfo.studentInfoList" range-key="name">
         <view class="stuContent">
           <view class="stuText">{{ memberStore.userInfo.studentInfoList[stuIndex]?.name }}</view>
           <view class="stuIcon"></view>
