@@ -165,11 +165,13 @@
   const classRange = ref([]);
   let classText = ref('');
   let classIndex = ref(0);
-  
+  let showTable = ref(false);
+
   // teacher: choose class
   const classChange = async (e) => {
     classIndex.value = e.detail.value;
     classText.value = classRange.value[e.detail.value].className;
+    showTable.value = classRange.value[e.detail.value].isTeacher;
 
     headTeacherClassId.value = classRange.value[e.detail.value].classId;
 
@@ -195,7 +197,7 @@
 
   const clickHeadTeacher = (e) => {
     if (e.currentIndex.index !== -1) {
-      if (memberStore.userInfo.isHeadTeacher) {
+      if (showTable.value === true) {
         if (e.currentIndex.index === (e.opts.categories.length - 1)) {
           tableDataShow.value = tableData.value.reduce((acc, cur) => {
             const index = acc.findIndex((el) => el.studentId === cur.studentId);
@@ -341,13 +343,7 @@
     await getDeptParentId();
     await getSchoolDeptDetail();
 
-    if (memberStore.userInfo.isHeadTeacher && memberStore.userInfo.isGuardian) {
-      classRange.value = [...memberStore.userInfo.teacherInfoList, ...memberStore.userInfo.studentInfoList];
-    } else if (memberStore.userInfo.isHeadTeacher) {
-      classRange.value = memberStore.userInfo.teacherInfoList;
-    } else if (memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) {
-      classRange.value = memberStore.userInfo.studentInfoList;
-    }
+    classRange.value = [...memberStore.userInfo.teacherInfoList, ...memberStore.userInfo.studentInfoList];
 
     classRange.value = classRange.value.reduce((acc, cur) => {
       if (!acc.some(item => item.classId === cur.classId)) {
@@ -355,6 +351,10 @@
       }
       return acc;
     }, []);
+
+    if (classRange.value[0]) {
+      showTable.value = classRange.value[0].isTeacher;
+    }
 
     classText.value = classRange.value[0] ? classRange.value[0].className : '';
 

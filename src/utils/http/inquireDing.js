@@ -18,7 +18,6 @@ import { useMemberStore } from
 const memberStore = useMemberStore();
 
 export const getDeptName = async () => {
-  memberStore.userInfo.isStudent = false;
   memberStore.userInfo.isGuardian = false;
   memberStore.userInfo.isTeacher = false;
   for (const item of roleList) {
@@ -35,15 +34,6 @@ export const getDeptName = async () => {
       if (res.data.result.name === '家长') {
         memberStore.userInfo.isGuardian = true;
         memberStore.userInfo.deptIdGuardianList.push(item);
-      }
-
-      if (res.data.result.name === '学生') {
-        memberStore.userInfo.isStudent = true;
-        memberStore.userInfo.studentInfoList.push({
-          name: memberStore.userInfo.name,
-          userId: memberStore.userInfo.userid,
-          calssStudentId: item,
-        });
       }
 
       if (res.data.result.name === '老师') {
@@ -104,6 +94,7 @@ export const getDeptParentId = async () => {
     return deptDetailAPI(item).then(res => {
       memberStore.userInfo.teacherInfoList.push({
         classId: res.data.result.parent_id,
+        isTeacher: true,
       });
     });
   });
@@ -114,7 +105,7 @@ export const getDeptParentId = async () => {
 export const getSchoolDeptDetail = async () => {
   const list = memberStore.userInfo.teacherInfoList.map(item => {
     return schoolDeptDetailAPI(item.classId).then(res => {
-      item.className = res.data.result.detail.name;
+      item.className = res.data.result.detail.nick ? res.data.result.detail.nick : res.data.result.detail.name;
       item.classDetail = res.data.result.detail;
     });
   });

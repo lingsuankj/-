@@ -22,9 +22,11 @@ export const getDeptName = async () => {
   memberStore.userInfo.isStudent = false;
   memberStore.userInfo.isGuardian = false;
   memberStore.userInfo.isTeacher = false;
+
   for (const item of roleList) {
     memberStore.userInfo[item.role] = false;
   }
+
   memberStore.userInfo.studentInfoList = [];
   memberStore.userInfo.deptIdGuardianList = [];
   memberStore.userInfo.deptIdTeacherList = [];
@@ -41,9 +43,19 @@ export const getDeptName = async () => {
 
       if (res.data.result.name === '学生') {
         memberStore.userInfo.isStudent = true;
+
         memberStore.userInfo.studentInfoList.push({
           name: memberStore.userInfo.name,
           userId: memberStore.userInfo.userid,
+          isTeacher: false,
+        });
+
+        deptDetailAPI(item).then(res => {
+          memberStore.userInfo.studentInfoList[0].classId = res.data.result.parent_id;
+
+          schoolDeptDetailAPI(res.data.result.parent_id).then(res => {
+            memberStore.userInfo.studentInfoList[0].className = res.data.result.detail.nick ? res.data.result.detail.nick : res.data.result.detail.name;
+          });
         });
       }
 
@@ -65,6 +77,7 @@ export const getDeptName = async () => {
 
 export const getDeptParentId = async () => {
   memberStore.userInfo.deptIdGuardianParentList = [];
+
   const promiseAllGuardian = memberStore.userInfo.deptIdGuardianList.map(item => {
     return deptDetailAPI(item).then(res => {
       // 获取家长所在的班级
@@ -78,11 +91,12 @@ export const getDeptParentId = async () => {
       // 获取老师所在的班级
       memberStore.userInfo.teacherInfoList.push({
         classId: res.data.result.parent_id,
+        isTeacher: true,
       });
     });
   });
 
-  await Promise.all(promiseAllGuardian.concat(promiseAllTeacher));
+  await Promise.all([ ...promiseAllGuardian, ...promiseAllTeacher ]);
 };
 
 export const getUserRelationList = async () => {
@@ -95,6 +109,7 @@ export const getUserRelationList = async () => {
           userId: itemId.to_userid,
           relation_name: itemId.relation_name,
           classId: itemId.class_id,
+          isTeacher: false,
         });
       });
     });
@@ -113,7 +128,7 @@ export const getStuInfo = async () => {
 
   const classNameList = memberStore.userInfo.studentInfoList.map(item => {
     return schoolDeptDetailAPI(item.classId).then(res => {
-      item.className = res.data.result.detail.name;
+      item.className = res.data.result.detail.nick ? res.data.result.detail.nick : res.data.result.detail.name;
     });
   });
 
