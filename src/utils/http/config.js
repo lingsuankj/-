@@ -5,14 +5,7 @@ import {
   userInfoAPI,
 } from '../request/config.js';
 
-import { useMemberStore } from
-// #ifndef H5
-  '../../stores/modules/member.js';
-// #endif
-
-// #ifdef H5
-'../../stores/modules/memberH5.js';
-// #endif
+import { useMemberStore } from '../../stores/modules/member.js';
 
 // Note: The name here cannot be dd. The dd of the micro application will overwrite the original dd of the mini program.
 import * as microappdd from 'dingtalk-jsapi';
@@ -69,11 +62,15 @@ export const getToken = async () => {
 };
 
 export const getUserId = async () => {
+  if (memberStore.Limiting) return;
+
   const res = await userIdAPI();
   memberStore.userId = res.data.result.userid;
 };
 
 export const getUserInfo = async () => {
+  if (memberStore.Limiting) return;
+
   const res = await userInfoAPI();
   memberStore.userInfo.name = res.data.result.name;
   memberStore.userInfo.userid = res.data.result.userid;

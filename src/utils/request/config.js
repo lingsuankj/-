@@ -89,3 +89,15 @@ export function schoolDeptDetailAPI(deptId) {
     },
   });
 }
+
+export function schoolDeptListAPI(super_id = undefined) {
+  return request({
+    method: 'POST',
+    url: `/oding/topapi/edu/dept/list?access_token=${memberStore.token.accessToken}`,
+    data: {
+      page_size: 30,
+      page_no: 1,
+      super_id,
+    },
+  });
+}

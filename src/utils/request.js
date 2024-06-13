@@ -1,3 +1,7 @@
+import { useMemberStore } from '../stores/modules/member.js';
+
+const memberStore = useMemberStore();
+
 /* eslint-disable no-unused-vars */
 function getUrl(url) {
   if (url.startsWith('/ding')) {
@@ -31,9 +35,7 @@ export async function request(options) {
     if (!options.headers) options.headers = {};
     options.headers = getHeaders(options.headers);
 
-    if (options.url.startsWith('/ling')) {
-      options.data.clientId = import.meta.env.VITE_APPKEY;
-    }
+    options.data.clientId = import.meta.env.VITE_APPKEY;
 
     // #ifndef H5
     options.url = getUrl(options.url);
@@ -43,6 +45,10 @@ export async function request(options) {
       timeout: 30000,
       ...options,
       success(res) {
+        if (res.data.errcode === 88) {
+          memberStore.Limiting = true;
+        }
+
         if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(res);
         } else {
@@ -50,6 +56,7 @@ export async function request(options) {
             icon: 'none',
             title: res.data.msg || '请求错误',
           });
+
           reject(res);
         }
       },
@@ -58,6 +65,7 @@ export async function request(options) {
           icon: 'none',
           title: '网络错误，换个网络试试',
         });
+
         reject(err);
       },
     });

@@ -8,6 +8,8 @@ export const useMemberStore = defineStore(
     let authCode = ref('');
     let userId = ref('');
     const token = ref({});
+    let Limiting = ref(false);
+    const oldUserInfo = ref({});
     const userInfo = ref({
       userid: '',
       name: '',
@@ -27,15 +29,24 @@ export const useMemberStore = defineStore(
       isHeadMaster: false,
       studentInfoList: [],
       roleList: [],
+      schoolTreeList: [],
     });
 
     return {
       authCode,
       userId,
       token,
+      Limiting,
+      oldUserInfo,
       userInfo,
     };
   },
+  // #ifdef H5
+  {
+    persist: true,
+  },
+  // #endif
+  // #ifndef H5
   {
     persist: {
       storage: {
@@ -48,4 +59,5 @@ export const useMemberStore = defineStore(
       },
     },
   }
+  // #endif
 );

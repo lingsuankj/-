@@ -81,20 +81,12 @@
 
   import { ref } from 'vue';
 
-  import { useMemberStore } from
-  // #ifndef H5
-    '../../stores/modules/member.js';
-  // #endif
-
-  // #ifdef H5
-  '../../stores/modules/memberH5.js';
-  // #endif
+  import { useMemberStore } from '../../stores/modules/member.js';
 
   import {
-    getDeptName,
-    getTeacherCourse,
-    getDeptParentId,
-    getSchoolDeptDetail,
+    getCourse,
+    getClassName,
+    gradeAll,
   } from '../../utils/http/inquireDing';
 
   import {
@@ -102,18 +94,11 @@
     teacherCorrectScore,
     headTeacherScore,
     headTeacherCorrectScore,
-    gradeAll,
     headMasterScore,
     headMasterCorrectScore,
     getGradeAllDeptType,
+    gradeId,
   } from '../../utils/http/inquire';
-
-  import {
-    getAuthCode,
-    getToken,
-    getUserId,
-    getUserInfo,
-  } from '../../utils/http/config';
   
   import Loading from '../../components/loading/index.vue';
 
@@ -328,38 +313,47 @@
   });
   // #endif
 
-
   onLoad(async () => {
-    await getAuthCode();
-    await getToken();
-    await getUserId();
-    await getUserInfo();
-    await getDeptName();
-    await getTeacherCourse();
+    try {
+      await getCourse();
+      await getClassName();
+
+      // When the role is the HeadMaster or GradeDirector, get a list of all classes
+      if (memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector) {
+        await gradeAll();
+      }
+    } catch(e) {
+      if (memberStore.Limiting) memberStore.userInfo = memberStore.oldUserInfo;
+    }
 
     courseList.value = memberStore.userInfo.allCourse;
     course.value = memberStore.userInfo.teacherSubjectList[0] ? memberStore.userInfo.teacherSubjectList[0].name : '';
 
-    await getDeptParentId();
-    await getSchoolDeptDetail();
-
+    // When teacher and guardian class information is repeated, remove the duplicates
     classRange.value = [...memberStore.userInfo.teacherInfoList, ...memberStore.userInfo.studentInfoList];
-
     classRange.value = classRange.value.reduce((acc, cur) => {
       if (!acc.some(item => item.classId === cur.classId)) {
         acc.push(cur);
       }
+
       return acc;
     }, []);
 
+    // Determine whether you can view table details
     if (classRange.value[0]) {
       showTable.value = classRange.value[0].isTeacher;
     }
 
     classText.value = classRange.value[0] ? classRange.value[0].className : '';
 
+    // When the role is the HeadMaster or GradeDirector, get a list of all classes
     if (memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector) {
-      await gradeAll(gradeAllData, gradeAllDefaultId, classText);
+      gradeAllData.value = memberStore.userInfo.schoolTreeList;
+
+      // Get the ID of the first grade as the default value of the drop-down list
+      const defaultGrade = gradeId(memberStore.userInfo.schoolTreeList);
+      gradeAllDefaultId.value = defaultGrade.deptId;
+      classText.value = defaultGrade.text;
     }
 
     getChartDataArgument();

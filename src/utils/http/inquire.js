@@ -3,7 +3,6 @@ import {
   teacherCorrectScoreAPI,
   headTeacherScoreAPI,
   headTeacherCorrectScoreAPI,
-  schoolDeptListAPI,
   headMasterScoreAPI,
   headMasterCorrectScoreAPI,
 } from '../request/inquire.js';
@@ -318,31 +317,7 @@ export const headMasterCorrectScore = async (gradeDingId, courseDingId, startDat
   };
 };
 
-const schoolList = async (deptId, newArr) => {
-  const res = await schoolDeptListAPI(deptId);
-
-  for (const k of res.data.result.details) {
-    const content = {
-      text: k.name,
-      deptType: k.dept_type,
-      value: k.dept_id,
-    };
-    newArr.push(content);
-  }
-
-  for (const item of newArr) {
-    if (item.deptType !== 'grade') {
-      item.children = [];
-      await schoolList(item.value, item.children);
-    } else {
-      return;
-    }
-  }
-
-  return newArr;
-};
-
-const gradeId = (gradeAllData, period = '') => {
+export const gradeId = (gradeAllData, period = '') => {
   for (const k of gradeAllData) {
     if (k.deptType === 'period') {
       period = k.text;
@@ -359,15 +334,6 @@ const gradeId = (gradeAllData, period = '') => {
       return gradeId(k.children, period);
     }
   }
-};
-
-export const gradeAll = async (gradeAllData, gradeAllDefaultId, classText) => {
-  const res = await schoolList(undefined, []);
-  gradeAllData.value = res;
-
-  const resGrade = gradeId(res);
-  gradeAllDefaultId.value = resGrade.deptId;
-  classText.value = resGrade.text;
 };
 
 export const getGradeAllDeptType = (gradeAllData, deptId) => {

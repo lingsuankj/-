@@ -183,27 +183,43 @@
   // #endif
 
   onLoad(async () => {
+    memberStore.Limiting = false;
+
+    // Store old data and use it when the request triggers current limiting
+    memberStore.oldUserInfo = JSON.parse(JSON.stringify(memberStore.userInfo));
+
     uni.hideTabBar();
     await getAuthCode();
     await getToken();
-    await getUserId();
-    await getUserInfo();
-    await getDeptName();
 
-    const showTabBar = memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent;
-    if (showTabBar) uni.showTabBar();
+    try {
+      await getUserId();
+      await getUserInfo();
 
-    if (!(memberStore.userInfo.isStudent || memberStore.userInfo.isGuardian)) {
+      await getDeptName();
+      await getDeptParentId();
+    } catch(e) {
+      if (memberStore.Limiting) memberStore.userInfo = memberStore.oldUserInfo;
+    }
+
+    const hasStuInfo = memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent;
+    if (!hasStuInfo) {
       uni.switchTab({
         url: '/pages/inquire/inquire',
       });
     } else {
+      uni.showTabBar();
+
       if (memberStore.userInfo.isGuardian) {
-        await getDeptParentId();
-        await getUserRelationList();
-        await getStuInfo();
+        try {
+          await getUserRelationList();
+          await getStuInfo();
+        } catch(e) {
+          if (memberStore.Limiting) memberStore.userInfo = memberStore.oldUserInfo;
+        }
       }
 
+      // Get student data from the server
       await getStatisticsData(sendDateRange, statisticsData, totalData, stuIndex, statisticsOpts);
       await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex, accuracyOpts);
     }

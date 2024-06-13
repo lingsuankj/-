@@ -1,14 +1,4 @@
 import { request } from '../request.js';
-import { useMemberStore } from
-// #ifndef H5
-  '../../stores/modules/member.js';
-// #endif
-
-// #ifdef H5
-'../../stores/modules/memberH5.js';
-// #endif
-
-const memberStore = useMemberStore();
 
 export function headTeacherScoreAPI(classDingId, startDate, endDate) {
   return request({
@@ -82,18 +72,6 @@ export function headMasterCorrectScoreAPI(gradeDingId, courseDingId, startDate, 
       courseDingId,
       startDate,
       endDate,
-    },
-  });
-}
-
-export function schoolDeptListAPI(super_id = undefined) {
-  return request({
-    method: 'POST',
-    url: `/oding/topapi/edu/dept/list?access_token=${memberStore.token.accessToken}`,
-    data: {
-      page_size: 30,
-      page_no: 1,
-      super_id,
     },
   });
 }

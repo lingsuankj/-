@@ -7,21 +7,13 @@ import {
 
 import { roleList } from '../config.js';
 
-import { useMemberStore } from
-// #ifndef H5
-  '../../stores/modules/member.js';
-// #endif
-
-// #ifdef H5
-'../../stores/modules/memberH5.js';
-// #endif
+import { useMemberStore } from '../../stores/modules/member.js';
 
 const memberStore = useMemberStore();
 
+// Replace the ID in deptList with a name, Identify positions by name
 export const getDeptName = async () => {
-  memberStore.userInfo.isStudent = false;
-  memberStore.userInfo.isGuardian = false;
-  memberStore.userInfo.isTeacher = false;
+  if (memberStore.Limiting) return;
 
   for (const item of roleList) {
     memberStore.userInfo[item.role] = false;
@@ -37,13 +29,10 @@ export const getDeptName = async () => {
       deptNameList.push(res.data.result.name);
 
       if (res.data.result.name === '家长') {
-        memberStore.userInfo.isGuardian = true;
         memberStore.userInfo.deptIdGuardianList.push(item);
       }
 
       if (res.data.result.name === '学生') {
-        memberStore.userInfo.isStudent = true;
-
         memberStore.userInfo.studentInfoList.push({
           name: memberStore.userInfo.name,
           userId: memberStore.userInfo.userid,
@@ -60,7 +49,6 @@ export const getDeptName = async () => {
       }
 
       if (res.data.result.name === '老师') {
-        memberStore.userInfo.isTeacher = true;
         memberStore.userInfo.deptIdTeacherList.push(item);
       }
 
@@ -71,16 +59,21 @@ export const getDeptName = async () => {
       }
     });
   });
+
   await Promise.all(promiseAll);
+
   memberStore.userInfo.deptNameList = deptNameList;
 };
 
+// Get the ID of the class where the teacher/parent is located
 export const getDeptParentId = async () => {
+  if (memberStore.Limiting) return;
+
   memberStore.userInfo.deptIdGuardianParentList = [];
 
   const promiseAllGuardian = memberStore.userInfo.deptIdGuardianList.map(item => {
     return deptDetailAPI(item).then(res => {
-      // 获取家长所在的班级
+      // Get the class of the parent
       memberStore.userInfo.deptIdGuardianParentList.push(res.data.result.parent_id);
     });
   });
@@ -88,7 +81,7 @@ export const getDeptParentId = async () => {
   memberStore.userInfo.teacherInfoList = [];
   const promiseAllTeacher = memberStore.userInfo.deptIdTeacherList.map(item => {
     return deptDetailAPI(item).then(res => {
-      // 获取老师所在的班级
+      // Get the class the teacher is in
       memberStore.userInfo.teacherInfoList.push({
         classId: res.data.result.parent_id,
         isTeacher: true,
@@ -99,7 +92,10 @@ export const getDeptParentId = async () => {
   await Promise.all([ ...promiseAllGuardian, ...promiseAllTeacher ]);
 };
 
+// Get information about your own children in the class
 export const getUserRelationList = async () => {
+  if (memberStore.Limiting) return;
+
   if (memberStore.userInfo.isStudent) return;
 
   const promiseAll = memberStore.userInfo.deptIdGuardianParentList.map(item => {
@@ -114,10 +110,13 @@ export const getUserRelationList = async () => {
       });
     });
   });
+
   await Promise.all(promiseAll);
 };
 
 export const getStuInfo = async () => {
+  if (memberStore.Limiting) return;
+
   if (memberStore.userInfo.isStudent) return;
 
   const userNameList = memberStore.userInfo.studentInfoList.map(item => {

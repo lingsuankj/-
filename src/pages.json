@@ -1,15 +1,18 @@
 {
-  "pages": [{
-    "path": "pages/details/details",
-    "style": {
-      "navigationBarTitleText": "个人详情"
+  "pages": [
+    {
+      "path": "pages/details/details",
+      "style": {
+        "navigationBarTitleText": "个人详情"
+      }
+    },
+    {
+      "path": "pages/inquire/inquire",
+      "style": {
+        "navigationBarTitleText": "智慧课堂互动信息"
+      }
     }
-  }, {
-    "path": "pages/inquire/inquire",
-    "style": {
-      "navigationBarTitleText": "智慧课堂互动信息"
-    }
-  }],
+  ],
   "globalStyle": {
     "navigationStyle": "custom",
     "navigationBarTextStyle": "black",
