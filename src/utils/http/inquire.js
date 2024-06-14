@@ -27,7 +27,7 @@ export const headTeacherScore = async (classDingId, startDate, endDate, tableDat
   tableData.value = res.data;
 };
 
-export const headTeacherCorrectScore = async (classDingId, startDate, endDate, tableData, headTeacherData, optsAll) => {
+export const headTeacherCorrectScore = async (classDingId, startDate, endDate, tableData, teacherData, optsAll) => {
   const res = await headTeacherCorrectScoreAPI(classDingId, startDate, endDate);
 
   tableData.value.forEach(item => {
@@ -90,7 +90,7 @@ export const headTeacherCorrectScore = async (classDingId, startDate, endDate, t
 
   const coutSize = getFontSize(Math.max(...count, ...correctCount));
 
-  headTeacherData.value = {
+  teacherData.value = {
     categories: course.length !== 0 ? course : [ '' ],
     series: [{
       name: '提问数量',

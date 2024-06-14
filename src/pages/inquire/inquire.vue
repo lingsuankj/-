@@ -24,8 +24,8 @@
       </picker>
     </view>
 
-    <!-- isHeadMaster / isGradeDirector -->
-    <view class="courseSelector" v-if="memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector">
+    <!-- isHeadMaster / isGradeDirector / isTeacher-->
+    <view class="courseSelector" v-if="memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector || memberStore.userInfo.isTeacher && !memberStore.userInfo.isHeadTeacher">
       <picker mode="selector" :value="courseIndex" @change="courseChange" :range="courseList" range-key="name">
         <view class="courseContent">
           <view class="courseText">{{ course }}</view>
@@ -36,7 +36,6 @@
 
     <!-- isTeacher / isHeadMaster / isGradeDirector -->
     <view class="teacher" v-if="memberStore.userInfo.isTeacher && !memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector">
-      <view class="title">{{ course }}</view>
       <Loading :chartData="teacherData" />
       <qiun-data-charts type="mix" :opts="optsAll" :ontouch='true' :chartData="teacherData"
         @getIndex="clickTeacher" :loadingType="0" background="#F8F8F8" />
@@ -110,10 +109,10 @@
 
   // getChartData argument
   let headMasterGradeId = ref('');
-  let headMasterCourseId = ref();
   // headTeacherClassId + guardianClassId
   let headTeacherClassId = ref('');
-  let teacherCourseId = ref(memberStore.userInfo.teacherSubjectList[0]?.deptid);
+
+  let courseId = ref();
 
   const currentDate = new Date();
   const startDay = 1;
@@ -170,7 +169,7 @@
 
   const courseChange = async (e) => {
     courseIndex.value = e.detail.value;
-    headMasterCourseId.value = courseList.value[e.detail.value].deptid;
+    courseId.value = courseList.value[e.detail.value].deptid;
 
     course.value = courseList.value[e.detail.value].name;
     await getChartData();
@@ -204,8 +203,13 @@
           tableDataShow.value = tableData.value.filter(item => item.courseName === e.opts.categories[e.currentIndex.index]);
         }
 
-        course.value = e.opts.categories[e.currentIndex.index];
+        if (e.opts.categories[e.currentIndex.index] !== '') {
+          course.value = e.opts.categories[e.currentIndex.index];
+        }
+
+        // Sort by accuracy
         tableDataShow.value.sort((a, b) => (b.correctCount / b._count) - (a.correctCount / a._count));
+
         tableFlag.value = true;
       }
     }
@@ -280,27 +284,16 @@
 
   const getChartData = async () => {
     if (memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector) {
-      await headMasterScore(headMasterGradeId.value, headMasterCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
-      await headMasterCorrectScore(headMasterGradeId.value, headMasterCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData, optsAll);
+      await headMasterScore(headMasterGradeId.value, courseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
+      await headMasterCorrectScore(headMasterGradeId.value, courseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData, optsAll);
     } else if ((memberStore.userInfo.isHeadTeacher || ((memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) && !memberStore.userInfo.isTeacher)) && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector) {
       await headTeacherScore(headTeacherClassId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
       await headTeacherCorrectScore(headTeacherClassId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, headTeacherData, optsAll);
     } else {
-      await teacherScore(memberStore.userInfo.userid, teacherCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
-      await teacherCorrectScore(memberStore.userInfo.userid, teacherCourseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData, optsAll);
+      await teacherScore(memberStore.userInfo.userid, courseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
+      await teacherCorrectScore(memberStore.userInfo.userid, courseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData, optsAll);
     }
   }
-
-  const getChartDataArgument = () => {
-    if (memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector) {
-      headMasterGradeId.value = gradeAllDefaultId.value;
-      headMasterCourseId.value = memberStore.userInfo.allCourse[0]?.deptid;
-    } else if (memberStore.userInfo.isHeadTeacher || memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) {
-      headTeacherClassId.value = classRange.value[0] ? classRange.value[0].classId : '';
-    } else {
-      teacherCourseId.value = memberStore.userInfo.teacherSubjectList[0]?.deptid;
-    }
-  };
 
   // #ifdef H5
   onShow(() => {
@@ -326,8 +319,14 @@
       if (memberStore.Limiting) memberStore.userInfo = memberStore.oldUserInfo;
     }
 
-    courseList.value = memberStore.userInfo.allCourse;
-    course.value = memberStore.userInfo.teacherSubjectList[0] ? memberStore.userInfo.teacherSubjectList[0].name : '';
+    if (memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector) {
+      courseList.value = memberStore.userInfo.allCourse;
+    } else if(memberStore.userInfo.isTeacher) {
+      courseList.value = memberStore.userInfo.teacherSubjectList;
+    }
+
+    course.value = courseList.value[0] ? courseList.value[0].name : '';
+    courseId.value = courseList.value[0] ? courseList.value[0].deptid : '';
 
     // When teacher and guardian class information is repeated, remove the duplicates
     classRange.value = [...memberStore.userInfo.teacherInfoList, ...memberStore.userInfo.studentInfoList];
@@ -338,6 +337,8 @@
 
       return acc;
     }, []);
+
+    headTeacherClassId.value = classRange.value[0] ? classRange.value[0].classId : '';
 
     // Determine whether you can view table details
     if (classRange.value[0]) {
@@ -353,10 +354,10 @@
       // Get the ID of the first grade as the default value of the drop-down list
       const defaultGrade = gradeId(memberStore.userInfo.schoolTreeList);
       gradeAllDefaultId.value = defaultGrade.deptId;
+      headMasterGradeId.value = defaultGrade.deptId;
       classText.value = defaultGrade.text;
     }
 
-    getChartDataArgument();
     await getChartData();
   })
 </script>
@@ -364,6 +365,8 @@
 <style lang="scss">
   .body {
     font-size: 28rpx;
+    min-height: 100vh;
+    background-color: #FFFFFF;
 
     .bannerImg {
       display: block;
@@ -377,7 +380,7 @@
       margin: 0 auto 20rpx;
       width: 680rpx;
 
-      // 解决日期选择器大小不适配 H5 端的问题
+      // Solve the problem that the date picker size does not fit the H5 end
       /* #ifdef H5 */
       .uni-calendar:nth-of-type(2) {
         display: none !important;
@@ -399,14 +402,11 @@
       }
 
       /* #endif */
-      // 年级/班级 边距
-
       .input-value .selected-item {
         margin-left: 0;
         margin-right: 0;
       }
 
-      // 文字
       .input-value {
         padding-left: 20rpx;
         padding-right: 0;
@@ -470,20 +470,14 @@
       }
     }
 
-    .headTeacher {
+    .headTeacher, .teacher {
       position: relative;
       margin: 40rpx auto;
       width: 680rpx;
-    }
-
-    .teacher {
-      position: relative;
-      margin: 40rpx auto;
-      width: 680rpx;
-
-      .title {
-        text-align: center;
-      }
+      height: 500rpx;
+      border-radius: 30rpx;
+      box-sizing: border-box;
+      overflow: hidden;
     }
 
     .tableBox {

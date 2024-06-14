@@ -13,7 +13,6 @@
     </view>
 
     <view class="chartsBox">
-    <!-- <view class="chartsBox" v-if="statisticsData?.series"> -->
       <view class="title">
         <text class="titleLeft">本次统计</text>
       </view>
@@ -230,7 +229,7 @@
   .body {
     min-height: 100vh;
     padding-top: 40rpx;
-    background-color: #fff;
+    background-color: #FFFFFF;
 
     .dateSelector {
       position: relative;
@@ -274,7 +273,7 @@
 
     .chartsBox {
       margin: 40rpx auto;
-      padding: 0 0 0;
+      padding: 0;
       width: 680rpx;
       height: 500rpx;
       background-color: #F8F8F8;
