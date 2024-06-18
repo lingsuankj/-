@@ -4,7 +4,7 @@ import uni from '@dcloudio/vite-plugin-uni';
 // https://vitejs.dev/config/
 export default defineConfig({
   // Use when build
-  base: '/bdxy/',
+  // base: '/ltcs/',
   plugins: [
     uni(),
   ],
@@ -16,9 +16,8 @@ export default defineConfig({
         rewrite: path => path.replace(/^\/ding/, ''),
       },
       '/oding': {
-        target: 'https://oapi.dingtalk.com',
+        target: 'https://dmq.lingsuankj.com',
         changeOrigin: true,
-        rewrite: path => path.replace(/^\/oding/, ''),
       },
       '/ling': {
         target: 'https://dmq.lingsuankj.com',

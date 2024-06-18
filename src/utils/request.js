@@ -2,7 +2,6 @@ import { useMemberStore } from '../stores/modules/member.js';
 
 const memberStore = useMemberStore();
 
-/* eslint-disable no-unused-vars */
 function getUrl(url) {
   if (url.startsWith('/ding')) {
     url = url.replace(new RegExp('^/ding'), '');
@@ -10,8 +9,7 @@ function getUrl(url) {
   }
 
   if (url.startsWith('/oding')) {
-    url = url.replace(new RegExp('^/oding'), '');
-    url = 'https://oapi.dingtalk.com' + url;
+    url = `${import.meta.env.VITE_REQUESTIP}` + url;
   }
 
   if (url.startsWith('/ling')) {
@@ -30,7 +28,21 @@ function getHeaders(headers = {}) {
   };
 }
 
+const max = 20;
+let reqPerSecond = 0;
+
 export async function request(options) {
+  // Ensure that the number of dingding requests from the client does not exceed 20 per second.
+  if (options.url.slice(0, 6) === '/oding') {
+    reqPerSecond++;
+
+    while (reqPerSecond > max) {
+      await new Promise(res => setTimeout(res, 100));
+    }
+
+    setTimeout(() => reqPerSecond--, 1000);
+  }
+
   return new Promise((resolve, reject) => {
     if (!options.headers) options.headers = {};
     options.headers = getHeaders(options.headers);
