@@ -87,7 +87,9 @@ export const getAccuracyData = async (sendDateRange, accuracyData, totalData, st
     }
 
     if (correctCount.length > 0) {
-      accuracyOpts.yAxis.data[0].max = Math.round(Math.max(...correctCount) * 2);
+      // Set the maximum value of the Y axis
+      // When the correct number is 0, the y-axis must be greater than 0, otherwise the data will show the highest
+      accuracyOpts.yAxis.data[0].max = Math.round(Math.max(...correctCount) * 2) || 1;
     }
 
     const coutSize = getFontSize(Math.max(...correctCount));

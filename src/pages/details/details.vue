@@ -126,7 +126,8 @@
       disableGrid: true,
       scrollShow: true,
       scrollShow: true,
-      itemCount: 3,
+      // The number of bar charts on the current page
+      itemCount: 6,
       fontSize: 10,
     },
     yAxis: {
