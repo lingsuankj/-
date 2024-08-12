@@ -9,6 +9,7 @@ export const useMemberStore = defineStore(
     let userId = ref('');
     const token = ref({});
     let Limiting = ref(false);
+    let qpsMax = ref(18);
     const oldUserInfo = ref({});
     const userInfo = ref({
       userid: '',
@@ -37,6 +38,7 @@ export const useMemberStore = defineStore(
       userId,
       token,
       Limiting,
+      qpsMax,
       oldUserInfo,
       userInfo,
     };

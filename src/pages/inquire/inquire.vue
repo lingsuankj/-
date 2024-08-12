@@ -284,12 +284,15 @@
 
   const getChartData = async () => {
     if (memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector) {
+      // Get head master Data
       await headMasterScore(headMasterGradeId.value, courseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
       await headMasterCorrectScore(headMasterGradeId.value, courseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData, optsAll);
     } else if ((memberStore.userInfo.isHeadTeacher || ((memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent) && !memberStore.userInfo.isTeacher)) && !memberStore.userInfo.isHeadMaster && !memberStore.userInfo.isGradeDirector) {
+      // Get head teacher data
       await headTeacherScore(headTeacherClassId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
       await headTeacherCorrectScore(headTeacherClassId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, headTeacherData, optsAll);
     } else {
+      // Get ordinary teacher data
       await teacherScore(memberStore.userInfo.userid, courseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData);
       await teacherCorrectScore(memberStore.userInfo.userid, courseId.value, sendDateRange.value[0], sendDateRange.value[1], tableData, teacherData, optsAll);
     }
@@ -308,7 +311,9 @@
 
   onLoad(async () => {
     try {
+      // Get a list of all courses、Get the course list for this account
       await getCourse();
+      // Get the name of the class the teacher teaches
       await getClassName();
 
       // When the role is the HeadMaster or GradeDirector, get a list of all classes
@@ -319,13 +324,18 @@
       if (memberStore.Limiting) memberStore.userInfo = memberStore.oldUserInfo;
     }
 
+    // 
     if (memberStore.userInfo.isHeadMaster || memberStore.userInfo.isGradeDirector) {
+      // Drop-down list showing all courses
       courseList.value = memberStore.userInfo.allCourse;
     } else if(memberStore.userInfo.isTeacher) {
+      // The drop-down list shows the courses taught
       courseList.value = memberStore.userInfo.teacherSubjectList;
     }
 
+    // Default course name in the drop-down list
     course.value = courseList.value[0] ? courseList.value[0].name : '';
+    // Default course id in the drop-down list
     courseId.value = courseList.value[0] ? courseList.value[0].deptid : '';
 
     // When teacher and guardian class information is repeated, remove the duplicates
@@ -338,13 +348,16 @@
       return acc;
     }, []);
 
+    // Default class id in drop-down list
     headTeacherClassId.value = classRange.value[0] ? classRange.value[0].classId : '';
 
     // Determine whether you can view table details
+    // Only teachers can view details
     if (classRange.value[0]) {
       showTable.value = classRange.value[0].isTeacher;
     }
 
+    // Default class name in drop-down box
     classText.value = classRange.value[0] ? classRange.value[0].className : '';
 
     // When the role is the HeadMaster or GradeDirector, get a list of all classes
@@ -358,6 +371,7 @@
       classText.value = defaultGrade.text;
     }
 
+    // Get chart data
     await getChartData();
   })
 </script>

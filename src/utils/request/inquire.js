@@ -1,5 +1,6 @@
 import { request } from '../request.js';
 
+// The head teacher total roll call data
 export function headTeacherScoreAPI(classDingId, startDate, endDate) {
   return request({
     method: 'POST',
@@ -12,6 +13,7 @@ export function headTeacherScoreAPI(classDingId, startDate, endDate) {
   });
 }
 
+// Data on the number of correct roll calls taken by the head teacher
 export function headTeacherCorrectScoreAPI(classDingId, startDate, endDate) {
   return request({
     method: 'POST',
@@ -24,6 +26,7 @@ export function headTeacherCorrectScoreAPI(classDingId, startDate, endDate) {
   });
 }
 
+// The teacher total roll call data
 export function teacherScoreAPI(teacherDingId, courseDingId, startDate, endDate) {
   return request({
     method: 'POST',
@@ -37,6 +40,7 @@ export function teacherScoreAPI(teacherDingId, courseDingId, startDate, endDate)
   });
 }
 
+// Data on the number of correct roll calls by teachers
 export function teacherCorrectScoreAPI(teacherDingId, courseDingId, startDate, endDate) {
   return request({
     method: 'POST',
@@ -50,6 +54,7 @@ export function teacherCorrectScoreAPI(teacherDingId, courseDingId, startDate, e
   });
 }
 
+// The head master total roll call data
 export function headMasterScoreAPI(gradeDingId, courseDingId, startDate, endDate) {
   return request({
     method: 'POST',
@@ -63,6 +68,7 @@ export function headMasterScoreAPI(gradeDingId, courseDingId, startDate, endDate
   });
 }
 
+// Data on the number of correct roll calls by head master
 export function headMasterCorrectScoreAPI(gradeDingId, courseDingId, startDate, endDate) {
   return request({
     method: 'POST',

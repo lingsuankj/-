@@ -39,7 +39,11 @@
 
   import { ref } from 'vue';
 
-  import { getStatisticsData, getAccuracyData } from '../../utils/http/details.js';
+  import { 
+    getStatisticsData,
+    getAccuracyData,
+    getQpsMax,
+   } from '../../utils/http/details.js';
 
   import {
     getDeptName,
@@ -65,30 +69,43 @@
 
   const memberStore = useMemberStore();
 
+  // The default time range is: 1st of this month to today
   const currentDate = new Date();
   const startDay = 1;
+  // currentDate: '2024-08-01T06:22:57.621Z'
   currentDate.setDate(startDay);
+  // '2024-08-01'
   const startDate = currentDate.toISOString().split('T')[0];
+  // '2024-08-09'
   const endDate = new Date().toISOString().split('T')[0];
   const dateRange = ref([startDate, endDate]);
   let sendDateRange = [startDate + 'T00:00:00Z', endDate + 'T23:59:59Z'];
 
+  // Called after selecting a date
   const dateChange = async (e) => {
+    // Formatting date ranges
     sendDateRange = [e[0] + 'T00:00:00Z', e[1] + 'T23:59:59Z'];
+    // Get chart data
     await getStatisticsData(sendDateRange, statisticsData, totalData, stuIndex, statisticsOpts);
     await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex, accuracyOpts);
   };
 
+  // The currently selected student id
   let stuIndex = ref(0);
 
+  // Called after switching students
   const stuChange = async (e) => {
+    // Update the currently selected student id
     stuIndex.value = e.detail.value;
 
+    // Get chart data
     await getStatisticsData(sendDateRange, statisticsData, totalData, stuIndex, statisticsOpts);
     await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex, accuracyOpts);
   };
 
+  // This statistical chart data
   const statisticsData = ref({});
+  // Correct chart data
   const accuracyData = ref({});
 
   const statisticsOpts = {
@@ -188,7 +205,9 @@
     // Store old data and use it when the request triggers current limiting
     memberStore.oldUserInfo = JSON.parse(JSON.stringify(memberStore.userInfo));
 
+    // Hide the tabbar at the bottom of the page
     uni.hideTabBar();
+    await getQpsMax();
     await getAuthCode();
     await getToken();
 
@@ -202,25 +221,32 @@
       if (memberStore.Limiting) memberStore.userInfo = memberStore.oldUserInfo;
     }
 
+    // Determine whether you are a guardian/student
     const hasStuInfo = memberStore.userInfo.isGuardian || memberStore.userInfo.isStudent;
+    // If not, jump to the teacher page
     if (!hasStuInfo) {
       uni.switchTab({
         url: '/pages/inquire/inquire',
       });
     } else {
+      // Display the tabbar at the bottom of the page
       uni.showTabBar();
 
+      // If the guardian
       if (memberStore.userInfo.isGuardian) {
         try {
+          // Get your child's Id
           await getUserRelationList();
+          // Get your child's name
           await getStuInfo();
         } catch(e) {
           if (memberStore.Limiting) memberStore.userInfo = memberStore.oldUserInfo;
         }
       }
 
-      // Get student data from the server
+      // Get the total number of student roll calls
       await getStatisticsData(sendDateRange, statisticsData, totalData, stuIndex, statisticsOpts);
+      // Get the total number of correct roll calls of students
       await getAccuracyData(sendDateRange, accuracyData, totalData, stuIndex, accuracyOpts);
     }
   });

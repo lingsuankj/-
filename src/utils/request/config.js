@@ -3,6 +3,7 @@ import { useMemberStore } from '../../stores/modules/member.js';
 
 const memberStore = useMemberStore();
 
+// Get a token
 export function tokenAPI() {
   return request({
     method: 'POST',
@@ -17,6 +18,7 @@ export function tokenAPI() {
   });
 }
 
+// Get user id
 export function userIdAPI() {
   return request({
     method: 'POST',
@@ -27,6 +29,7 @@ export function userIdAPI() {
   });
 }
 
+// Get user information
 export function userInfoAPI() {
   return request({
     method: 'POST',
@@ -37,6 +40,7 @@ export function userInfoAPI() {
   });
 }
 
+// Get contact department details
 export function deptDetailAPI(deptId) {
   return request({
     method: 'POST',
@@ -47,6 +51,7 @@ export function deptDetailAPI(deptId) {
   });
 }
 
+// Get a list of departments
 export function deptListAPI(deptId = 1) {
   return request({
     method: 'POST',
@@ -57,6 +62,7 @@ export function deptListAPI(deptId = 1) {
   });
 }
 
+// List of students associated with this account
 export function userRelationListAPI(from_userid, class_id) {
   return request({
     method: 'POST',
@@ -68,6 +74,7 @@ export function userRelationListAPI(from_userid, class_id) {
   });
 }
 
+// Home-school address book, get user details
 export function schoolUserInfoAPI(class_id, userid, role = 'student') {
   return request({
     method: 'POST',
@@ -80,6 +87,7 @@ export function schoolUserInfoAPI(class_id, userid, role = 'student') {
   });
 }
 
+// Home-school contact list, get department details
 export function schoolDeptDetailAPI(deptId) {
   return request({
     method: 'POST',
@@ -90,6 +98,7 @@ export function schoolDeptDetailAPI(deptId) {
   });
 }
 
+// Home-school contact list, get department list
 export function schoolDeptListAPI(super_id = undefined) {
   return request({
     method: 'POST',
