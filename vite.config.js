@@ -16,11 +16,11 @@ export default defineConfig({
         rewrite: path => path.replace(/^\/ding/, ''),
       },
       '/oding': {
-        target: 'https://dmq.lingsuankj.com',
+        target: 'https://bdxx.lingsuankj.com',
         changeOrigin: true,
       },
       '/ling': {
-        target: 'https://dmq.lingsuankj.com',
+        target: 'https://bdxx.lingsuankj.com',
         changeOrigin: true,
         // rewrite: path => path.replace(/^\/ling/, ''),
       },
